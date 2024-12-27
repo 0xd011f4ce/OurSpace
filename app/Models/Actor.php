@@ -33,6 +33,11 @@ class Actor extends Model
         "private_key"
     ];
 
+    public function user ()
+    {
+        return $this->belongsTo (User::class);
+    }
+
     public function create_from_user (User $user)
     {
         $app_url = Config::get ("app.url");
@@ -74,7 +79,7 @@ class Actor extends Model
 
     public static function build_response (Actor $actor)
     {
-        return [
+        $response = [
             "@context" => [
                 "https://www.w3.org/ns/activitystreams",
                 "https://w3id.org/security/v1"
@@ -96,11 +101,25 @@ class Actor extends Model
             "name" => $actor->name,
             "summary" => $actor->summary,
 
+            "icon" => [
+                "type" => "Image",
+                "mediaType" => "image/jpeg",
+                "url" => $actor->icon
+            ],
+
+            "image" => [
+                "type" => "Image",
+                "mediaType" => "image/jpeg",
+                "url" => $actor->icon
+            ],
+
             "publicKey" => [
                 "id" => $actor->actor_id . "#main-key",
                 "owner" => $actor->actor_id,
                 "publicKeyPem" => $actor->public_key
             ]
         ];
+
+        return $response;
     }
 }

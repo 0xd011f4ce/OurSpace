@@ -36,6 +36,8 @@ return new class extends Migration
             $table->string ("public_key")->nullable ();
             $table->string ("private_key")->nullable ();
 
+            $table->string ("icon")->nullable ();
+
             $table->timestamps();
         });
     }

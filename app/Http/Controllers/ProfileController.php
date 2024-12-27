@@ -57,7 +57,9 @@ class ProfileController extends Controller
             Storage::disk ("public")->put ("avatars/" . $fname, $image_data);
 
             $old_avatar = $user->avatar;
+
             $user->avatar = $fname;
+            $user->actor->icon = env ("APP_URL") . $user->avatar;
 
             $changing_avatar = true;
         }
@@ -70,6 +72,9 @@ class ProfileController extends Controller
         $user->interests_books = $incoming_fields["books"];
         $user->interests_heroes = $incoming_fields["heroes"];
         $user->save ();
+
+        $user->actor->summary = $user->bio;
+        $user->actor->save ();
 
         if ($changing_avatar)
         {
