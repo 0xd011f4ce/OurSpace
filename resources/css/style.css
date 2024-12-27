@@ -3718,3 +3718,15 @@ audio {
 .main-header a:visited {
     color: #ffffff;
 }
+
+.profile-info {
+    height: 82px;
+}
+
+#music {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    width: 80px;
+    transition: 0.5s width;
+}

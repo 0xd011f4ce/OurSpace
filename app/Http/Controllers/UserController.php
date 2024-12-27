@@ -22,7 +22,7 @@ class UserController extends Controller
     public function do_signup (Request $request)
     {
         $incoming_fields = $request->validate ([
-            "name" => "required",
+            "name" => "required|alpha_dash",
             "email" => "required|email|unique:users",
             "password" => "required|confirmed"
         ]);
@@ -54,5 +54,10 @@ class UserController extends Controller
         auth ()->logout ();
 
         return redirect ()->route ("login")->with ("success", "You have successfuly logged out!");
+    }
+
+    public function show (User $user)
+    {
+        return view ("users.profile", compact ("user"));
     }
 }

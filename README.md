@@ -7,7 +7,44 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
 ## Overview
 
 ![](img/OurSpaceHome.png)
+![](img/OurSpaceProfile.png)
 
 ## TODO:
 
-- [ ] Do the ToDo list
+- [-] Activitypub
+    - [x] Accounts (users can now be found in mastodon instances)
+    - [ ] Posts
+        - [ ] Local posts should be federated
+        - [ ] Remote posts should be fetched
+    - [ ] Follows
+    - [ ] Likes
+    - [ ] Comments
+
+- [-] Social features
+    - [x] Profile
+        - [ ] Show when the user is online
+        - [ ] Set mood
+        - [ ] Set interests
+        - [ ] Update profile picture
+        - [ ] Mark account as private (in federation manual approval is needed)
+        - [ ] Allow custom CSS
+        - [ ] Profile audio
+    - [ ] Friends (they are known as follows in the activitypub protocol)
+        - [ ] Add friends
+        - [ ] Remove friends
+    - [ ] Posts (everything should be federated)
+        - [ ] Create posts
+        - [ ] Delete posts
+        - [ ] Like posts
+        - [ ] Comment posts
+    - [ ] Blog
+    - [ ] Bulletin
+    - [ ] Groups
+    - [ ] Forum
+    - [ ] Events
+    - [ ] Add users to favourites
+    - [ ] Chat
+
+- [ ] Others
+    - [ ] Music
+    - [ ] Announcements

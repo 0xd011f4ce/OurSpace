@@ -14,4 +14,6 @@ Route::get ("/auth/logout", [ UserController::class, "logout" ])->name ("logout"
 Route::post ("/auth/signup", [ UserController::class, "do_signup" ])->middleware ("guest");
 Route::post ("/auth/login", [ UserController::class, "do_login" ])->middleware ("guest");
 
+Route::get ("/user/{user:name}", [ UserController::class, "show" ])->name ("users.show");
+
 require __DIR__ . "/api.php";

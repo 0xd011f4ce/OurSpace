@@ -14,6 +14,19 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->text ("bio")->nullable ();
             $table->string ("avatar")->nullable ();
+
+            $table->string ("status")->nullable ();
+            $table->string ("mood")->nullable ();
+            $table->string ("about_you")->nullable ();
+
+            // interests
+            $table->string ("interests_general")->nullable ();
+            $table->string ("interests_music")->nullable ();
+            $table->string ("interests_movies")->nullable ();
+            $table->string ("interests_television")->nullable ();
+            $table->string ("interests_books")->nullable ();
+            $table->string ("interests_heroes")->nullable ();
+
             $table->integer ("friends")->default (0);
         });
     }

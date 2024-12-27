@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield ("title") | OurSpace</title>
 
+    <link rel="icon" href="/resources/img/favicon.ico" type="image/x-icon">
+
     @vite(["/resources/css/app.css"])
 </head>
 <body>
