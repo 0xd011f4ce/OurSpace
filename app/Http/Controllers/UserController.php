@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Actor;
+
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -26,6 +28,8 @@ class UserController extends Controller
         ]);
 
         $user = User::create ($incoming_fields);
+        $actor = new Actor ();
+        $actor->create_from_user ($user);
         auth ()->login ($user);
 
         return redirect ()->route ("home")->with ("success", "You have successfuly signed up!");

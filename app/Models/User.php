@@ -53,4 +53,9 @@ class User extends Authenticatable
             return $value ? "/storage/avatars/" . $value : "/resources/img/default.jpg";
         });
     }
+
+    public function actor ()
+    {
+        return $this->hasOne (Actor::class);
+    }
 }

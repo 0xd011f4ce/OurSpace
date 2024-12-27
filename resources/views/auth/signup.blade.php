@@ -22,12 +22,12 @@
 
     <form action="#" method="POST">
         @csrf
-        <input type="text" name="name" placeholder="Username" required><br>
+        <input type="text" name="name" placeholder="Username" value="{{ old ('name') }}" required><br>
         @error('username')
             <div class="error">{{ $message }}</div>
         @enderror
 
-        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="email" name="email" placeholder="Email" value="{{ old ('email') }}" required><br>
         @error('email')
             <div class="error">{{ $message }}</div>
         @enderror
