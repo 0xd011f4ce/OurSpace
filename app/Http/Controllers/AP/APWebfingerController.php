@@ -30,6 +30,10 @@ class APWebfingerController extends Controller
 
         $user = $user[0];
         $actual_user = User::where ("name", $user)->first ();
+        if (!isset ($actual_user)) {
+            return response ()->json ([ "error" => "user not found" ], 404);
+        }
+
         $webfinger = [
             "subject" => $resource,
             "links" => [
