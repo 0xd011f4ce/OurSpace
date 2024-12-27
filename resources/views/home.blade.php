@@ -15,11 +15,11 @@
                     <div class="inner">
                         @foreach ($latest_users as $user)
                             <div class="person">
-                                <a href="#">
+                                <a href="{{ route ('users.show', [ 'user' => $user ]) }}">
                                     <p>{{ $user->name }}</p>
                                 </a>
                                 <a href="#">
-                                    <img src="{{ $user->avatar }}" alt="{{ $user->name }}'s profile picture"
+                                    <img loading="lazy" src="{{ $user->avatar }}" alt="{{ $user->name }}'s profile picture"
                                         class="pfp-fallback" style="width: 100%; max-height: 95px; aspect-ratio: 1/1">
                                 </a>
                             </div>

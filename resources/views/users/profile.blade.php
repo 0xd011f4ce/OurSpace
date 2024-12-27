@@ -99,9 +99,9 @@
 
             <div class="url-info">
                 <p>
-                    <b>OurSpace URL:</b>
+                    <b>Federation handle:</b>
                 </p>
-                <p>{{ route ('users.show', [ 'user' => $user ]) }}</p>
+                <p>@php echo "@" . $user->name . "@" . explode ("/", env ("APP_URL"))[2] @endphp</p>
             </div>
 
             <div class="table-section">
@@ -177,7 +177,7 @@
                 @if (auth()->user()->is($user))
                     <div class="profile-info">
                         <h3>
-                            <a href="#">Edit Your Profile</a>
+                            <a href="{{ route ('users.edit') }}">Edit Your Profile</a>
                         </h3>
                     </div>
                 @endif

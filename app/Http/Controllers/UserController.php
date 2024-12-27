@@ -55,9 +55,4 @@ class UserController extends Controller
 
         return redirect ()->route ("login")->with ("success", "You have successfuly logged out!");
     }
-
-    public function show (User $user)
-    {
-        return view ("users.profile", compact ("user"));
-    }
 }
