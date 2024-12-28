@@ -96,6 +96,25 @@
                 </div>
             </div>
 
+            <div class="friends">
+                <div class="heading">
+                    <h4>Friend Requests</h4>
+                </div>
+                <div class="inner">
+                    <p>
+                        <b>
+                            <span class="count">{{ count (auth ()->user ()->friend_requests ()) }}</span>
+                            Open Friend Requests
+                        </b>
+                    </p>
+                    <a href="{{ route ('requests') }}">
+                        <button>
+                            View All Requests
+                        </button>
+                    </a>
+                </div>
+            </div>
+
             <div class="new-people cool">
                 <div class="top">
                     <h4>Feed</h4>

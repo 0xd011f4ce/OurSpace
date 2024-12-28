@@ -22,5 +22,6 @@ Route::get ("/user/{user_name}", [ ProfileController::class, "show" ])->name ("u
 
 // other routes
 Route::get ("/search", [ HomeController::class, "search" ])->name ("search");
+Route::get ("/requests", [ HomeController::class, "requests" ])->name ("requests")->middleware ("auth");
 
 require __DIR__ . "/api.php";

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\AP;
 use App\Models\User;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 class APWebfingerController extends Controller

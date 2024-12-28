@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Types\TypeActor;
 
 use App\Models\User;
+use App\Models\Actor;
+
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -37,5 +39,22 @@ class HomeController extends Controller
 
             return redirect ()->route ("users.show", "@$actor->preferredUsername@$domain");
         }
+    }
+
+    public function requests ()
+    {
+        $user = auth ()->user ();
+        $requests = [];
+
+        foreach ($user->friend_requests () as $request)
+        {
+            $actor = Actor::where ("actor_id", $request->actor)->first ();
+            if (!$actor)
+                continue;
+
+            $requests[] = $actor;
+        }
+
+        return view ("users.requests", compact ("user", "requests"));
     }
 }
