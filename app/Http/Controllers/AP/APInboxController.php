@@ -14,5 +14,6 @@ class APInboxController extends Controller
     public function inbox (User $user)
     {
         Log::info ("APInboxController@index");
+        Log::info (json_encode (request ()->all ()));
     }
 }

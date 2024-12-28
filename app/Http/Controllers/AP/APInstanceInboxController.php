@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers\AP;
 
-use App\Models\User;
-use App\Models\Actor;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+
 use App\Http\Controllers\Controller;
 
-class APOutboxController extends Controller
+class APInstanceInboxController extends Controller
 {
-    public function outbox (User $user)
+    public function inbox ()
     {
-        Log::info ("APOutboxController@index");
+        Log::info ("APInstanceInboxController:inbox");
         Log::info (json_encode (request ()->all ()));
     }
 }
