@@ -217,7 +217,7 @@
 
                     <p>
                         <b>
-                            {{ $user->name }} has <span class="count">{{ $user->friends }}</span> friends.
+                            {{ $user->name }} has <span class="count">{{ count ($user->mutual_friends ()) }}</span> friends.
                         </b>
                     </p>
 

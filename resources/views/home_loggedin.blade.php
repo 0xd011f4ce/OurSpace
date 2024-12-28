@@ -78,7 +78,7 @@
                                 <p>
                                     Your Friends:
                                     <br>
-                                    <span class="count">{{ auth ()->user ()->friends }}</span>
+                                    <span class="count">{{ count (auth ()->user ()->mutual_friends ()) }}</span>
                                 </p>
                             </div>
 

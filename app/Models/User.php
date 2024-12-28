@@ -72,4 +72,14 @@ class User extends Authenticatable
     {
         return $this->hasOne (Actor::class);
     }
+
+    public function mutual_friends ()
+    {
+        $actor_id = '"' . str_replace ("/", "\/", $this->actor->actor_id) . '"';
+
+        $followers = Activity::where ("type", "Follow")->where ("object", $actor_id)->get ();
+        $following = Activity::where ("type", "Follow")->where ("actor", $actor_id)->get ();
+
+        return $followers->intersect ($following);
+    }
 }
