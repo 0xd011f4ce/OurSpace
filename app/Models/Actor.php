@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Config;
 
 class Actor extends Model
 {
@@ -40,7 +39,7 @@ class Actor extends Model
 
     public function create_from_user (User $user)
     {
-        $app_url = Config::get ("app.url");
+        $app_url = env ("APP_URL");
 
         $config = [
             "private_key_bits" => 4096,
