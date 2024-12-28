@@ -16,7 +16,7 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
     - [ ] Posts
         - [ ] Local posts should be federated
         - [ ] Remote posts should be fetched
-    - [ ] Follows
+    - [x] Follows
     - [ ] Likes
     - [ ] Comments
 

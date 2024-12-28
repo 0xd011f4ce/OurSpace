@@ -14,6 +14,7 @@ class Actor extends Model
 
         "type",
         "actor_id",
+        "local_actor_id",
 
         "following",
         "followers",

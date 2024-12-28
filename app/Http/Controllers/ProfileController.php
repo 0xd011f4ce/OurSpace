@@ -9,12 +9,27 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 
 use App\Models\User;
+use App\Models\Actor;
 
 class ProfileController extends Controller
 {
-    public function show (User $user)
+    public function show ($user_name)
     {
-        return view ("users.profile", compact ("user"));
+        $actor = null;
+        $user = null;
+
+        if (str_starts_with ($user_name, "@")) {
+            $actor = Actor::where ("local_actor_id", $user_name)->first ();
+        }
+        else
+        {
+            $user = User::where ("name", $user_name)->first ();
+            if (!$user)
+                return redirect ()->route ("home");
+            $actor = $user->actor;
+        }
+
+        return view ("users.profile", compact ("actor", "user"));
     }
 
     public function edit ()

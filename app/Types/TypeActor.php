@@ -111,6 +111,7 @@ class TypeActor {
 
         // Use null coalescing operator `??` for safety
         $actor->actor_id = $request['id'] ?? '';
+        $actor->local_actor_id = TypeActor::actor_build_private_id ($actor->actor_id) ?? '';
         $actor->type = $request['type'] ?? '';
 
         $actor->following = $request['following'] ?? '';
@@ -141,25 +142,21 @@ class TypeActor {
 
     public static function obtain_actor_info ($actor_id)
     {
-        $client = new Client ();
-
         $parsed_url = parse_url ($actor_id);
         $url_instance = $parsed_url["scheme"] . "://" . $parsed_url["host"];
         $url_path = explode ("/", $parsed_url["path"]);
         $actor_name = end ($url_path);
 
-        $well_known_url = $url_instance . "/.well-known/webfinger?resource=acct:" . $actor_name . "@" . $parsed_url["host"];
-        $res = $client->get ($well_known_url);
+        $well_known = TypeActor::query_wellknown ($actor_name, $parsed_url ["host"]);
 
-        $response = json_decode ($res->getBody ()->getContents ());
-
-        foreach ($response->links as $link)
+        foreach ($well_known->links as $link)
         {
             if ($link->rel == "self")
             {
+                $client = new Client ();
                 $res = $client->request ("GET", $link->href, [
                     "headers" => [
-                        "Accept" => "application/activity+json"
+                        "Accept" => "application/json"
                     ]
                 ]);
                 $actor = json_decode ($res->getBody ()->getContents (), true);
@@ -170,6 +167,25 @@ class TypeActor {
         }
 
         return null;
+    }
+
+    public static function query_wellknown ($name, $domain)
+    {
+        $client = new Client ();
+
+        $well_known_url = "https://" . $domain . "/.well-known/webfinger?resource=acct:" . $name . "@" . $domain;
+
+        try {
+            $res = $client->get ($well_known_url, [
+                "headers" => [
+                    "Accept" => "application/json"
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return json_encode (["error" => "Actor not found"]);
+        }
+
+        return json_decode ($res->getBody ()->getContents ());
     }
 
     // some little functions
@@ -188,6 +204,33 @@ class TypeActor {
         }
 
         return $actor;
+    }
+
+    public static function actor_exists_or_obtain_from_handle ($name, $domain)
+    {
+        $well_known = TypeActor::query_wellknown ($name, $domain);
+        if (!$well_known)
+            return null;
+
+        foreach ($well_known->links as $link)
+        {
+            if ($link->rel == "self")
+            {
+                return TypeActor::actor_exists_or_obtain ($link->href);
+            }
+        }
+
+        return null;
+    }
+
+    public static function actor_build_private_id ($actor_id)
+    {
+        $parsed_url = parse_url ($actor_id);
+        $split_path = explode ("/", $parsed_url ["path"]);
+        $username = end ($split_path);
+        $domain = $parsed_url ["host"];
+
+        return "@" . $username . "@" . $domain;
     }
 
     public static function actor_get_local ($actor_id)

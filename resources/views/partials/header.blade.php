@@ -12,7 +12,7 @@
             </div>
 
             <div class="center">
-                <form action="#">
+                <form action="{{ route('search') }}" method="get">
                     <label>OurSpace</label>
                     <input type="text" placeholder="Search OurSpace" name="query">
                     <input type="submit" value="Search" class="submit-btn">
@@ -67,7 +67,7 @@
             </li>
 
             <li>
-                <a href="#">&nbsp;Source </a>
+                <a href="https://github.com/0xd011f4ce/OurSpace">&nbsp;Source </a>
             </li>
 
             <li>

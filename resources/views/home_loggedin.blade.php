@@ -23,7 +23,7 @@
                 <div class="more-options">
                     <p>
                         View My
-                        <a href="{{ route('users.show', ['user' => auth()->user()]) }}">Profile</a>
+                        <a href="{{ route('users.show', ['user_name' => auth()->user()->name]) }}">Profile</a>
                         |
                         <a href="#">Blog</a>
                         |
@@ -34,7 +34,7 @@
                     <p>
                         My URL:
                         <a
-                            href="{{ route('users.show', ['user' => auth()->user()]) }}">{{ route('users.show', ['user' => auth()->user()]) }}</a>
+                            href="{{ route('users.show', ['user_name' => auth()->user()->name]) }}">{{ route('users.show', ['user_name' => auth()->user()->name]) }}</a>
                     </p>
                 </div>
             </div>
@@ -42,7 +42,7 @@
 
         <div class="url-info view-full-profile">
             <p>
-                <a href="{{ route('users.show', ['user' => auth()->user()]) }}"><b>View Your Profile</b></a>
+                <a href="{{ route('users.show', ['user_name' => auth()->user()->name]) }}"><b>View Your Profile</b></a>
             </p>
         </div>
 

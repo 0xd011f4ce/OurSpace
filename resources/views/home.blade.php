@@ -15,7 +15,7 @@
                     <div class="inner">
                         @foreach ($latest_users as $user)
                             <div class="person">
-                                <a href="{{ route ('users.show', [ 'user' => $user ]) }}">
+                                <a href="{{ route ('users.show', [ 'user_name' => $user ]) }}">
                                     <p>{{ $user->name }}</p>
                                 </a>
                                 <a href="#">

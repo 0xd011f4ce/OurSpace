@@ -18,6 +18,7 @@ return new class extends Migration
 
             $table->string ("type")->nullable ();
             $table->string ("actor_id")->unique ();
+            $table->string ("local_actor_id")->unique ()->nullable ();
 
             $table->string ("following")->nullable ();
             $table->string ("followers")->nullable ();

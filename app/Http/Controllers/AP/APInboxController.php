@@ -59,9 +59,6 @@ class APInboxController extends Controller
                 "error" => "Error posting activity",
             ], 500);
         }
-
-        $target->user->friends += 1;
-        $target->user->save ();
     }
 
     public function handle_undo (User $user, $activity)

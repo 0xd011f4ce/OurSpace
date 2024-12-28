@@ -9,7 +9,7 @@
     <div class="col right">
         <h1>Edit profile</h1>
         <p>All fields are optional and can be left empty</p>
-        <a href="{{ route ('users.show', [ 'user' => $user ]) }}">« View Profile</a>
+        <a href="{{ route ('users.show', [ 'user_name' => $user->name ]) }}">« View Profile</a>
 
         <div class="profile-pic">
             <h1>{{ $user->name }}</h1>
