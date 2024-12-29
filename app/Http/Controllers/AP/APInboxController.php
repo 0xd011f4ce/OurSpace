@@ -63,7 +63,6 @@ class APInboxController extends Controller
 
     public function handle_undo (User $user, $activity)
     {
-        // TODO: This needs to be refactored
         if (TypeActivity::activity_exists ($activity ["id"]))
             return response ()->json (["error" => "Activity already exists",], 409);
 
@@ -74,27 +73,9 @@ class APInboxController extends Controller
             return response ()->json (["error" => "Child activity not found",], 404);
 
         $child_activity = Activity::where ("activity_id", $child_activity ["id"])->first ();
-        switch ($child_activity->type)
-        {
-            case "Follow":
-                // TODO: Move this to its own function
-                // TODO: Should the accept activity be deleted?
-                $followed_user = TypeActor::actor_get_local ($child_activity ["object"]);
-                if (!$followed_user || !$followed_user->user)
-                    return response ()->json (["error" => "Target not found",], 404);
+        $child_activity->delete ();
 
-                $followed_user->user->friends -= 1;
-                $followed_user->user->save ();
-
-                $child_activity->delete ();
-                break;
-
-            default:
-                Log::info ("Unknown activity type to Undo: " . $child_activity ["type"]);
-                break;
-        }
-
-        // TODO: Should Undo create a new activity model?
-        return response ()->json (["error" => "Not implemented",], 501);
+        // TODO: Should Undo create a new activity in database?
+        return response ()->json (["success" => "Activity undone",], 200);
     }
 }
