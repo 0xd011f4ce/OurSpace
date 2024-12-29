@@ -265,24 +265,24 @@
                 </div>
             @endif
 
-            @if ($user != null)
-                <div id="comments" class="friends">
-                    <div class="heading">
-                        <h4>{{ $actor->preferredUsername }}'s Friends Comments</h4>
-                    </div>
-                    <div class="inner">
-                        <p>
-                            <b>
-                                Displaying <span class="count">0</span> of <span class="count">0</span> comments (<a href="#">View all</a> | <a href="#">Add Comment</a>)
-                            </b>
-                        </p>
-
-                        <table class="comments-table" cellspacing="0" cellpadding="3" bordercollor="#ffffff" border="1">
-                            <tbody></tbody>
-                        </table>
-                    </div>
+            <div id="comments" class="friends">
+                <div class="heading">
+                    <h4>{{ $actor->preferredUsername }}'s Posts</h4>
                 </div>
-            @endif
+                <div class="inner">
+                    <p>
+                        <b>{{ $actor->preferredUsername }} has <span class="count">{{ count ($actor->posts) }}</span> posts.</b>
+                    </p>
+
+                    <table class="comments-table" cellspacing="0" cellpadding="3" bordercollor="#ffffff" border="1">
+                        <tbody>
+                            @foreach ($actor->posts as $post)
+                                <x-comment_block :actor="$actor" :post="$post" />
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
     </div>

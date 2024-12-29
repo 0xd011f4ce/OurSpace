@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\Activity;
+use App\Models\Note;
 
 use App\Types\TypeActor;
 
@@ -50,6 +51,11 @@ class Actor extends Model
     public function user ()
     {
         return $this->belongsTo (User::class);
+    }
+
+    public function posts ()
+    {
+        return $this->hasMany (Note::class, "actor_id")->orderBy ("created_at", "desc");
     }
 
     public function create_from_user (User $user)
