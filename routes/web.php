@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserActionController;
 
 Route::get('/', [ HomeController::class, "home" ])->name ("home");
 
@@ -15,6 +16,10 @@ Route::get ("/auth/logout", [ UserController::class, "logout" ])->name ("logout"
 Route::post ("/auth/signup", [ UserController::class, "do_signup" ])->middleware ("guest");
 Route::post ("/auth/login", [ UserController::class, "do_login" ])->middleware ("guest");
 
+// user actions
+Route::post ("/user/action/friend", [ UserActionController::class, "friend" ])->name ("user.friend")->middleware ("auth");
+Route::post ("/user/action/unfriend", [ UserActionController::class, "unfriend" ])->name ("user.unfriend")->middleware ("auth");
+
 // user routes
 Route::get ("/user/edit", [ ProfileController::class, "edit" ])->name ("users.edit")->middleware ("auth");
 Route::post ("/user/edit", [ ProfileController::class, "update" ])->middleware ("auth");
@@ -23,5 +28,6 @@ Route::get ("/user/{user_name}", [ ProfileController::class, "show" ])->name ("u
 // other routes
 Route::get ("/search", [ HomeController::class, "search" ])->name ("search");
 Route::get ("/requests", [ HomeController::class, "requests" ])->name ("requests")->middleware ("auth");
+Route::post ("/requests", [ HomeController::class, "requests_accept" ])->middleware ("auth");
 
 require __DIR__ . "/api.php";

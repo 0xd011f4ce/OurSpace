@@ -17,6 +17,8 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
         - [ ] Local posts should be federated
         - [ ] Remote posts should be fetched
     - [x] Follows
+        - [ ] I cannot follow myself
+        - [ ] Check when waiting for approval
     - [ ] Likes
     - [ ] Comments
 
@@ -25,7 +27,7 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
         - [ ] Show when the user is online
         - [ ] Set mood
         - [ ] Set interests
-        - [ ] Update profile picture
+        - [x] Update profile picture
         - [ ] Mark account as private (in federation manual approval is needed)
         - [ ] Allow custom CSS
         - [ ] Profile audio

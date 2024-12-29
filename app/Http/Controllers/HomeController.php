@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Types\TypeActor;
+use App\Actions\ActionsFriends;
 
 use App\Models\User;
 use App\Models\Actor;
+
+use GuzzleHttp\Client;
 
 use Illuminate\Http\Request;
 
@@ -48,7 +51,7 @@ class HomeController extends Controller
 
         foreach ($user->friend_requests () as $request)
         {
-            $actor = Actor::where ("actor_id", $request->actor)->first ();
+            $actor = Actor::where ("actor_id", $request)->first ();
             if (!$actor)
                 continue;
 
@@ -56,5 +59,23 @@ class HomeController extends Controller
         }
 
         return view ("users.requests", compact ("user", "requests"));
+    }
+
+    public function requests_accept (Request $request)
+    {
+        $user = auth ()->user ();
+
+        if (isset ($request->accept))
+        {
+            // accept a single request
+            $target = $request->accept;
+            $action = ActionsFriends::add_friend ($target);
+            if (isset ($action ["error"]))
+            {
+                return back ()->with ("error", $action ["error"]);
+            }
+
+            return back ()->with ("success", $action ["success"]);
+        }
     }
 }

@@ -45,6 +45,30 @@ class TypeActivity {
         return $accept_activity;
     }
 
+    public static function craft_undo (Activity $activity, Actor $self)
+    {
+        $undo_activity = new Activity ();
+        $undo_activity->activity_id = env ("APP_URL") . "/activity/" . uniqid ();
+        $undo_activity->type = "Undo";
+        $undo_activity->actor = $self->actor_id;
+        $undo_activity->object = $activity;
+        $undo_activity->save ();
+
+        return $undo_activity;
+    }
+
+    public static function craft_follow (Actor $actor, Actor $object)
+    {
+        $follow_activity = new Activity ();
+        $follow_activity->activity_id = env ("APP_URL") . "/activity/" . uniqid ();
+        $follow_activity->type = "Follow";
+        $follow_activity->actor = $actor->actor_id;
+        $follow_activity->object = $object->actor_id;
+        $follow_activity->save ();
+
+        return $follow_activity;
+    }
+
     public static function craft_signed_headers ($activity, Actor $source, Actor $target)
     {
         if (!$source->user)

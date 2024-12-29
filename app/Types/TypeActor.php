@@ -151,7 +151,7 @@ class TypeActor {
 
         foreach ($well_known->links as $link)
         {
-            if ($link->rel == "self")
+        if ($link->rel == "self")
             {
                 $client = new Client ();
                 $res = $client->request ("GET", $link->href, [

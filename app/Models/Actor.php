@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\User;
+use App\Models\Activity;
+
 use App\Types\TypeActor;
 
 use Illuminate\Database\Eloquent\Model;
@@ -51,5 +53,16 @@ class Actor extends Model
     public static function build_response (Actor $actor)
     {
         return TypeActor::build_response ($actor);
+    }
+
+    public function friends_with (Actor $actor)
+    {
+        $self_id = '"' . str_replace ("/", "\/", $this->actor_id) . '"';
+        $other_id = '"' . str_replace ("/", "\/", $actor->actor_id) . '"';
+
+        $following = Activity::where ("actor", $this->actor_id)->where ("type", "Follow")->where ("object", $other_id)->first ();
+        $followers = Activity::where ("actor", $actor->actor_id)->where ("type", "Follow")->where ("object", $self_id)->first ();
+
+        return $following && $followers;
     }
 }

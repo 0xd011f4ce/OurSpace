@@ -43,9 +43,10 @@
                                         <p>
                                             <b>Friend Request</b>
                                         </p>
-                                        <form action="#" method="POST">
+                                        <form method="POST">
                                             @csrf
-                                            <input type="submit" name="accept" value="Accept">
+                                            <input type="hidden" name="accept" value="{{ $frequest->actor_id }}">
+                                            <input type="submit" name="submit" value="Accept">
                                         </form>
                                     </td>
                                 </tr>

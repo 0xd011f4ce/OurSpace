@@ -46,12 +46,23 @@
                     <h4>Contacting {{ $actor->preferredUsername }}</h4>
                 </div>
 
+                @auth
                 <div class="inner">
                     <div class="f-row">
                         <div class="f-col">
-                            <a href="#">
-                                <img loading="lazy" src="/resources/icons/add.png" alt=""> Add to Friends
-                            </a>
+                            @if (auth ()->user ()->actor->friends_with ($actor))
+                                <form action="{{ route ('user.unfriend') }}" onclick="this.submit ()" method="post">
+                                    @csrf
+                                    <input type="hidden" name="object" value="{{ $actor->actor_id }}">
+                                    <img loading="lazy" src="/resources/icons/delete.png" alt=""> Remove Friend
+                                </form>
+                            @else
+                                <form action="{{ route ('user.friend') }}" onclick="this.submit ()" method="post">
+                                    @csrf
+                                    <input type="hidden" name="object" value="{{ $actor->actor_id }}">
+                                    <img loading="lazy" src="/resources/icons/add.png" alt=""> Add to Friends
+                                </form>
+                            @endif
                         </div>
 
                         <div class="f-col">
@@ -103,6 +114,7 @@
                         </div>
                     </div>
                 </div>
+                @endauth
             </div>
 
             <div class="url-info">

@@ -77,19 +77,19 @@ class User extends Authenticatable
     {
         $actor_id = '"' . str_replace ("/", "\/", $this->actor->actor_id) . '"';
 
-        $followers = Activity::where ("type", "Follow")->where ("object", $actor_id)->get ();
-        $following = Activity::where ("type", "Follow")->where ("actor", $actor_id)->get ();
+        $followers = Activity::where ("type", "Follow")->where ("object", $actor_id)->pluck ("actor")->toArray ();
+        $following = Activity::where ("type", "Follow")->where ("actor", $this->actor->actor_id)->pluck ("object")->toArray ();
 
-        return $followers->intersect ($following);
+        return array_intersect ($followers, $following);
     }
 
     public function friend_requests ()
     {
         $actor_id = '"' . str_replace ("/", "\/", $this->actor->actor_id) . '"';
 
-        $followers = Activity::where ("type", "Follow")->where ("object", $actor_id)->get ();
-        $following = Activity::where ("type", "Follow")->where ("actor", $actor_id)->get ();
+        $followers = Activity::where ("type", "Follow")->where ("object", $actor_id)->pluck ("actor")->toArray ();
+        $following = Activity::where ("type", "Follow")->where ("actor", $this->actor->actor_id)->pluck ("object")->toArray ();
 
-        return $followers->diff ($following);
+        return array_diff ($followers, $following);
     }
 }
