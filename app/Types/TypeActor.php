@@ -4,6 +4,7 @@ namespace App\Types;
 
 use App\Models\User;
 use App\Models\Actor;
+use App\Models\Instance;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
@@ -136,6 +137,14 @@ class TypeActor {
         $actor->public_key = $request['publicKey']['publicKeyPem'] ?? '';
 
         $actor->save ();
+
+        $instances = Instance::where ("inbox", $actor->sharedInbox);
+        if (!$instances->first ())
+        {
+            $instance = new Instance ();
+            $instance->inbox = $actor->sharedInbox;
+            $instance->save ();
+        }
 
         return $actor;
     }

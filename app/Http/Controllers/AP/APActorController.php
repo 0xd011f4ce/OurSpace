@@ -39,8 +39,7 @@ class APActorController extends Controller
 
     public function following (User $user)
     {
-        $actor_id = '"' . str_replace ("/", "\/", $user->actor->actor_id) . '"';
-        $following = Activity::where ("type", "Follow")->where ("actor", $actor_id);
+        $following = Activity::where ("type", "Follow")->where ("actor", $user->actor->actor_id);
         $ordered_collection = new TypeOrderedCollection ();
         $ordered_collection->collection = $following->get ()->pluck ("object")->toArray ();
         $ordered_collection->url = route ("ap.following", $user->name);

@@ -11,6 +11,8 @@ use Intervention\Image\Drivers\Gd\Driver;
 use App\Models\User;
 use App\Models\Actor;
 
+use App\Actions\ActionsUser;
+
 class ProfileController extends Controller
 {
     public function show ($user_name)
@@ -95,6 +97,10 @@ class ProfileController extends Controller
         {
             Storage::disk ("public")->delete (str_replace ("/storage/", "", $old_avatar));
         }
+
+        $response = ActionsUser::update_profile ();
+        if (isset ($response["error"]))
+            return back ()->with ("error", "Error updating profile: " . $response["error"]);
 
         return back ()->with ("success", "Profile updated successfully!");
     }

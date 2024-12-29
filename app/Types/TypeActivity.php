@@ -69,7 +69,19 @@ class TypeActivity {
         return $follow_activity;
     }
 
-    public static function craft_signed_headers ($activity, Actor $source, Actor $target)
+    public static function craft_update (Actor $actor, $fields)
+    {
+        $update_activity = new Activity ();
+        $update_activity->activity_id = env ("APP_URL") . "/activity/" . uniqid ();
+        $update_activity->type = "Update";
+        $update_activity->actor = $actor->actor_id;
+        $update_activity->object = $fields;
+        $update_activity->save ();
+
+        return $update_activity;
+    }
+
+    public static function craft_signed_headers ($activity, Actor $source, $target)
     {
         if (!$source->user)
         {
@@ -87,7 +99,13 @@ class TypeActivity {
         $hash = hash ("sha256", $activity, true);
         $digest = base64_encode ($hash);
 
-        $url = parse_url ($target->inbox);
+        $url = null;
+
+        if ($target instanceof Actor)
+            $url = parse_url ($target->inbox);
+        else
+            $url = parse_url ($target);
+
         $string_to_sign = "(request-target): post ". $url["path"] . "\nhost: " . $url["host"] . "\ndate: " . $date . "\ndigest: SHA-256=" . $digest;
 
         openssl_sign ($string_to_sign, $signature, $signer, OPENSSL_ALGO_SHA256);
@@ -105,7 +123,7 @@ class TypeActivity {
         ];
     }
 
-    public static function post_activity (Activity $activity, Actor $source, Actor $target)
+    public static function post_activity (Activity $activity, Actor $source, $target)
     {
         $crafted_activity = TypeActivity::craft_response ($activity);
         $activity_json = json_encode ($crafted_activity, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
@@ -114,8 +132,19 @@ class TypeActivity {
         $headers = TypeActivity::craft_signed_headers ($activity_json, $source, $target);
 
         try {
+            $target_inbox = null;
+
+            if ($target instanceof Actor)
+            {
+                $target_inbox = $target->inbox;
+            }
+            else
+            {
+                $target_inbox = $target;
+            }
+
             $client = new Client ();
-            $response = $client->post ($target->inbox, [
+            $response = $client->post ($target_inbox, [
                 "headers" => $headers,
                 "body" => $activity_json,
                 "debug" => true

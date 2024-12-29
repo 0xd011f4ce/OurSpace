@@ -39,6 +39,14 @@ class Actor extends Model
         "private_key"
     ];
 
+    protected $hidden = [
+        "id",
+        "user_id",
+        "created_at",
+        "updated_at",
+        "private_key"
+    ];
+
     public function user ()
     {
         return $this->belongsTo (User::class);

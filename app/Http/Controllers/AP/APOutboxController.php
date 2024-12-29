@@ -5,8 +5,10 @@ namespace App\Http\Controllers\AP;
 use App\Models\User;
 use App\Models\Actor;
 use App\Models\Activity;
+use App\Models\Instance;
 
 use App\Types\TypeActivity;
+use App\Types\TypeActor;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -16,8 +18,13 @@ class APOutboxController extends Controller
 {
     public function outbox (User $user, Request $request)
     {
+        // TODO: check we are logged in and we are the logged in user
         switch ($request->get ("type"))
         {
+            case "UpdateProfile":
+                return $this->handle_update_profile ($user);
+                break;
+
             case "Follow":
                 return $this->handle_follow ($user, $request->get ("object"));
                 break;
@@ -33,11 +40,38 @@ class APOutboxController extends Controller
         }
     }
 
+    public function handle_update_profile (User $user)
+    {
+        $actor = $user->actor ()->first ();
+        $actor_response = TypeActor::build_response ($actor);
+
+        $update_activity = TypeActivity::craft_update ($actor, $actor_response);
+        $instances = Instance::all ();
+        foreach ($instances as $instance)
+        {
+            $response = TypeActivity::post_activity ($update_activity, $actor, $instance->inbox);
+            if ($response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
+                continue;
+        }
+        return response ()->json ("success", 200);
+    }
+
     public function handle_follow (User $user, string $object)
     {
         $object_actor = Actor::where ("actor_id", $object)->first ();
         if (!$object_actor)
             return response ()->json ([ "error" => "object not found" ], 404);
+
+        if ($user->actor ()->first ()->actor_id == $object_actor->actor_id)
+            return response ()->json ([ "error" => "cannot follow self" ], 400);
+
+        // check we are not following already
+        $following_activity = Activity::where ("actor", $user->actor ()->first ()->actor_id)
+            ->where ("object", '"' . str_replace ("/", "\/", $object_actor->actor_id) . '"')
+            ->where ("type", "Follow")
+            ->first ();
+        if ($following_activity)
+            return response ()->json ([ "error" => "already following" ], 400);
 
         $follow_activity = TypeActivity::craft_follow ($user->actor ()->first (), $object_actor);
         $response = TypeActivity::post_activity ($follow_activity, $user->actor ()->first (), $object_actor);
