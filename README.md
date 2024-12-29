@@ -13,9 +13,11 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
 
 - [-] Activitypub
     - [x] Accounts
-    - [ ] Posts
+    - [-] Posts
         - [ ] Local posts should be federated
-        - [ ] Remote posts should be fetched
+        - [ ] Local posts should be deleted
+        - [x] Remote posts should be fetched
+        - [x] Remote posts should be deleted
     - [x] Follows
         - [x] I cannot follow myself
         - [ ] Check when waiting for approval

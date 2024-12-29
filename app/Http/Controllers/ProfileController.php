@@ -22,6 +22,8 @@ class ProfileController extends Controller
 
         if (str_starts_with ($user_name, "@")) {
             $actor = Actor::where ("local_actor_id", $user_name)->first ();
+            if (!$actor)
+                return redirect ()->route ("home");
         }
         else
         {

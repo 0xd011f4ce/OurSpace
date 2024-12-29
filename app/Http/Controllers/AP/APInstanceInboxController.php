@@ -10,6 +10,7 @@ use App\Models\Activity;
 
 use App\Types\TypeActor;
 use App\Types\TypeActivity;
+use App\Types\TypeNote;
 
 use App\Http\Controllers\Controller;
 
@@ -22,6 +23,14 @@ class APInstanceInboxController extends Controller
 
         switch ($activity_type)
         {
+            case "Create":
+                return $this->handle_create ($activity);
+                break;
+
+            case "Delete":
+                return $this->handle_delete ($activity);
+                break;
+
             case "Update":
                 return $this->handle_update ($activity);
                 break;
@@ -31,6 +40,39 @@ class APInstanceInboxController extends Controller
                 Log::info (json_encode (request ()->all ()));
                 break;
         }
+
+        return response ()->json (["status" => "ok"]);
+    }
+
+    public function handle_create ($activity)
+    {
+        if (TypeActivity::activity_exists ($activity ["id"]))
+            return response ()->json (["status" => "ok"]);
+
+        $activity ["activity_id"] = $activity ["id"];
+        $new_activity = Activity::create ($activity);
+
+        $object = $activity ["object"];
+
+        switch ($object ["type"])
+        {
+            case "Note":
+                return $this->handle_create_note ($object, $new_activity);
+                break;
+        }
+
+        return response ()->json (["status" => "ok"]);
+    }
+
+    public function handle_delete ($activity)
+    {
+        // we suppose that we are deleting a note
+        $note = TypeNote::note_exists ($activity ["object"]["id"]);
+        if (!$note)
+            return response ()->json (["status" => "ok"]);
+
+        $activity = $note->get_activity ();
+        $activity->delete ();
 
         return response ()->json (["status" => "ok"]);
     }
@@ -55,9 +97,25 @@ class APInstanceInboxController extends Controller
         return response ()->json (["status" => "ok"]);
     }
 
+    // create related functions
+    public function handle_create_note ($note, Activity $activity)
+    {
+        $exists = TypeNote::note_exists ($note ["id"]);
+        if ($exists)
+            return response ()->json (["status" => "ok"]);
+
+        $actor = TypeActor::actor_exists_or_obtain ($activity ["actor"]);
+        if (!$actor)
+            return response ()->json (["status" => "error"]);
+
+        $created_note = TypeNote::create_from_request ($note, $activity, $actor);
+        return response ()->json (["status" => "ok"]);
+    }
+
+    // update related functions
     public function handle_update_person ($person)
     {
-        $actor = Actor::where ("actor_id", $person ["id"])->first ();
+        $actor = TypeActor::actor_exists ($person ["id"]);
         if (!$actor)
             $actor = TypeActor::create_from_request ($person);
 

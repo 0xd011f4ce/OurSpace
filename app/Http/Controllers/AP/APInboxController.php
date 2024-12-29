@@ -63,6 +63,7 @@ class APInboxController extends Controller
 
     public function handle_undo (User $user, $activity)
     {
+        // TODO: This needs to be refactored
         if (TypeActivity::activity_exists ($activity ["id"]))
             return response ()->json (["error" => "Activity already exists",], 409);
 
