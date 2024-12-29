@@ -106,10 +106,8 @@ class TypeActor {
         return $response;
     }
 
-    public static function create_from_request ($request)
+    public static function update_from_request (Actor $actor, $request)
     {
-        $actor = new Actor ();
-
         // Use null coalescing operator `??` for safety
         $actor->actor_id = $request['id'] ?? '';
         $actor->local_actor_id = TypeActor::actor_build_private_id ($actor->actor_id) ?? '';
@@ -136,8 +134,6 @@ class TypeActor {
         // Handle nested keys in `publicKey`
         $actor->public_key = $request['publicKey']['publicKeyPem'] ?? '';
 
-        $actor->save ();
-
         $instances = Instance::where ("inbox", $actor->sharedInbox);
         if (!$instances->first ())
         {
@@ -146,6 +142,15 @@ class TypeActor {
             $instance->save ();
         }
 
+        return $actor;
+    }
+
+    public static function create_from_request ($request)
+    {
+        $actor = new Actor ();
+        TypeActor::update_from_request ($actor, $request);
+
+        $actor->save ();
         return $actor;
     }
 

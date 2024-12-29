@@ -12,12 +12,12 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
 ## TODO:
 
 - [-] Activitypub
-    - [x] Accounts (users can now be found in mastodon instances)
+    - [x] Accounts
     - [ ] Posts
         - [ ] Local posts should be federated
         - [ ] Remote posts should be fetched
     - [x] Follows
-        - [ ] I cannot follow myself
+        - [x] I cannot follow myself
         - [ ] Check when waiting for approval
     - [ ] Likes
     - [ ] Comments
@@ -31,9 +31,9 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
         - [ ] Mark account as private (in federation manual approval is needed)
         - [ ] Allow custom CSS
         - [ ] Profile audio
-    - [ ] Friends (they are known as follows in the activitypub protocol)
-        - [ ] Add friends
-        - [ ] Remove friends
+    - [x] Friends (they are known as follows in the activitypub protocol)
+        - [x] Add friends
+        - [x] Remove friends
     - [ ] Posts (everything should be federated)
         - [ ] Create posts
         - [ ] Delete posts
