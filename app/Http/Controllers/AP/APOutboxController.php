@@ -6,9 +6,12 @@ use App\Models\User;
 use App\Models\Actor;
 use App\Models\Activity;
 use App\Models\Instance;
+use App\Models\Note;
+use App\Models\NoteAttachment;
 
 use App\Types\TypeActivity;
 use App\Types\TypeActor;
+use App\Types\TypeNote;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -31,6 +34,10 @@ class APOutboxController extends Controller
 
             case "Unfollow":
                 return $this->handle_unfollow ($user, $request->get ("object"));
+                break;
+
+            case "Post":
+                return $this->handle_post ($user, $request);
                 break;
 
             default:
@@ -108,5 +115,36 @@ class APOutboxController extends Controller
         return [
             "success" => "unfollowed"
         ];
+    }
+
+    public function handle_post (User $user, $request)
+    {
+        $actor = $user->actor ()->first ();
+        $note = TypeNote::craft_from_outbox ($actor, $request);
+
+        if (isset ($request ["attachments"]))
+        {
+            foreach ($request ["attachments"] as $attachment)
+            {
+                $attachment_note = NoteAttachment::create ([
+                    "note_id" => $note->id,
+                    "url" => $attachment
+                ]);
+            }
+        }
+
+        $create_activity = TypeActivity::craft_create ($actor, $note);
+
+        $note->activity_id = $create_activity->id;
+        $note->save ();
+
+        $instances = Instance::all ();
+
+        foreach ($instances as $instance)
+        {
+            $response = TypeActivity::post_activity ($create_activity, $actor, $instance->inbox);
+            if ($response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
+                continue;
+        }
     }
 }

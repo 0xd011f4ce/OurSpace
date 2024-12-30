@@ -69,10 +69,17 @@ class APInboxController extends Controller
         $actor = TypeActor::actor_exists_or_obtain ($activity ["actor"]);
 
         $child_activity = $activity ["object"];
-        if (!TypeActivity::activity_exists ($child_activity ["id"]))
+        $child_activity_id = "";
+
+        if (is_array ($child_activity))
+            $child_activity_id = $child_activity ["id"];
+        else
+            $child_activity_id = $child_activity;
+
+        if (!TypeActivity::activity_exists ($child_activity_id))
             return response ()->json (["error" => "Child activity not found",], 404);
 
-        $child_activity = Activity::where ("activity_id", $child_activity ["id"])->first ();
+        $child_activity = Activity::where ("activity_id", $child_activity_id)->first ();
         $child_activity->delete ();
 
         // TODO: Should Undo create a new activity in database?

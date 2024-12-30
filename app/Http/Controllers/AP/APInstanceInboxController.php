@@ -41,6 +41,9 @@ class APInstanceInboxController extends Controller
                 break;
         }
 
+        Log::info ("APInstanceInboxController:inbox");
+        Log::info ($activity);
+
         return response ()->json (["status" => "ok"]);
     }
 

@@ -81,6 +81,25 @@ class TypeActivity {
         return $update_activity;
     }
 
+    public static function craft_create (Actor $actor, $fields)
+    {
+        $create_activity = new Activity ();
+        $create_activity->activity_id = env ("APP_URL") . "/activity/" . uniqid ();
+        $create_activity->type = "Create";
+        $create_activity->actor = $actor->actor_id;
+
+        switch ($fields ["type"])
+        {
+            case "Note":
+                $create_activity->object = TypeNote::build_response ($fields);
+                break;
+        }
+
+        $create_activity->save ();
+
+        return $create_activity;
+    }
+
     public static function craft_signed_headers ($activity, Actor $source, $target)
     {
         if (!$source->user)

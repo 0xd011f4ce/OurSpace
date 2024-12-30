@@ -11,6 +11,58 @@ use Illuminate\Support\Facades\Log;
 
 class TypeNote
 {
+    public static function build_response (Note $note)
+    {
+        $author = $note->get_actor ()->first ();
+
+        $response = [
+            "id" => $note->note_id,
+            "type" => "Note",
+            "summary" => $note->summary,
+            "inReplyTo" => $note->in_reply_to,
+            "published" => $note->created_at,
+            "url" => $note->url,
+            "attributedTo" => $note->attributedTo,
+            "to" => [
+                "https://www.w3.org/ns/activitystreams#Public"
+            ],
+            "cc" => [
+                $author->following
+            ],
+            "content" => $note->content
+        ];
+
+        $attachments = $note->attachments ()->get ();
+        foreach ($attachments as $attachment)
+        {
+            $response ["attachment"] [] = [
+                "type" => "Document",
+                "mediaType" => "image/jpeg",
+                "url" => $attachment->url
+            ];
+        }
+
+        return $response;
+    }
+
+    public static function craft_from_outbox (Actor $actor, $request)
+    {
+        // TODO: url should be route ('posts.show', $note->id)
+        $note = Note::create ([
+            "actor_id" => $actor->id,
+            "note_id" => env ("APP_URL") . "/ap/v1/note/" . uniqid (),
+            "in_reply_to" => $request ["inReplyTo"] ?? null,
+            "type" => "Note",
+            "summary" => $request ["summary"] ?? null,
+            "url" => "TODO",
+            "attributedTo" => $actor->actor_id,
+            "content" => $request ["content"] ?? null,
+            "tag" => $request ["tag"] ?? null
+        ]);
+
+        return $note;
+    }
+
     public static function update_from_request (Note $note, $request, Activity $activity, Actor $actor)
     {
         $note->activity_id = $activity->id;

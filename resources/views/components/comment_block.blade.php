@@ -1,11 +1,20 @@
+@php
+$actor_url = "";
+
+if ($actor->user_id)
+    $actor_url = route ('users.show', [ 'user_name' => $actor->user->name ]);
+else
+    $actor_url = route ('users.show', [ 'user_name' => $actor->local_actor_id ]);
+@endphp
+
 <tr>
     <td>
-        <a href="{{ route ('users.show', [ 'user_name' => $actor->local_actor_id ]) }}">
+        <a href="{{ $actor_url }}">
             <p>
                 <b>{{ $actor->name }}</b>
             </p>
         </a>
-        <a href="{{ route ('users.show', [ 'user_name' => $actor->local_actor_id ]) }}">
+        <a href="{{ $actor_url }}">
             <p>
                 @if ($actor->user)
                     <img loading="lazy" src="{{ $actor->user->avatar }}" class="pfp-fallback" width="50">

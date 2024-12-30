@@ -19,6 +19,7 @@ Route::post ("/auth/login", [ UserController::class, "do_login" ])->middleware (
 // user actions
 Route::post ("/user/action/friend", [ UserActionController::class, "friend" ])->name ("user.friend")->middleware ("auth");
 Route::post ("/user/action/unfriend", [ UserActionController::class, "unfriend" ])->name ("user.unfriend")->middleware ("auth");
+Route::post ("/user/action/post/new", [ UserActionController::class, "post_new" ])->name ("user.post.new")->middleware ("auth");
 
 // user routes
 Route::get ("/user/edit", [ ProfileController::class, "edit" ])->name ("users.edit")->middleware ("auth");

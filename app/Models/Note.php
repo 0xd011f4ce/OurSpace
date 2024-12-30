@@ -17,7 +17,7 @@ class Note extends Model
         "url",
         "attributedTo",
         "content",
-        "tags",
+        "tag",
     ];
 
     public function get_activity ()

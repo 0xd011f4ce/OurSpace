@@ -103,6 +103,42 @@ class TypeActor {
             ]
         ];
 
+        if ($actor->user)
+        {
+            $response ["attachment"] = [
+                [
+                    "type" => "PropertyValue",
+                    "name" => "Interests General",
+                    "value" => $actor->user->interests_general
+                ],
+                [
+                    "type" => "PropertyValue",
+                    "name" => "Interests Music",
+                    "value" => $actor->user->interests_music
+                ],
+                [
+                    "type" => "PropertyValue",
+                    "name" => "Interests Movies",
+                    "value" => $actor->user->interests_movies
+                ],
+                [
+                    "type" => "PropertyValue",
+                    "name" => "Interests Television",
+                    "value" => $actor->user->interests_television
+                ],
+                [
+                    "type" => "PropertyValue",
+                    "name" => "Interests Books",
+                    "value" => $actor->user->interests_books
+                ],
+                [
+                    "type" => "PropertyValue",
+                    "name" => "Interests Heroes",
+                    "value" => $actor->user->interests_heroes
+                ]
+            ];
+        }
+
         return $response;
     }
 
