@@ -87,7 +87,7 @@
                                     Joined:
                                     <br>
                                     <span class="count">
-                                        <i>{{ Carbon\Carbon::parse (auth ()->user ()->created_at)->diffForHumans () }}</i>
+                                        <i>{{ auth ()->user ()->created_at->diffForHumans () }}</i>
                                     </span>
                                 </p>
                             </div>
@@ -121,7 +121,13 @@
                 </div>
 
                 <div class="inner">
-                    Feed goes here
+                    <table class="comments-table" cellspacing="0" cellpadding="3" bordercollor="#ffffff" border="1">
+                        <tbody>
+                            @foreach (auth ()->user ()->feed () as $post)
+                                <x-comment_block :actor="$post->get_actor ()->first ()" :post="$post" />
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

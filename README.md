@@ -14,8 +14,8 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
 - [-] Activitypub
     - [x] Accounts
     - [-] Posts
-        - [ ] Local posts should be federated
-        - [ ] Local posts should be deleted
+        - [x] Local posts should be federated
+        - [x] Local posts should be deleted
         - [x] Remote posts should be fetched
         - [x] Remote posts should be deleted
     - [x] Follows
@@ -28,7 +28,7 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
     - [x] Profile
         - [ ] Show when the user is online
         - [ ] Set mood
-        - [ ] Set interests
+        - [x] Set interests
         - [x] Update profile picture
         - [ ] Mark account as private (in federation manual approval is needed)
         - [ ] Allow custom CSS
@@ -36,8 +36,8 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
     - [x] Friends (they are known as follows in the activitypub protocol)
         - [x] Add friends
         - [x] Remove friends
-    - [ ] Posts (everything should be federated)
-        - [ ] Create posts
+    - [x] Posts (everything should be federated)
+        - [x] Create posts
         - [ ] Delete posts
         - [ ] Like posts
         - [ ] Comment posts

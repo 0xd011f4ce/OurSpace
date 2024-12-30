@@ -95,6 +95,15 @@ class APInstanceInboxController extends Controller
             case "Person":
                 return $this->handle_update_person ($object);
                 break;
+
+            case "Note":
+                return $this->handle_update_note ($object);
+                break;
+
+            default:
+                Log::info ("APInstanceInboxController:handle_update");
+                Log::info (json_encode ($activity));
+                break;
         }
 
         return response ()->json (["status" => "ok"]);
@@ -124,6 +133,18 @@ class APInstanceInboxController extends Controller
 
         TypeActor::update_from_request ($actor, $person);
         $actor->save ();
+
+        return response ()->json (["status" => "ok"]);
+    }
+
+    public function handle_update_note ($object)
+    {
+        $note = TypeNote::note_exists ($object ["id"]);
+        if (!$note)
+            return response ()->json (["status" => "ok"]);
+
+        TypeNote::update_from_request ($note, $object, $note->get_activity ()->first (), $note->get_actor ()->first ());
+        $note->save ();
 
         return response ()->json (["status" => "ok"]);
     }

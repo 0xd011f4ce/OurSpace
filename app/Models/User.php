@@ -92,4 +92,21 @@ class User extends Authenticatable
 
         return array_diff ($followers, $following);
     }
+
+    public function feed ()
+    {
+        $mutual_friends = $this->mutual_friends ();
+        $friends_id = [
+            $this->actor ()->first ()->id
+        ];
+
+        foreach ($mutual_friends as $friend)
+        {
+            $friends_id[] = Actor::where ("actor_id", $friend)->first ()->id;
+        }
+
+        $notes = Note::whereIn ("actor_id", $friends_id)->orderBy ("created_at", "desc")->get ();
+
+        return $notes;
+    }
 }

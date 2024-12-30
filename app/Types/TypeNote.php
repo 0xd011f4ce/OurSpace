@@ -76,14 +76,22 @@ class TypeNote
         $note->content = $request["content"] ?? null;
         $note->tag = $request["tag"] ?? null;
 
+        $attachments = $note->attachments ()->get ();
+        foreach ($attachments as $attachment)
+            $attachment->delete ();
+
         if ($request ["attachment"])
         {
+
             foreach ($request ["attachment"] as $attachment)
             {
-                $note_attachment = NoteAttachment::create ([
-                    "note_id" => $note->id,
-                    "url" => $attachment ["url"]
-                ]);
+                $attachment_url = $attachment ["url"];
+                $exists = NoteAttachment::where ("url", $attachment_url)->first ();
+                if (!$exists)
+                    $note_attachment = NoteAttachment::create ([
+                        "note_id" => $note->id,
+                        "url" => $attachment ["url"]
+                    ]);
             }
         }
     }

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserActionController;
@@ -25,6 +26,9 @@ Route::post ("/user/action/post/new", [ UserActionController::class, "post_new" 
 Route::get ("/user/edit", [ ProfileController::class, "edit" ])->name ("users.edit")->middleware ("auth");
 Route::post ("/user/edit", [ ProfileController::class, "update" ])->middleware ("auth");
 Route::get ("/user/{user_name}", [ ProfileController::class, "show" ])->name ("users.show");
+
+// posts routes
+Route::get ("/post/{note}", [ PostController::class, "show" ])->name ("posts.show");
 
 // other routes
 Route::get ("/search", [ HomeController::class, "search" ])->name ("search");

@@ -27,16 +27,34 @@ else
     <td>
         <p>
             <b>
-                <time>{{ Carbon\Carbon::parse ($post->created_at)->diffForHumans () }}</time>
+                <time>{{ $post->created_at->diffForHumans () }}</time>
             </b>
         </p>
-        <p>
-            {!! $post->content !!}
-        </p>
+
+        {!! $post->content !!}
+
         <p>
             @foreach ($post->attachments as $attachment)
                 <img loading="lazy" src="{{ $attachment->url }}" alt="{{ $attachment->name }}" width="100">
             @endforeach
         </p>
+
+        <br>
+        <hr>
+
+        <a href="{{ route ('posts.show', [ 'note' => $post ]) }}">
+            <button type="button">View</button>
+        </a>
+        @if ($actor->user && auth ()->check () && auth ()->user ()->is ($actor->user))
+            <form action="#" method="POST" style="display: inline">
+                @csrf
+                <a href="#">
+                    <button type="button">
+                        Edit
+                    </button>
+                </a>
+                <input type="submit" value="Delete">
+            </form>
+        @endif
     </td>
 </tr>
