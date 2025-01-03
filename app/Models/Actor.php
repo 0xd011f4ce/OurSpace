@@ -71,11 +71,8 @@ class Actor extends Model
 
     public function friends_with (Actor $actor)
     {
-        $self_id = '"' . str_replace ("/", "\/", $this->actor_id) . '"';
-        $other_id = '"' . str_replace ("/", "\/", $actor->actor_id) . '"';
-
-        $following = Activity::where ("actor", $this->actor_id)->where ("type", "Follow")->where ("object", $other_id)->first ();
-        $followers = Activity::where ("actor", $actor->actor_id)->where ("type", "Follow")->where ("object", $self_id)->first ();
+        $following = Activity::where ("actor", $this->actor_id)->where ("type", "Follow")->where ("object", $actor->actor_id)->first ();
+        $followers = Activity::where ("actor", $actor->actor_id)->where ("type", "Follow")->where ("object", $this->actor_id)->first ();
 
         return $following && $followers;
     }

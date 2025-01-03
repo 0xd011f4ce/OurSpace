@@ -75,20 +75,42 @@ class User extends Authenticatable
 
     public function mutual_friends ()
     {
-        $actor_id = '"' . str_replace ("/", "\/", $this->actor->actor_id) . '"';
-
-        $followers = Activity::where ("type", "Follow")->where ("object", $actor_id)->pluck ("actor")->toArray ();
+        $followers = Activity::where ("type", "Follow")->where ("object", '"' . $this->actor->actor_id . '"')->pluck ("actor")->toArray ();
         $following = Activity::where ("type", "Follow")->where ("actor", $this->actor->actor_id)->pluck ("object")->toArray ();
 
         return array_intersect ($followers, $following);
     }
 
-    public function friend_requests ()
+    public function received_requests ()
     {
-        $actor_id = '"' . str_replace ("/", "\/", $this->actor->actor_id) . '"';
+        // users following me, where I am the object and I retrieve the actors
+        $following = Activity::where ("type", "Follow")
+            ->where ("object", '"' . $this->actor->actor_id . '"') // i am the object being followed
+            ->pluck ("actor")
+            ->map (fn ($actor) => json_encode ($actor, JSON_UNESCAPED_SLASHES))
+            ->toArray ();
 
-        $followers = Activity::where ("type", "Follow")->where ("object", $actor_id)->pluck ("actor")->toArray ();
-        $following = Activity::where ("type", "Follow")->where ("actor", $this->actor->actor_id)->pluck ("object")->toArray ();
+        // users i am following, where I am the actor and I retrieve the objects
+        $followers = Activity::where ("type", "Follow")
+            ->whereIn ("object", $following) // actors
+            ->where ("actor", $this->actor->actor_id) // following me
+            ->pluck ("actor")->toArray ();
+
+        return array_diff ($following, $followers);
+    }
+
+    public function sent_requests ()
+    {
+        // users i am following, where I am the actor and I retrieve the objects
+        $followers = Activity::where ("type", "Follow")
+            ->where ("actor", $this->actor->actor_id) // actors I follow
+            ->pluck ("object")->toArray ();
+
+        // users following me, where I am the object and I retrieve the actors
+        $following = Activity::where ("type", "Follow")
+            ->whereIn ("actor", $followers) // actors
+            ->where ("object", '"' . $this->actor->actor_id . '"') // that following me
+            ->pluck ("actor")->toArray ();
 
         return array_diff ($followers, $following);
     }

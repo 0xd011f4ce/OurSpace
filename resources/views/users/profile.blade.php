@@ -24,9 +24,15 @@
                     <div class="details">
                         <p>{{ $user->status }}</p>
                         <p>{{ $user->about_you }}</p>
-                        <p class="online">
-                            <img loading="lazy" src="/resources/img/green_person.png" alt="online"> ONLINE!
-                        </p>
+                        @if (auth ()->user () && auth ()->user ()->actor ()->first ()->is ($actor))
+                            <p class="online">
+                                <img loading="lazy" src="/resources/img/green_person.png" alt="online"> YOU!
+                            </p>
+                        @else
+                            <p class="online">
+                                <img loading="lazy" src="/resources/img/green_person.png" alt="online"> ONLINE!
+                            </p>
+                        @endif
                     </div>
                 @endif
 
@@ -56,6 +62,18 @@
                                         @csrf
                                         <input type="hidden" name="object" value="{{ $actor->actor_id }}">
                                         <img loading="lazy" src="/resources/icons/delete.png" alt=""> Remove Friend
+                                    </form>
+                                @elseif (in_array ($actor->actor_id, auth ()->user ()->received_requests ()))
+                                    <form action="{{ route ('user.friend') }}" onclick="this.submit ()" method="post" style="cursor: pointer">
+                                        @csrf
+                                        <input type="hidden" name="object" value="{{ $actor->actor_id }}">
+                                        <img loading="lazy" src="/resources/icons/add.png" alt=""> Accept Friend Request
+                                    </form>
+                                @elseif (in_array ($actor->actor_id, auth ()->user ()->sent_requests ()))
+                                    <form action="{{ route ('user.unfriend') }}" onclick="this.submit ()" method="post" style="cursor: pointer">
+                                        @csrf
+                                        <input type="hidden" name="object" value="{{ $actor->actor_id }}">
+                                        <img loading="lazy" src="/resources/icons/hourglass.png" alt=""> Cancel Request
                                     </form>
                                 @else
                                     <form action="{{ route ('user.friend') }}" onclick="this.submit ()" method="post" style="cursor: pointer">
@@ -275,7 +293,7 @@
                     </p>
 
                     @if (auth ()->user () && auth ()->user ()->is ($user))
-                        <form action="{{ route ('user.post.new') }}" method="post" enctype="multipart/form-data">
+                        <form action="{{ route ('user.post.new') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <input type="text" name="summary" placeholder="Title" size="60">
                             <br>

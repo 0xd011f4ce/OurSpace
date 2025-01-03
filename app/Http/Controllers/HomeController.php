@@ -47,18 +47,28 @@ class HomeController extends Controller
     public function requests ()
     {
         $user = auth ()->user ();
-        $requests = [];
+        $received_requests = [];
+        $sent_requests = [];
 
-        foreach ($user->friend_requests () as $request)
+        foreach ($user->received_requests () as $request)
         {
             $actor = Actor::where ("actor_id", $request)->first ();
             if (!$actor)
                 continue;
 
-            $requests[] = $actor;
+            $received_requests[] = $actor;
         }
 
-        return view ("users.requests", compact ("user", "requests"));
+        foreach ($user->sent_requests () as $request)
+        {
+            $actor = Actor::where ("actor_id", $request)->first ();
+            if (!$actor)
+                continue;
+
+            $sent_requests[] = $actor;
+        }
+
+        return view ("users.requests", compact ("user", "received_requests", "sent_requests"));
     }
 
     public function requests_accept (Request $request)

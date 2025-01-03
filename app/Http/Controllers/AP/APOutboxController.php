@@ -165,14 +165,13 @@ class APOutboxController extends Controller
         $object_actor = Actor::where ("actor_id", $object)->first ();
         if (!$object_actor)
             return response ()->json ([ "error" => "object not found" ], 404);
-        $object_id = '"' . str_replace ("/", "\/", $object_actor->actor_id) . '"';
 
         $follow_activity = Activity::where ("actor", $user->actor ()->first ()->actor_id)
-            ->where ("object", $object_id)
+            ->where ("object", json_encode ($object_actor->actor_id, JSON_UNESCAPED_SLASHES))
             ->where ("type", "Follow")
             ->first ();
         if (!$follow_activity)
-            return response ()->json ([ "error" => "no follow activity found" ], 404);
+            return response ()->json ([ "error" => "no follow activity found. " . $user->actor ()->first ()->actor_id . " unfollowing " . $object_actor->actor_id ], 404);
 
         $unfollow_activity = TypeActivity::craft_undo ($follow_activity, $user->actor ()->first ());
         $response = TypeActivity::post_activity ($unfollow_activity, $user->actor ()->first (), $object_actor);

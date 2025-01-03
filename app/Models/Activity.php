@@ -20,6 +20,11 @@ class Activity extends Model
         "target" => "array"
     ];
 
+    public function setObjectAttribute ($value)
+    {
+        $this->attributes["object"] = json_encode ($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+    }
+
     public function actor ()
     {
         return $this->belongsTo (Actor::class);

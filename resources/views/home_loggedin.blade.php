@@ -1,3 +1,7 @@
+@php
+
+@endphp
+
 <div class="row profile user-home">
     <div class="col w-40 left">
         <div class="general-about home-actions">
@@ -103,7 +107,7 @@
                 <div class="inner">
                     <p>
                         <b>
-                            <span class="count">{{ count (auth ()->user ()->friend_requests ()) }}</span>
+                            <span class="count">{{ count (auth ()->user ()->received_requests ()) }}</span>
                             Open Friend Requests
                         </b>
                     </p>
