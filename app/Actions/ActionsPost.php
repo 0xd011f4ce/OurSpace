@@ -18,11 +18,8 @@ use Intervention\Image\Drivers\Gd\Driver;
 
 class ActionsPost
 {
-    public static function post_new ($request)
+    public static function process_content_and_attachments ($request)
     {
-        if (!auth ()->check ())
-            return ["error" => "You must be logged in to post."];
-
         $processed_content = Str::markdown ($request->get ("content"));
         $attachments = [];
 
@@ -42,6 +39,36 @@ class ActionsPost
             }
         }
 
+        return [
+            "summary" => $request->summary,
+            "content" => $processed_content,
+            "attachments" => $attachments,
+        ];
+    }
+
+    public static function create_attachment (Note $note, $url)
+    {
+        $attachment = new NoteAttachment ();
+        $attachment->note_id = $note->id;
+        $attachment->url = $url;
+        $attachment->save ();
+    }
+
+    public static function create_attachments (Note $note, $attachments)
+    {
+        foreach ($attachments as $attachment)
+        {
+            ActionsPost::create_attachment ($note, $attachment);
+        }
+    }
+
+    public static function post_new ($request)
+    {
+        if (!auth ()->check ())
+            return ["error" => "You must be logged in to post."];
+
+        $processed = ActionsPost::process_content_and_attachments ($request);
+
         $actor = auth ()->user ()->actor ()->first ();
 
         try {
@@ -49,8 +76,9 @@ class ActionsPost
             $response = $client->post ($actor->outbox, [
                 "json" => [
                     "type" => "Post",
-                    "content" => $processed_content,
-                    "attachments" => $attachments,
+                    "summary" => $processed ["summary"],
+                    "content" => $processed ["content"],
+                    "attachments" => $processed ["attachments"],
                 ]
             ]);
         }

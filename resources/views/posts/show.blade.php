@@ -42,14 +42,21 @@
         @if (auth ()->check () && auth ()->user ()->is ($actor->user))
             <form action="#" method="POST">
                 @csrf
-                <a href="#">
+                <a href="{{ route ('posts.edit', [ 'note' => $note ]) }}">
                     <button type="button">Edit</button>
                 </a>
                 <button type="submit">Delete</button>
             </form>
         @endif
         <div class="content">
+            <div class="heading">
+                <h4>{{ $note->summary }}</h4>
+            </div>
             {!! $note->content !!}
+
+            @foreach ($note->attachments as $attachment)
+                <img loading="lazy" src="{{ $attachment->url }}" width="250">
+            @endforeach
         </div>
 
         <br>

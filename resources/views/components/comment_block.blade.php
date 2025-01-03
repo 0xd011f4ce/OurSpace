@@ -45,7 +45,7 @@ else
         <a href="{{ route ('posts.show', [ 'note' => $post ]) }}">
             <button type="button">View</button>
         </a>
-        @if ($actor->user && auth ()->check () && auth ()->user ()->is ($actor->user))
+        {{-- @if ($actor->user && auth ()->check () && auth ()->user ()->is ($actor->user))
             <form action="#" method="POST" style="display: inline">
                 @csrf
                 <a href="#">
@@ -55,6 +55,6 @@ else
                 </a>
                 <input type="submit" value="Delete">
             </form>
-        @endif
+        @endif --}}
     </td>
 </tr>

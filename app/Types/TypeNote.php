@@ -21,6 +21,7 @@ class TypeNote
             "summary" => $note->summary,
             "inReplyTo" => $note->in_reply_to,
             "published" => $note->created_at,
+            "updated" => $note->updated_at,
             "url" => $note->url,
             "attributedTo" => $note->attributedTo,
             "to" => [
@@ -50,15 +51,18 @@ class TypeNote
         // TODO: url should be route ('posts.show', $note->id)
         $note = Note::create ([
             "actor_id" => $actor->id,
+            "summary" => $request ["summary"],
             "note_id" => env ("APP_URL") . "/ap/v1/note/" . uniqid (),
             "in_reply_to" => $request ["inReplyTo"] ?? null,
             "type" => "Note",
             "summary" => $request ["summary"] ?? null,
-            "url" => "TODO",
             "attributedTo" => $actor->actor_id,
             "content" => $request ["content"] ?? null,
             "tag" => $request ["tag"] ?? null
         ]);
+
+        $note->url = route ('posts.show', $note->id);
+        $note->save ();
 
         return $note;
     }

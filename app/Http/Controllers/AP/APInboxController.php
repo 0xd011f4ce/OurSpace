@@ -20,6 +20,9 @@ class APInboxController extends Controller
         $request = request ();
         $type = $request->get ("type");
 
+        Log::info ("APInboxController@index");
+        Log::info (json_encode ($request->all ()));
+
         switch ($type) {
             case "Follow":
                 $this->handle_follow ($user, $request->all ());
@@ -29,9 +32,6 @@ class APInboxController extends Controller
                 $this->handle_undo ($user, $request->all ());
                 break;
         }
-
-        Log::info ("APInboxController@index");
-        Log::info (json_encode ($request->all ()));
     }
 
     private function handle_follow (User $user, $activity)

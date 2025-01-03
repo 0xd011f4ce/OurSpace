@@ -28,6 +28,8 @@ Route::post ("/user/edit", [ ProfileController::class, "update" ])->middleware (
 Route::get ("/user/{user_name}", [ ProfileController::class, "show" ])->name ("users.show");
 
 // posts routes
+Route::get ("/post/{note}/edit", [ PostController::class, "edit" ])->name ("posts.edit")->middleware ("auth");
+Route::post ("/post/{note}/edit", [ PostController::class, "update" ])->middleware ("auth");
 Route::get ("/post/{note}", [ PostController::class, "show" ])->name ("posts.show");
 
 // other routes

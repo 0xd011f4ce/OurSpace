@@ -18,6 +18,7 @@ class TypeActivity {
             "type" => $activity->type,
             "actor" => $activity->actor,
             "object" => $activity->object,
+            "published" => $activity->created_at,
         ];
 
         if ($activity->target)
@@ -100,6 +101,18 @@ class TypeActivity {
         return $create_activity;
     }
 
+    public static function get_private_key (Actor $actor)
+    {
+        return openssl_get_privatekey ($actor->private_key);
+    }
+
+    public static function sign ($data, $key)
+    {
+        openssl_sign ($data, $signature, $key, OPENSSL_ALGO_SHA256);
+
+        return $signature;
+    }
+
     public static function craft_signed_headers ($activity, Actor $source, $target)
     {
         if (!$source->user)
@@ -110,7 +123,7 @@ class TypeActivity {
 
         $key_id = $source->actor_id . "#main-key";
 
-        $signer = openssl_get_privatekey ($source->private_key);
+        $signer = TypeActivity::get_private_key ($source);
 
         $date = gmdate ("D, d M Y H:i:s \G\M\T");
 
@@ -124,6 +137,12 @@ class TypeActivity {
             $url = parse_url ($target->inbox);
         else
             $url = parse_url ($target);
+
+        if (!$url ["path"] || !$url ["host"])
+        {
+            Log::error ("Target not found");
+            return null;
+        }
 
         $string_to_sign = "(request-target): post ". $url["path"] . "\nhost: " . $url["host"] . "\ndate: " . $date . "\ndigest: SHA-256=" . $digest;
 
@@ -139,16 +158,47 @@ class TypeActivity {
             "Signature" => $signature_header,
             "Content-Type" => "application/activity+json",
             "Accept" => "application/activity+json",
+            "B64" => $signature_b64
         ];
     }
 
-    public static function post_activity (Activity $activity, Actor $source, $target)
+    public static function post_activity (Activity $activity, Actor $source, $target, $should_sign = false)
     {
         $crafted_activity = TypeActivity::craft_response ($activity);
+
+        if ($should_sign)
+        {
+            $crafted_activity["to"] = [
+                "https://www.w3.org/ns/activitystreams#Public"
+            ];
+
+            $crafted_activity["cc"] = [
+                $source->following
+            ];
+
+            $key = TypeActivity::get_private_key ($source);
+            $activity_json = json_encode ($crafted_activity, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+            $signature = TypeActivity::sign ($activity_json, $key);
+
+            $crafted_activity ["signature"] = [
+                "type" => "RsaSignature2017",
+                "creator" => $source->actor_id . "#main-key",
+                "created" => gmdate ("Y-m-d\TH:i:s\Z"),
+                "signatureValue" => base64_encode ($signature)
+            ];
+
+            $activity_json = json_encode ($crafted_activity, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+        }
+
         $activity_json = json_encode ($crafted_activity, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
         $activity_json = mb_convert_encoding ($activity_json, "UTF-8");
 
         $headers = TypeActivity::craft_signed_headers ($activity_json, $source, $target);
+        if (!$headers)
+        {
+            Log::error ("Failed to craft headers");
+            return null;
+        }
 
         try {
             $target_inbox = null;
@@ -171,7 +221,13 @@ class TypeActivity {
         }
         catch (RequestException $e)
         {
-            Log::error ($e->getMessage ());
+            $response = $e->getResponse ();
+            if ($response)
+            {
+                Log::error ("Failed to post activity: " . $response->getBody ());
+            }
+
+            Log::error ("Failed to post activity: " . $e->getMessage ());
             return null;
         }
 

@@ -21,6 +21,9 @@ class APInstanceInboxController extends Controller
         $activity = request ()->all ();
         $activity_type = $activity['type'];
 
+        Log::info ("APInstanceInboxController:inbox");
+        Log::info ($activity);
+
         switch ($activity_type)
         {
             case "Create":
@@ -40,9 +43,6 @@ class APInstanceInboxController extends Controller
                 Log::info (json_encode (request ()->all ()));
                 break;
         }
-
-        Log::info ("APInstanceInboxController:inbox");
-        Log::info ($activity);
 
         return response ()->json (["status" => "ok"]);
     }
@@ -69,6 +69,9 @@ class APInstanceInboxController extends Controller
 
     public function handle_delete ($activity)
     {
+        if (!is_array ($activity ["object"]))
+            return response ()->json (["error" => "not implemented"]);
+
         // we suppose that we are deleting a note
         $note = TypeNote::note_exists ($activity ["object"]["id"]);
         if (!$note)

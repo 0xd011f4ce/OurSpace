@@ -30,6 +30,7 @@ class UserActionController extends Controller
     public function post_new (Request $request)
     {
         $request->validate ([
+            "summary" => "nullable|string",
             "content" => "required",
             "files.*" => "mimes:jpeg,png,jpg,gif,webm|max:4096"
         ]);

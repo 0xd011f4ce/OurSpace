@@ -232,6 +232,7 @@ class TypeActor {
                 ]
             ]);
         } catch (\Exception $e) {
+            // TODO: check if we got a 404
             return json_encode (["error" => "Actor not found"]);
         }
 

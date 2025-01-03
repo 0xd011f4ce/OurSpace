@@ -277,6 +277,8 @@
                     @if (auth ()->user () && auth ()->user ()->is ($user))
                         <form action="{{ route ('user.post.new') }}" method="post" enctype="multipart/form-data">
                             @csrf
+                            <input type="text" name="summary" placeholder="Title" size="60">
+                            <br>
                             <textarea name="content" placeholder="What's on your mind?" cols="60" rows="5"></textarea>
                             <input type="file" name="files[]" accept="image/*" multiple>
                             <button type="submit">Post</button>

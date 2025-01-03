@@ -52,3 +52,6 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
 - [ ] Others
     - [ ] Music
     - [ ] Announcements
+
+- [ ] Fixes
+    - [ ] Fix that weird json encoding in the object field of an activity
