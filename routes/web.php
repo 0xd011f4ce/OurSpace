@@ -32,6 +32,7 @@ Route::get ("/user/{user_name}", [ ProfileController::class, "show" ])->name ("u
 Route::get ("/post/{note}/edit", [ PostController::class, "edit" ])->name ("posts.edit")->middleware ("auth");
 Route::post ("/post/{note}/edit", [ PostController::class, "update" ])->middleware ("auth");
 Route::get ("/post/{note}", [ PostController::class, "show" ])->name ("posts.show");
+Route::delete ("/post/{note}", [ PostController::class, "delete" ])->name ("posts.delete")->middleware ("auth");
 
 // other routes
 Route::get ("/search", [ HomeController::class, "search" ])->name ("search");

@@ -69,4 +69,30 @@ class PostController extends Controller
             Log::error ($e->getMessage ());
         }
     }
+
+    public function delete (Note $note)
+    {
+        $actor = auth ()->user ()->actor ()->first ();
+        $note_user = $actor->user ()->first ();
+        if (!auth ()->user ()->is ($note_user)) {
+            return back ()->with ("error", "You are not allowed to delete this post.");
+        }
+
+        try {
+            $client = new Client ();
+            $client->request ("POST", $note->get_actor ()->first ()->outbox, [
+                "json" => [
+                    "type" => "DeleteNote",
+                    "note" => $note->id
+                ]
+            ]);
+
+            return redirect ()->route ("home")->with ("success", "Post deleted successfully.");
+        } catch (\Exception $e) {
+            return back ()->with ("error", "An error occurred while deleting the post.");
+
+            Log::error ("An error occurred while deleting the post.");
+            Log::error ($e->getMessage ());
+        }
+    }
 }

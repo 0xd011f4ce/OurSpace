@@ -37,6 +37,10 @@ class APOutboxController extends Controller
                 return $this->handle_update_note ($user, $request);
                 break;
 
+            case "DeleteNote":
+                return $this->handle_delete_note ($user, $request);
+                break;
+
             case "Follow":
                 return $this->handle_follow ($user, $request->get ("object"));
                 break;
@@ -62,15 +66,7 @@ class APOutboxController extends Controller
         $actor_response = TypeActor::build_response ($actor);
 
         $update_activity = TypeActivity::craft_update ($actor, $actor_response);
-        $instances = Instance::all ();
-        foreach ($instances as $instance)
-        {
-            $response = TypeActivity::post_activity ($update_activity, $actor, $instance->inbox, true);
-            if ($response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
-            {
-                Log::info ("failed to post activity to " . $instance->inbox);
-            }
-        }
+        $response = TypeActivity::post_to_instances ($update_activity, $actor);
         return response ()->json ("success", 200);
     }
 
@@ -121,15 +117,26 @@ class APOutboxController extends Controller
 
         $note_response = TypeNote::build_response ($note);
         $update_activity = TypeActivity::craft_update ($actor, $note_response);
-        $instances = Instance::all ();
-        foreach ($instances as $instance)
-        {
-            $response = TypeActivity::post_activity ($update_activity, $actor, $instance->inbox, true);
-            if ($response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
-            {
-                Log::info ("failed to post activity to " . $instance->inbox);
-            }
-        }
+        $response = TypeActivity::post_to_instances ($update_activity, $actor);
+
+        return response ()->json ("success", 200);
+    }
+
+    public function handle_delete_note (User $user, $request)
+    {
+        $actor = $user->actor ()->first ();
+        $note = Note::where ("id", $request ["note"])->first ();
+        if (!$note)
+            return response ()->json ([ "error" => "note not found" ], 404);
+
+        $note_actor = $note->get_actor ()->first ();
+        if ($actor != $note_actor)
+            return response ()->json ([ "error" => "not allowed" ], 403);
+
+        $note->delete ();
+
+        $delete_activity = TypeActivity::craft_delete ($actor, $note->note_id);
+        $response = TypeActivity::post_to_instances ($delete_activity, $actor);
 
         return response ()->json ("success", 200);
     }
@@ -208,13 +215,7 @@ class APOutboxController extends Controller
         $note->activity_id = $create_activity->id;
         $note->save ();
 
-        $instances = Instance::all ();
-
-        foreach ($instances as $instance)
-        {
-            $response = TypeActivity::post_activity ($create_activity, $actor, $instance->inbox);
-            if ($response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
-                continue;
-        }
+        $response = TypeActivity::post_to_instances ($create_activity, $actor);
+        return response ()->json ("success", 200);
     }
 }

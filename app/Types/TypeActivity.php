@@ -4,6 +4,7 @@ namespace App\Types;
 
 use App\Models\Actor;
 use App\Models\Activity;
+use App\Models\Instance;
 
 use GuzzleHttp\Client;
 
@@ -99,6 +100,23 @@ class TypeActivity {
         $create_activity->save ();
 
         return $create_activity;
+    }
+
+    public static function craft_delete (Actor $actor, $id)
+    {
+        $delete_activity = new Activity ();
+        $delete_activity->activity_id = env ("APP_URL") . "/activity/" . uniqid ();
+        $delete_activity->type = "Delete";
+        $delete_activity->actor = $actor->actor_id;
+
+        $delete_activity->object = [
+            "id" => $id,
+            "type" => "Tombstone"
+        ];
+
+        $delete_activity->save ();
+
+        return $delete_activity;
     }
 
     public static function get_private_key (Actor $actor)
@@ -232,6 +250,19 @@ class TypeActivity {
         }
 
         return $response;
+    }
+
+    public static function post_to_instances (Activity $activity, Actor $source)
+    {
+        $instances = Instance::all ();
+        foreach ($instances as $instance)
+        {
+            $response = TypeActivity::post_activity ($activity, $source, $instance->inbox, true);
+            if ($response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
+            {
+                Log::info ("failed to post activity to " . $instance->inbox);
+            }
+        }
     }
 
     // some little functions

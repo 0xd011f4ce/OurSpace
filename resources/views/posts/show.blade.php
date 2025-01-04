@@ -42,6 +42,7 @@
         @if (auth ()->check () && auth ()->user ()->is ($actor->user))
             <form action="#" method="POST">
                 @csrf
+                @method("DELETE")
                 <a href="{{ route ('posts.edit', [ 'note' => $note ]) }}">
                     <button type="button">Edit</button>
                 </a>
