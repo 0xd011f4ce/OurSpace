@@ -22,7 +22,7 @@ class APInstanceInboxController extends Controller
         $activity_type = $activity['type'];
 
         Log::info ("APInstanceInboxController:inbox");
-        Log::info ($activity);
+        Log::info (json_encode ($activity));
 
         switch ($activity_type)
         {

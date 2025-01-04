@@ -22,6 +22,7 @@ class APActorController extends Controller
 
     public function followers (User $user)
     {
+        // TODO: Rewrite this using the follow model
         $followers = Activity::where ("type", "Follow")->where ("object", $user->actor->actor_id);
         $ordered_collection = new TypeOrderedCollection ();
         $ordered_collection->collection = $followers->get ()->pluck ("actor")->toArray ();
@@ -38,6 +39,7 @@ class APActorController extends Controller
 
     public function following (User $user)
     {
+        // TODO: Rewrite this using the follow model
         $following = Activity::where ("type", "Follow")->where ("actor", $user->actor->actor_id);
         $ordered_collection = new TypeOrderedCollection ();
         $ordered_collection->collection = $following->get ()->pluck ("object")->toArray ();

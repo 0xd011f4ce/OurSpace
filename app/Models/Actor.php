@@ -71,8 +71,8 @@ class Actor extends Model
 
     public function friends_with (Actor $actor)
     {
-        $following = Activity::where ("actor", $this->actor_id)->where ("type", "Follow")->where ("object", '"' . $actor->actor_id . '"')->first ();
-        $followers = Activity::where ("actor", $actor->actor_id)->where ("type", "Follow")->where ("object", '"' . $this->actor_id . '"')->first ();
+        $following = Follow::where ("actor", $this->id)->where ("object", $actor->id)->first ();
+        $followers = Follow::where ("actor", $actor->id)->where ("object", $this->id)->first ();
 
         return $following && $followers;
     }

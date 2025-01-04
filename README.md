@@ -41,6 +41,8 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
         - [ ] Delete posts
         - [ ] Like posts
         - [ ] Comment posts
+        - [ ] Boost posts
+        - [ ] Post tags
     - [ ] Blog
     - [ ] Bulletin
     - [ ] Groups

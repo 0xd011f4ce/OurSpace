@@ -100,6 +100,19 @@
                 </div>
             </div>
 
+            <div class="new-people cool">
+                <div class="top">
+                    <h4>Cool New People</h4>
+                    <a href="#" class="more">[view more]</a>
+                </div>
+
+                <div class="inner">
+                    @foreach ($latest_users as $user)
+                        <x-user_block :user="$user" />
+                    @endforeach
+                </div>
+            </div>
+
             <div class="friends">
                 <div class="heading">
                     <h4>Friend Requests</h4>
@@ -119,8 +132,8 @@
                 </div>
             </div>
 
-            <div class="new-people cool">
-                <div class="top">
+            <div class="bulletin-preview">
+                <div class="heading">
                     <h4>Feed</h4>
                 </div>
 
