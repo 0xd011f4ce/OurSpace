@@ -5,6 +5,7 @@ namespace App\Http\Controllers\AP;
 use App\Models\User;
 use App\Models\Actor;
 use App\Models\Activity;
+use App\Models\Follow;
 
 use App\Types\TypeActor;
 use App\Types\TypeActivity;
@@ -49,6 +50,12 @@ class APInboxController extends Controller
 
         // there's no follows model, it'll be handled with the activity model
         $act = Activity::create ($activity);
+
+        $follow = Follow::create ([
+            "activity_id" => $act->id,
+            "actor" => $actor->id,
+            "object" => $target->id,
+        ]);
 
         // TODO: Users should be able to manually check this
         $accept_activity = TypeActivity::craft_accept ($act);

@@ -3,19 +3,21 @@
 namespace App\Http\Controllers\AP;
 
 use App\Models\Note;
+use App\Models\NoteAttachment;
 use App\Models\User;
 use App\Models\Actor;
-use App\Types\TypeNote;
 use App\Models\Activity;
 use App\Models\Instance;
+use App\Models\Follow;
 
 use App\Types\TypeActor;
 use App\Types\TypeActivity;
+
+use App\Types\TypeNote;
 use App\Actions\ActionsPost;
 
 use Illuminate\Http\Request;
 
-use App\Models\NoteAttachment;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -151,6 +153,12 @@ class APOutboxController extends Controller
 
         $follow_activity = TypeActivity::craft_follow ($user->actor ()->first (), $object_actor);
         $response = TypeActivity::post_activity ($follow_activity, $user->actor ()->first (), $object_actor);
+
+        $follow = Follow::create ([
+            "activity_id" => $follow_activity->id,
+            "actor" => $user->actor ()->first ()->id,
+            "object" => $object_actor->id,
+        ]);
 
         if ($response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
             return response ()->json ([ "error" => "failed to post activity" ], 500);
