@@ -106,4 +106,33 @@ class ProfileController extends Controller
 
         return back ()->with ("success", "Profile updated successfully!");
     }
+
+    public function friends ($user_name)
+    {
+        // only local users
+        if (str_starts_with ($user_name, "@"))
+        {
+            return redirect ()->route ("users.show", [ "user_name" => $user_name ]);
+        }
+
+        $user = User::where ("name", $user_name)->first ();
+        if (!$user)
+            return redirect ()->route ("home");
+
+        $actor = $user->actor;
+
+        $ids = $user->mutual_friends ();
+        if (request ()->get ("query"))
+        {
+            $friends = Actor::whereIn ("actor_id", $ids)
+                ->where ("preferredUsername", "like", "%" . request ()->get ("query") . "%")
+                ->get ();
+        }
+        else
+        {
+            $friends = Actor::whereIn ("actor_id", $ids)->get ();
+        }
+
+        return view ("users.friends", compact ("actor", "user", "friends"));
+    }
 }

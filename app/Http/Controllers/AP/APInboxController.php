@@ -46,6 +46,13 @@ class APInboxController extends Controller
         if (!$target || !$target->user)
             return response ()->json (["error" => "Target not found",], 404);
 
+        // check follow doesn't exist
+        $follow_exists = Follow::where ("actor", $actor->id)
+            ->where ("object", $target->id)
+            ->first ();
+        if ($follow_exists)
+            return response ()->json (["error" => "Follow already exists",], 409);
+
         $activity ["activity_id"] = $activity ["id"];
 
         // there's no follows model, it'll be handled with the activity model
@@ -84,7 +91,7 @@ class APInboxController extends Controller
             $child_activity_id = $child_activity;
 
         if (!TypeActivity::activity_exists ($child_activity_id))
-            return response ()->json (["error" => "Child activity not found",], 404);
+            return response ()->json (["error" => "Child activity doesn't exist",], 404);
 
         $child_activity = Activity::where ("activity_id", $child_activity_id)->first ();
         $child_activity->delete ();

@@ -21,6 +21,7 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
     - [x] Follows
         - [x] I cannot follow myself
         - [ ] Check when waiting for approval
+        - [ ] Handle Rejection
     - [ ] Likes
     - [ ] Comments
 

@@ -1,13 +1,13 @@
 @extends ("partials.layout")
 
-@section('title', "$actor->preferredUsername's Profile")
+@section('title', "$actor->name's Profile")
 
 @section('content')
     <div class="row profile">
 
         <div class="col w-40 left">
             <span>
-                <h1>{{ $actor->preferredUsername }}</h1>
+                <h1>{{ $actor->name }}</h1>
             </span>
 
             <div class="general-about">
@@ -49,7 +49,7 @@
 
             <div class="contact">
                 <div class="heading">
-                    <h4>Contacting {{ $actor->preferredUsername }}</h4>
+                    <h4>Contacting {{ $actor->name }}</h4>
                 </div>
 
                 @auth
@@ -250,7 +250,7 @@
             <div class="blurbs">
                 <div class="heading">
                     <h4>
-                        {{ $actor->preferredUsername }}'s Bio
+                        {{ $actor->name }}'s Bio
                     </h4>
                 </div>
                 <div class="inner">
@@ -264,16 +264,16 @@
                 <div class="friends">
                     <div class="heading">
                         <h4>
-                            {{ $actor->preferredUsername }}'s Friend Space
+                            {{ $actor->name }}'s Friend Space
                         </h4>
-                        <a href="#" class="more">[view all]</a>
+                        <a href="{{ route ('users.friends', [ 'user_name' => $actor->preferredUsername ]) }}" class="more">[view all]</a>
                     </div>
 
                     <div class="inner">
 
                         <p>
                             <b>
-                                {{ $actor->preferredUsername }} has <span class="count">{{ count ($user->mutual_friends ()) }}</span> friends.
+                                {{ $actor->name }} has <span class="count">{{ count ($user->mutual_friends ()) }}</span> friends.
                             </b>
                         </p>
 
@@ -285,11 +285,11 @@
 
             <div id="comments" class="friends">
                 <div class="heading">
-                    <h4>{{ $actor->preferredUsername }}'s Posts</h4>
+                    <h4>{{ $actor->name }}'s Posts</h4>
                 </div>
                 <div class="inner">
                     <p>
-                        <b>{{ $actor->preferredUsername }} has <span class="count">{{ count ($actor->posts) }}</span> posts.</b>
+                        <b>{{ $actor->name }} has <span class="count">{{ count ($actor->posts) }}</span> posts.</b>
                     </p>
 
                     @if (auth ()->user () && auth ()->user ()->is ($user))

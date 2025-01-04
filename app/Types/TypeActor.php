@@ -199,21 +199,37 @@ class TypeActor {
 
         $well_known = TypeActor::query_wellknown ($actor_name, $parsed_url ["host"]);
 
-        foreach ($well_known->links as $link)
+        if (isset ($well_known->links))
         {
-        if ($link->rel == "self")
+            foreach ($well_known->links as $link)
             {
-                $client = new Client ();
-                $res = $client->request ("GET", $link->href, [
-                    "headers" => [
-                        "Accept" => "application/json"
-                    ]
-                ]);
-                $actor = json_decode ($res->getBody ()->getContents (), true);
+                if ($link->rel == "self")
+                {
+                    $client = new Client ();
+                    $res = $client->request ("GET", $link->href, [
+                        "headers" => [
+                            "Accept" => "application/json"
+                        ]
+                    ]);
+                    $actor = json_decode ($res->getBody ()->getContents (), true);
 
-                $result = TypeActor::create_from_request ($actor);
-                return $result;
+                    $result = TypeActor::create_from_request ($actor);
+                    return $result;
+                }
             }
+        }
+        else
+        {
+            $client = new Client ();
+            $res = $client->request ("GET", $actor_id, [
+                "headers" => [
+                    "Accept" => "application/activity+json"
+                ]
+            ]);
+            $actor = json_decode ($res->getBody ()->getContents (), true);
+
+            $result = TypeActor::create_from_request ($actor);
+            return $result;
         }
 
         return null;

@@ -31,7 +31,7 @@
                                     <td>
                                         <a href="{{ route ('users.show', [ 'user_name' => $frequest->local_actor_id ? $frequest->local_actor_id : $frequest->preferredUsername ]) }}">
                                             <p>
-                                                {{ $frequest->name }}
+                                                {{ $frequest->name ? $frequest->name : $frequest->preferredUsername }}
                                             </p>
                                         </a>
 
