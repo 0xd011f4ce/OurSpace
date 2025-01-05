@@ -31,6 +31,8 @@ else
             </b>
         </p>
 
+        <h4>{{ $post->summary }}</h4>
+
         {!! $post->content !!}
 
         <p>
@@ -41,6 +43,10 @@ else
 
         <br>
         <hr>
+
+        <p>
+            <span><b>Likes:</b> {{ $post->get_likes ()->count () }}</span>
+        </p>
 
         <a href="{{ route ('posts.show', [ 'note' => $post ]) }}">
             <button type="button">View</button>

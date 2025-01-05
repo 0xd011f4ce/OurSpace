@@ -30,6 +30,11 @@ class Note extends Model
         return $this->hasOne (Actor::class, "id", "actor_id");
     }
 
+    public function get_likes ()
+    {
+        return $this->hasMany (Like::class);
+    }
+
     public function attachments ()
     {
         return $this->hasMany (NoteAttachment::class);

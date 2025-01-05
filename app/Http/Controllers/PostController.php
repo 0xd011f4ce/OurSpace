@@ -70,6 +70,19 @@ class PostController extends Controller
         }
     }
 
+    public function like (Note $note)
+    {
+        if (!auth ()->check ())
+            return back ()->with ("error", "You need to be logged in to like a post.");
+
+        $user = auth ()->user ();
+        $actor = $user->actor ()->first ();
+
+        $response = ActionsPost::like_post ($actor, $note);
+
+        return back ()->with ("success", "Post liked successfully.");
+    }
+
     public function delete (Note $note)
     {
         $actor = auth ()->user ()->actor ()->first ();

@@ -49,6 +49,10 @@ class APOutboxController extends Controller
                 return $this->handle_unfollow ($user, $request->get ("object"));
                 break;
 
+            case "Like":
+                return $this->handle_like ($user, $request->get ("object"));
+                break;
+
             case "Post":
                 return $this->handle_post ($user, $request);
                 break;
@@ -197,6 +201,37 @@ class APOutboxController extends Controller
         $follow_activity->delete ();
         return [
             "success" => "unfollowed"
+        ];
+    }
+
+    public function handle_like (User $user, $request)
+    {
+        $object = Note::where ("note_id", $request)->first ();
+        if (!$object)
+            return response ()->json ([ "error" => "object not found" ], 404);
+
+        $actor = $user->actor ()->first ();
+        $already_liked = $actor->liked_note ($object);
+        if ($already_liked)
+        {
+            // undo the like
+            $like_activity = $already_liked->get_activity ()->first ();
+            $undo_activity = TypeActivity::craft_undo ($like_activity, $actor);
+
+            $response = TypeActivity::post_activity ($undo_activity, $actor, $object->get_actor ()->first ());
+            return [
+                "success" => "unliked"
+            ];
+        }
+
+        $like_activity = TypeActivity::craft_like ($actor, $object->note_id);
+        $response = TypeActivity::post_activity ($like_activity, $actor, $object->get_actor ()->first ());
+
+        if ($response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
+            return response ()->json ([ "error" => "failed to post activity" ], 500);
+
+        return [
+            "success" => "liked"
         ];
     }
 

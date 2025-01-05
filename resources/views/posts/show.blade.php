@@ -62,6 +62,17 @@
 
         <br>
 
+        <div class="buttons">
+            <form action="{{ route ('posts.like', [ 'note' => $note->id ]) }}" method="POST">
+                @csrf
+                <button type="submit">{{ auth ()->user ()->actor ()->first ()->liked_note ($note) ? "Undo Like" : "Like" }}</button>
+            </form>
+        </div>
+
+        <p>
+            <b>Likes</b>: {{ $note->get_likes ()->count () }}
+        </p>
+
         <div class="comments" id="comments">
             <div class="heading">
                 <h4>Comments</h4>

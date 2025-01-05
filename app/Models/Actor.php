@@ -76,4 +76,9 @@ class Actor extends Model
 
         return $following && $followers;
     }
+
+    public function liked_note (Note $note)
+    {
+        return Like::where ("actor_id", $this->id)->where ("note_id", $note->id)->first ();
+    }
 }

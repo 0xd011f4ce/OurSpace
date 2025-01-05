@@ -22,7 +22,7 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
         - [x] I cannot follow myself
         - [ ] Check when waiting for approval
         - [ ] Handle Rejection
-    - [ ] Likes
+    - [x] Likes
     - [ ] Comments
 
 - [-] Social features
@@ -39,8 +39,8 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
         - [x] Remove friends
     - [x] Posts (everything should be federated)
         - [x] Create posts
-        - [ ] Delete posts
-        - [ ] Like posts
+        - [x] Delete posts
+        - [x] Like posts
         - [ ] Comment posts
         - [ ] Boost posts
         - [ ] Post tags

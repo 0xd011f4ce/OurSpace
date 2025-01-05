@@ -53,7 +53,7 @@ class TypeActivity {
         $undo_activity->activity_id = env ("APP_URL") . "/activity/" . uniqid ();
         $undo_activity->type = "Undo";
         $undo_activity->actor = $self->actor_id;
-        $undo_activity->object = $activity;
+        $undo_activity->object = TypeActivity::craft_response ($activity);
         $undo_activity->save ();
 
         return $undo_activity;
@@ -117,6 +117,18 @@ class TypeActivity {
         $delete_activity->save ();
 
         return $delete_activity;
+    }
+
+    public static function craft_like (Actor $actor, $id)
+    {
+        $like_activity = new Activity ();
+        $like_activity->activity_id = env ("APP_URL") . "/activity/" . uniqid ();
+        $like_activity->type = "Like";
+        $like_activity->actor = $actor->actor_id;
+        $like_activity->object = $id;
+        $like_activity->save ();
+
+        return $like_activity;
     }
 
     public static function get_private_key (Actor $actor)

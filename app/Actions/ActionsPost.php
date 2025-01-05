@@ -89,4 +89,25 @@ class ActionsPost
 
         return ["success" => "Post created"];
     }
+
+    public static function like_post (Actor $actor, Note $note)
+    {
+        $client = new Client ();
+
+        try
+        {
+            $response = $client->post ($actor->outbox, [
+                "json" => [
+                    "type" => "Like",
+                    "object" => $note->note_id,
+                ]
+            ]);
+        }
+        catch (\Exception $e)
+        {
+            return ["error" => "Could not connect to server."];
+        }
+
+        return $response;
+    }
 }
