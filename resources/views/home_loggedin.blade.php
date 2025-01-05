@@ -138,6 +138,8 @@
                 </div>
 
                 <div class="inner">
+                    <x-create_note /><Br>
+
                     <table class="comments-table" cellspacing="0" cellpadding="3" bordercollor="#ffffff" border="1">
                         <tbody>
                             @foreach (auth ()->user ()->feed () as $post)

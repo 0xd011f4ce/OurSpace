@@ -134,7 +134,7 @@ class User extends Authenticatable
             $friends_id[] = Actor::where ("actor_id", $friend)->first ()->id;
         }
 
-        $notes = Note::whereIn ("actor_id", $friends_id)->orderBy ("created_at", "desc")->get ();
+        $notes = Note::whereIn ("actor_id", $friends_id)->where ("in_reply_to", null)->orderBy ("created_at", "desc")->get ();
 
         return $notes;
     }

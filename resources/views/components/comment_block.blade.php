@@ -31,6 +31,13 @@ else
             </b>
         </p>
 
+        @if ($post->in_reply_to)
+            <small>
+                In response to
+                <a href="{{ route ('posts.show', [ 'note' => $post->get_parent ()->first ()->id ]) }}">this post</a>
+            </small>
+        @endif
+
         <h4>{{ $post->summary }}</h4>
 
         {!! $post->content !!}
@@ -42,10 +49,43 @@ else
         </p>
 
         <br>
+
+        @if ($post->get_replies ()->count () > 0)
+            <div class="comment-replies">
+                @foreach ($post->get_replies ()->get () as $reply)
+                    <div class="comment-reply">
+                        <h4>{{ $reply->summary }}</h4>
+
+                        {!! $reply->content !!}
+
+                        <p>
+                            @foreach ($reply->attachments as $attachment)
+                                <img loading="lazy" src="{{ $attachment->url }}" alt="{{ $attachment->name }}" width="100">
+                            @endforeach
+                        </p>
+
+                        <p>
+                            <small>
+                                by
+                                <a href="{{ route ('users.show', [ 'user_name' => $reply->get_actor ()->first ()->user_id ? $reply->get_actor ()->first ()->user->name : $reply->get_actor ()->first ()->local_actor_id ]) }}">
+                                    <b>{{ $reply->get_actor ()->first ()->name }}</b>
+                                </a>
+                                ;
+                                <time class="ago">{{ $reply->created_at->diffForHumans () }}</time>
+                            </small>
+                        </p>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
         <hr>
 
         <p>
-            <span><b>Likes:</b> {{ $post->get_likes ()->count () }}</span>
+            <b>Likes:</b> {{ $post->get_likes ()->count () }}
+        </p>
+        <p>
+            <b>Replies:</b> {{ $post->get_replies ()->count () }}
         </p>
 
         <a href="{{ route ('posts.show', [ 'note' => $post ]) }}">

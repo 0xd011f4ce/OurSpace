@@ -89,6 +89,8 @@ class TypeNote
 
             foreach ($request ["attachment"] as $attachment)
             {
+                // TODO: Check if it's type and proceed based on that
+                // TODO: Store its type in the database
                 $attachment_url = $attachment ["url"];
                 $exists = NoteAttachment::where ("url", $attachment_url)->first ();
                 if (!$exists)

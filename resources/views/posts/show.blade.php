@@ -49,6 +49,13 @@
                 <button type="submit">Delete</button>
             </form>
         @endif
+
+        @if ($note->in_reply_to)
+            <p>
+                <b>In Reply To</b>: <a href="{{ route ('posts.show', [ 'note' => $note->get_parent ()->first ()->id ]) }}">this post</a>
+            </p>
+        @endif
+
         <div class="content">
             <div class="heading">
                 <h4>{{ $note->summary }}</h4>
@@ -62,12 +69,14 @@
 
         <br>
 
-        <div class="buttons">
-            <form action="{{ route ('posts.like', [ 'note' => $note->id ]) }}" method="POST">
-                @csrf
-                <button type="submit">{{ auth ()->user ()->actor ()->first ()->liked_note ($note) ? "Undo Like" : "Like" }}</button>
-            </form>
-        </div>
+        @auth
+            <div class="buttons">
+                <form action="{{ route ('posts.like', [ 'note' => $note->id ]) }}" method="POST">
+                    @csrf
+                    <button type="submit">{{ auth ()->user ()->actor ()->first ()->liked_note ($note) ? "Undo Like" : "Like" }}</button>
+                </form>
+            </div>
+        @endauth
 
         <p>
             <b>Likes</b>: {{ $note->get_likes ()->count () }}
@@ -79,14 +88,20 @@
             </div>
 
             <div class="inner">
+                @auth
+                    <x-create_note :inreplyto="$note" />
+                    <br>
+                @endauth
+
                 <p>
-                    <b>Displaying <span class="count">0</span> of <span class="count">0</span> comments</b>
+                    <b>Displaying <span class="count">0</span> of <span class="count">{{ $note->get_replies ()->count () }}</span> comments</b>
                 </p>
 
                 <table class="comments-table" cellspacing="0" cellpadding="3" bordercolor="ffffff" border="1">
                     <tbody>
-                        <!-- TODO: Comments -->
-                        Comments go here
+                        @foreach ($note->get_replies ()->get () as $reply)
+                            <x-comment_block :actor="$reply->get_actor ()->first ()" :post="$reply" />
+                        @endforeach
                     </tbody>
                 </table>
             </div>

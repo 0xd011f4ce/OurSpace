@@ -24,6 +24,9 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
         - [ ] Handle Rejection
     - [x] Likes
     - [ ] Comments
+    - [ ] Boosts
+    - [ ] Tags
+    - [ ] Pinned Posts
 
 - [-] Social features
     - [x] Profile

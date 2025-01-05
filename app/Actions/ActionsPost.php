@@ -43,6 +43,7 @@ class ActionsPost
             "summary" => $request->summary,
             "content" => $processed_content,
             "attachments" => $attachments,
+            "inReplyTo" => $request->inReplyTo ?? null,
         ];
     }
 
@@ -79,12 +80,13 @@ class ActionsPost
                     "summary" => $processed ["summary"],
                     "content" => $processed ["content"],
                     "attachments" => $processed ["attachments"],
+                    "inReplyTo" => $processed ["inReplyTo"] ?? null,
                 ]
             ]);
         }
         catch (\Exception $e)
         {
-            return ["error" => "Could not connect to server."];
+            return ["error" => "Could not connect to server: " . $e->getMessage ()];
         }
 
         return ["success" => "Post created"];
@@ -105,7 +107,7 @@ class ActionsPost
         }
         catch (\Exception $e)
         {
-            return ["error" => "Could not connect to server."];
+            return ["error" => "Could not connect to server: " . $e->getMessage ()];
         }
 
         return $response;

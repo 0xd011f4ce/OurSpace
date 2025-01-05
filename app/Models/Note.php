@@ -35,6 +35,17 @@ class Note extends Model
         return $this->hasMany (Like::class);
     }
 
+    public function get_replies ()
+    {
+        return $this->hasMany (Note::class, "in_reply_to", "note_id");
+    }
+
+    public function get_parent ()
+    {
+        if ($this->in_reply_to)
+            return $this->hasOne (Note::class, "note_id", "in_reply_to");
+    }
+
     public function attachments ()
     {
         return $this->hasMany (NoteAttachment::class);
