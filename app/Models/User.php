@@ -24,10 +24,11 @@ class User extends Authenticatable
         'password',
 
         "bio",
-        "avatar",
         "status",
-        "mood",
         "about_you",
+        "mood",
+
+        "avatar",
 
         // interests
         "interests_general",
@@ -35,7 +36,9 @@ class User extends Authenticatable
         "interests_movies",
         "interests_television",
         "interests_books",
-        "interests_heroes"
+        "interests_heroes",
+
+        "blurbs"
     ];
 
     /**

@@ -56,12 +56,16 @@ class ProfileController extends Controller
         $incoming_fields = $request->validate ([
             "avatar" => "image|max:4096",
             "bio" => "sometimes|nullable|string",
+            "about_you" => "sometimes|nullable|string",
+            "status" => "sometimes|nullable|string",
+            "mood" => "sometimes|nullable|string",
             "general" => "sometimes|nullable|string",
             "music" => "sometimes|nullable|string",
             "movies" => "sometimes|nullable|string",
             "television" => "sometimes|nullable|string",
             "books" => "sometimes|nullable|string",
-            "heroes" => "sometimes|nullable|string"
+            "heroes" => "sometimes|nullable|string",
+            "blurbs" => "sometimes|nullable|string"
         ]);
 
         $user = auth ()->user ();
@@ -84,12 +88,18 @@ class ProfileController extends Controller
         }
 
         $user->bio = $incoming_fields["bio"];
+        $user->about_you = $incoming_fields["about_you"];
+        $user->status = $incoming_fields["status"];
+        $user->mood = $incoming_fields["mood"];
+
         $user->interests_general = $incoming_fields["general"];
         $user->interests_music = $incoming_fields["music"];
         $user->interests_movies = $incoming_fields["movies"];
         $user->interests_television = $incoming_fields["television"];
         $user->interests_books = $incoming_fields["books"];
         $user->interests_heroes = $incoming_fields["heroes"];
+
+        $user->blurbs = $incoming_fields["blurbs"];
         $user->save ();
 
         $user->actor->summary = $user->bio;

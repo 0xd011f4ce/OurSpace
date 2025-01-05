@@ -40,6 +40,23 @@
             <br>
             <small>max limit: 256 characters</small>
             <br>
+            <br>
+            <label for="about_you">About you:</label>
+            <input type="text" name="about_you" id="about_you" value="{{ $user->about_you ? $user->about_you : '' }}">
+            @error("about_you")
+                <p class="error">{{ $message }}</p>
+            @enderror
+            <br>
+            <br>
+            <label for="status">Status:</label>
+            <input type="text" name="status" id="status" value="{{ $user->status ? $user->status : '' }}">
+            @error("status")
+                <p class="error">{{ $message }}</p>
+            @enderror
+            <br>
+            <br>
+            <label for="mood">Mood:</label>
+            <input type="text" name="mood" id="mood" value="{{ $user->mood ? $user->mood : '' }}">
             <h1>Interests:</h1>
             <br>
             <label for="general">General:</label>
@@ -88,7 +105,7 @@
                 what you would normally paste into the 'Blurbs' section. Include HTML tags.
             </small>
             <br>
-            <textarea name="layout" id="layout" cols="58" placeholder="Layout" disabled></textarea>
+            <textarea name="blurbs" id="layout" cols="58" placeholder="Layout">{{ $user->blurbs ? $user->blurbs : '' }}</textarea>
             <br>
             <input type="submit" value="Save">
         </form>

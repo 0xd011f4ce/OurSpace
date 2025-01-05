@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string ("status")->nullable ();
             $table->string ("mood")->nullable ();
             $table->string ("about_you")->nullable ();
+            $table->text ("blurbs")->nullable ();
 
             // interests
             $table->string ("interests_general")->nullable ();
@@ -26,8 +27,6 @@ return new class extends Migration
             $table->string ("interests_television")->nullable ();
             $table->string ("interests_books")->nullable ();
             $table->string ("interests_heroes")->nullable ();
-
-            $table->integer ("friends")->default (0);
         });
     }
 
@@ -39,7 +38,18 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn ("bio");
             $table->dropColumn ("avatar");
-            $table->dropColumn ("friends");
+
+            $table->dropColumn ("status");
+            $table->dropColumn ("mood");
+            $table->dropColumn ("about_you");
+            $table->dropColumn ("blurbs");
+
+            $table->dropColumn ("interests_general");
+            $table->dropColumn ("interests_music");
+            $table->dropColumn ("interests_movies");
+            $table->dropColumn ("interests_television");
+            $table->dropColumn ("interests_books");
+            $table->dropColumn ("interests_heroes");
         });
     }
 };

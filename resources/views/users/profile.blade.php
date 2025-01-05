@@ -257,6 +257,10 @@
                 <div class="inner">
                     <div class="section">
                         <p>{!! $actor->summary !!}</p>
+
+                        @if ($user)
+                            {!! $user->blurbs !!}
+                        @endif
                     </div>
                 </div>
             </div>
