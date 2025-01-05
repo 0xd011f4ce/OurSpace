@@ -83,7 +83,7 @@ else
             <p>
                 <b>Tags:</b>
                 @foreach ($post->get_hashtags ()->get () as $hashtag)
-                    <a href="#">
+                    <a href="{{ route ('tags', [ 'tag' => substr ($hashtag->name, 1) ]) }}">
                         <span class="tag">{{ $hashtag->name }}</span>
                     </a>
                 @endforeach

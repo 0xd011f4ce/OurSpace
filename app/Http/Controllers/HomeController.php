@@ -7,6 +7,8 @@ use App\Actions\ActionsFriends;
 
 use App\Models\User;
 use App\Models\Actor;
+use App\Models\Note;
+use App\Models\Hashtag;
 
 use GuzzleHttp\Client;
 
@@ -19,6 +21,22 @@ class HomeController extends Controller
         $latest_users = User::latest ()->take (4)->get ();
 
         return view ("home", compact ("latest_users"));
+    }
+
+    public function browse ()
+    {
+        $latest_users = User::latest ()->take (8)->get ();
+        $popular_hashtags = Hashtag::withCount ("get_notes")->orderBy ("get_notes_count", "desc")->take (16)->get ()->shuffle ();
+        $popular_notes = Note::withCount ([ "get_likes" => function ($query) {
+            $query->where ("created_at", ">=", now ()->subDay ());
+        }])->where ("in_reply_to", null)->orderBy ("get_likes_count", "desc")->take (8)->get ();
+
+        return view ("browse", compact ("latest_users", "popular_hashtags", "popular_notes"));
+    }
+
+    public function tag ($tag)
+    {
+        dd ($tag);
     }
 
     public function search ()

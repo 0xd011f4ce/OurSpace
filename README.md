@@ -23,9 +23,9 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
         - [ ] Check when waiting for approval
         - [ ] Handle Rejection
     - [x] Likes
-    - [ ] Comments
+    - [x] Comments
     - [ ] Boosts
-    - [ ] Tags
+    - [x] Tags
     - [ ] Pinned Posts
 
 - [-] Social features
@@ -37,6 +37,7 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
         - [ ] Mark account as private (in federation manual approval is needed)
         - [ ] Allow custom CSS
         - [ ] Profile audio
+        - [ ] Top 8 friends
     - [x] Friends (they are known as follows in the activitypub protocol)
         - [x] Add friends
         - [x] Remove friends
@@ -44,9 +45,9 @@ Notice that the styles were taken from [AnySpace](https://anyspace.3to.moe/about
         - [x] Create posts
         - [x] Delete posts
         - [x] Like posts
-        - [ ] Comment posts
+        - [x] Comment posts
         - [ ] Boost posts
-        - [ ] Post tags
+        - [x] Post tags
     - [ ] Blog
     - [ ] Bulletin
     - [ ] Groups

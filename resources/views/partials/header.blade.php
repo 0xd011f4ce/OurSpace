@@ -39,7 +39,7 @@
             </li>
 
             <li>
-                <a href="#">&nbsp;Browse </a>
+                <a href="{{ route ('browse') }}">&nbsp;Browse </a>
             </li>
 
             <li>

@@ -3730,3 +3730,20 @@ audio {
     width: 80px;
     transition: 0.5s width;
 }
+
+ul.cloud {
+    list-style: none;
+    padding-left: 0;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+ul.cloud a {
+    display: block;
+    padding: 0.125rem 0.25rem;
+    text-decoration: none;
+    position: relative;
+}

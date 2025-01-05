@@ -33,6 +33,7 @@
                                 <img loading="lazy" src="/resources/img/green_person.png" alt="online"> ONLINE!
                             </p>
                         @endif
+                        <p><b>Joined: </b> {{ $user->created_at->diffForHumans () }}</p>
                     </div>
                 @endif
 
@@ -277,7 +278,16 @@
                             </b>
                         </p>
 
-                        <div class="friends-grid"></div>
+                        <div class="friends-grid">
+                            @foreach ($user->mutual_friends () as $key => $friend)
+                                @if ($key > 8)
+                                    @break
+                                @endif
+
+                                @php $friend = \App\Models\Actor::where ('actor_id', $friend)->first (); @endphp
+                                <x-user_block :user="$friend" />
+                            @endforeach
+                        </div>
 
                     </div>
                 </div>
