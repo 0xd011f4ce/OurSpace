@@ -79,6 +79,17 @@ else
             </div>
         @endif
 
+        @if ($post->get_hashtags ()->count () > 0)
+            <p>
+                <b>Tags:</b>
+                @foreach ($post->get_hashtags ()->get () as $hashtag)
+                    <a href="#">
+                        <span class="tag">{{ $hashtag->name }}</span>
+                    </a>
+                @endforeach
+            </p>
+        @endif
+
         <hr>
 
         <p>

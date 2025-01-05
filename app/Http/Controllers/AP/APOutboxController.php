@@ -10,6 +10,7 @@ use App\Models\Activity;
 use App\Models\Instance;
 use App\Models\Follow;
 use App\Models\Like;
+use App\Models\Hashtag;
 
 use App\Types\TypeActor;
 use App\Types\TypeActivity;
@@ -258,6 +259,24 @@ class APOutboxController extends Controller
         if (isset ($request ["attachments"]))
         {
             ActionsPost::create_attachments ($note, $request ["attachments"]);
+        }
+
+        if (isset ($request ["tags"]))
+        {
+            foreach ($request ["tags"] as $tag)
+            {
+                $tag_exists = Hashtag::where ("name", $tag ["name"])->first ();
+                if ($tag_exists)
+                {
+                    $note->get_hashtags ()->attach ($tag_exists->id);
+                    continue;
+                }
+
+                $tag = Hashtag::create ([
+                    "name" => $tag ["name"]
+                ]);
+                $note->get_hashtags ()->attach ($tag->id);
+            }
         }
 
         $create_activity = TypeActivity::craft_create ($actor, $note);

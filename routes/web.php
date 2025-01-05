@@ -36,6 +36,8 @@ Route::get ("/post/{note}", [ PostController::class, "show" ])->name ("posts.sho
 Route::delete ("/post/{note}", [ PostController::class, "delete" ])->name ("posts.delete")->middleware ("auth");
 
 // other routes
+Route::get ("/browse", [ HomeController::class, "browse" ])->name ("browse"); // TODO: This
+Route::get ("/tags/{tag}", [ HomeController::class, "tag" ])->name ("tags"); // TODO: This
 Route::get ("/search", [ HomeController::class, "search" ])->name ("search");
 Route::get ("/requests", [ HomeController::class, "requests" ])->name ("requests")->middleware ("auth");
 Route::post ("/requests", [ HomeController::class, "requests_accept" ])->middleware ("auth");

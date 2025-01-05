@@ -3,6 +3,7 @@
 namespace App\Types;
 
 use App\Models\Note;
+use App\Models\Hashtag;
 use App\Models\Actor;
 use App\Models\Activity;
 use App\Models\NoteAttachment;
@@ -40,6 +41,16 @@ class TypeNote
                 "type" => "Document",
                 "mediaType" => "image/jpeg",
                 "url" => $attachment->url
+            ];
+        }
+
+        $tags = $note->get_hashtags ()->get ();
+        foreach ($tags as $tag)
+        {
+            $response ["tag"] [] = [
+                "type" => "Hashtag",
+                "name" => $tag->name,
+                "url" => route ("tags", ["tag" => $tag->name])
             ];
         }
 
@@ -89,7 +100,7 @@ class TypeNote
 
             foreach ($request ["attachment"] as $attachment)
             {
-                // TODO: Check if it's type and proceed based on that
+                // TODO: Check it's type and proceed based on that
                 // TODO: Store its type in the database
                 $attachment_url = $attachment ["url"];
                 $exists = NoteAttachment::where ("url", $attachment_url)->first ();
@@ -98,6 +109,26 @@ class TypeNote
                         "note_id" => $note->id,
                         "url" => $attachment ["url"]
                     ]);
+            }
+        }
+
+        if ($request ["tag"])
+        {
+            foreach ($request ["tag"] as $tag)
+            {
+                $tag_name = $tag ["name"];
+
+                $hashtag_exists = Hashtag::where ("name", $tag_name)->first ();
+                if ($hashtag_exists)
+                {
+                    $note->get_hashtags ()->attach ($hashtag_exists->id);
+                    continue;
+                }
+
+                $hashtag = Hashtag::create ([
+                    "name" => $tag_name
+                ]);
+                $note->get_hashtags ()->attach ($hashtag->id);
             }
         }
     }

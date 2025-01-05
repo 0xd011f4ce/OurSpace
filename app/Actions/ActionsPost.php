@@ -20,6 +20,19 @@ class ActionsPost
 {
     public static function process_content_and_attachments ($request)
     {
+        preg_match_all ("/#\w+/", $request->get ("content"), $tag_matches);
+        $tags = $tag_matches [0];
+        $processed_tags = [];
+
+        foreach ($tags as $tag)
+        {
+            $processed_tags[] = [
+                "type" => "Hashtag",
+                "name" => $tag,
+                "url" => route ("tags", ["tag" => $tag])
+            ];
+        }
+
         $processed_content = Str::markdown ($request->get ("content"));
         $attachments = [];
 
@@ -44,6 +57,7 @@ class ActionsPost
             "content" => $processed_content,
             "attachments" => $attachments,
             "inReplyTo" => $request->inReplyTo ?? null,
+            "tags" => $processed_tags
         ];
     }
 
@@ -81,6 +95,7 @@ class ActionsPost
                     "content" => $processed ["content"],
                     "attachments" => $processed ["attachments"],
                     "inReplyTo" => $processed ["inReplyTo"] ?? null,
+                    "tags" => $processed ["tags"] ?? null,
                 ]
             ]);
         }

@@ -46,6 +46,11 @@ class Note extends Model
             return $this->hasOne (Note::class, "note_id", "in_reply_to");
     }
 
+    public function get_hashtags ()
+    {
+        return $this->belongsToMany (Hashtag::class, "note_hashtag");
+    }
+
     public function attachments ()
     {
         return $this->hasMany (NoteAttachment::class);
