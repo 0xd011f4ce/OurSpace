@@ -9,6 +9,7 @@ use App\Models\Actor;
 use App\Models\Activity;
 use App\Models\Instance;
 use App\Models\Follow;
+use App\Models\Like;
 
 use App\Types\TypeActor;
 use App\Types\TypeActivity;
@@ -219,12 +220,26 @@ class APOutboxController extends Controller
             $undo_activity = TypeActivity::craft_undo ($like_activity, $actor);
 
             $response = TypeActivity::post_activity ($undo_activity, $actor, $object->get_actor ()->first ());
+
+            $like_exists = Like::where ("note_id", $object->id)
+                ->where ("actor_id", $actor->id)
+                ->first ();
+            if ($like_exists)
+                $like_exists->delete ();
+
             return [
                 "success" => "unliked"
             ];
         }
 
         $like_activity = TypeActivity::craft_like ($actor, $object->note_id);
+
+        $like = Like::create ([
+            "note_id" => $object->id,
+            "activity_id" => $like_activity->id,
+            "actor_id" => $actor->id,
+        ]);
+
         $response = TypeActivity::post_activity ($like_activity, $actor, $object->get_actor ()->first ());
 
         if ($response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
