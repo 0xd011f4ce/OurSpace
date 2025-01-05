@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Actor;
 
+use App\Actions\ActionsFriends;
+
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -31,6 +33,11 @@ class UserController extends Controller
         $actor = new Actor ();
         $actor->create_from_user ($user);
         auth ()->login ($user);
+
+        // create a friendship between the new user and the admin
+        $admin = User::where ("is_admin", 1)->first ();
+        if ($admin)
+            ActionsFriends::force_friendship ($user, $admin);
 
         return redirect ()->route ("home")->with ("success", "You have successfuly signed up!");
     }

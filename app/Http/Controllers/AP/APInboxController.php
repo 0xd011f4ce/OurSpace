@@ -48,6 +48,9 @@ class APInboxController extends Controller
 
     private function handle_follow (User $user, $activity)
     {
+        if (TypeActivity::activity_exists ($activity["id"]))
+            return response ()->json (["error" => "Activity already exists",], 409);
+
         $actor = TypeActor::actor_exists_or_obtain ($activity ["actor"]);
 
         $target = TypeActor::actor_get_local ($activity ["object"]);
@@ -63,7 +66,6 @@ class APInboxController extends Controller
 
         $activity ["activity_id"] = $activity ["id"];
 
-        // there's no follows model, it'll be handled with the activity model
         $act = Activity::create ($activity);
 
         $follow = Follow::create ([
