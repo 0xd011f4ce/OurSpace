@@ -1,7 +1,3 @@
-@php
-
-@endphp
-
 <div class="row profile user-home">
     <div class="col w-40 left">
         <div class="general-about home-actions">

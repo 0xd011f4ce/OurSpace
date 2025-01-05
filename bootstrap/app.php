@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\UpdateOnlineUserMiddleware;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens (except: [
             "ap/v1/*",
         ]);
+
+        $middleware->alias (["update_online" => UpdateOnlineUserMiddleware::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

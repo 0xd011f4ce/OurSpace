@@ -24,13 +24,13 @@
                     <div class="details">
                         <p>{{ $user->status }}</p>
                         <p>{{ $user->about_you }}</p>
-                        @if (auth ()->user () && auth ()->user ()->actor ()->first ()->is ($actor))
-                            <p class="online">
-                                <img loading="lazy" src="/resources/img/green_person.png" alt="online"> YOU!
-                            </p>
-                        @else
+                        @if ($user->is_online ())
                             <p class="online">
                                 <img loading="lazy" src="/resources/img/green_person.png" alt="online"> ONLINE!
+                            </p>
+                        @else
+                            <p>
+                                <b>Last online: </b> {{ $user->last_online_at->diffForHumans () }}
                             </p>
                         @endif
                         <p><b>Joined: </b> {{ $user->created_at->diffForHumans () }}</p>

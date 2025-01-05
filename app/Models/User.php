@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -51,6 +52,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $casts = [
+        "last_online_at" => "datetime",
+    ];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -74,6 +79,11 @@ class User extends Authenticatable
     public function actor ()
     {
         return $this->hasOne (Actor::class);
+    }
+
+    public function is_online ()
+    {
+        return Cache::has ("user-online-" . $this->id);
     }
 
     public function mutual_friends ()
