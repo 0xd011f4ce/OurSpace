@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\AP;
 
+use App\Actions\ActionsActivity;
 use App\Models\User;
 use App\Models\Actor;
 use App\Models\Activity;
@@ -87,24 +88,7 @@ class APInboxController extends Controller
 
     public function handle_undo (User $user, $activity)
     {
-        $actor = TypeActor::actor_exists_or_obtain ($activity ["actor"]);
-
-        $child_activity = $activity ["object"];
-        $child_activity_id = "";
-
-        if (is_array ($child_activity))
-            $child_activity_id = $child_activity ["id"];
-        else
-            $child_activity_id = $child_activity;
-
-        if (!TypeActivity::activity_exists ($child_activity_id))
-            return response ()->json (["error" => "Child activity doesn't exist",], 404);
-
-        $child_activity = Activity::where ("activity_id", $child_activity_id)->first ();
-        $child_activity->delete ();
-
-        // TODO: Should Undo create a new activity in database?
-        return response ()->json (["success" => "Activity undone",], 200);
+        return response ()->json (ActionsActivity::activity_undo ($activity));
     }
 
     public function handle_like (User $user, $activity)

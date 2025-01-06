@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\AP;
 
+use App\Actions\ActionsActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 use App\Models\Actor;
 use App\Models\Activity;
+use App\Models\Announcement;
 
 use App\Types\TypeActor;
 use App\Types\TypeActivity;
@@ -26,6 +28,14 @@ class APInstanceInboxController extends Controller
 
         switch ($activity_type)
         {
+            case "Announce":
+                return $this->handle_announce ($activity);
+                break;
+
+            case "Undo":
+                return $this->handle_undo ($activity);
+                break;
+
             case "Create":
                 return $this->handle_create ($activity);
                 break;
@@ -45,6 +55,41 @@ class APInstanceInboxController extends Controller
         }
 
         return response ()->json (["status" => "ok"]);
+    }
+
+    public function handle_announce ($activity)
+    {
+        // we suppose an announce is always a note
+        $note_exists = TypeNote::note_exists ($activity ["object"]);
+        if (!$note_exists)
+        {
+            $note_exists = TypeNote::obtain_external ($activity ["object"]);
+            if (!$note_exists)
+                return response ()->json (["status" => "error"]);
+        }
+
+        $announcement_exists = TypeActivity::activity_exists ($activity ["id"]);
+        if ($announcement_exists)
+            return response ()->json (["status" => "ok"]);
+
+        $announcement_actor = TypeActor::actor_exists_or_obtain ($activity ["actor"]);
+        if (!$announcement_actor)
+            return response ()->json (["status" => "error"]);
+
+        $activity["activity_id"] = $activity["id"];
+        $ann_act = Activity::create ($activity);
+        $announcement = Announcement::create ([
+            "activity_id" => $ann_act->id,
+            "actor_id" => $announcement_actor->id,
+            "note_id" => $note_exists->id
+        ]);
+
+        return response ()->json (["status" => "ok"]);
+    }
+
+    public function handle_undo ($activity)
+    {
+        return response ()->json (ActionsActivity::activity_undo($activity));
     }
 
     public function handle_create ($activity)

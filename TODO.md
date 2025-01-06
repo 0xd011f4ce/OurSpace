@@ -50,4 +50,5 @@
     - [ ] Announcements
 
 - [ ] Fixes
-    - [ ] Fix that weird json encoding in the object field of an activity
+    - [x] Fix that weird json encoding in the object field of an activity
+    - [ ] The profile attachments are not working, they are not being federalised somehow (the interests thingy)

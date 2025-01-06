@@ -148,7 +148,10 @@ class User extends Authenticatable
         }
 
         $notes = Note::whereIn ("actor_id", $friends_id)->orderBy ("created_at", "desc")->get ();
+        $announcements = Announcement::whereIn ("actor_id", $friends_id)->orderBy ("created_at", "desc")->get ();
 
-        return $notes;
+        $feed = $notes->merge ($announcements)->sortByDesc ("created_at");
+
+        return $feed;
     }
 }

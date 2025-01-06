@@ -46,7 +46,7 @@
         <table class="comments-table" cellspacing="0" cellpadding="3" bordercollor="#ffffff" border="1">
             <tbody>
                 @foreach ($popular_notes as $post)
-                    <x-comment_block :post="$post" :actor="$post->get_actor ()->first ()" />
+                    <x-comment_block :post="$post" />
                 @endforeach
             </tbody>
         </table>

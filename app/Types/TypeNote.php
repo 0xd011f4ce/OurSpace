@@ -8,6 +8,8 @@ use App\Models\Actor;
 use App\Models\Activity;
 use App\Models\NoteAttachment;
 
+use GuzzleHttp\Client;
+
 use Illuminate\Support\Facades\Log;
 
 class TypeNote
@@ -78,13 +80,30 @@ class TypeNote
         return $note;
     }
 
-    public static function update_from_request (Note $note, $request, Activity $activity, Actor $actor)
+    public static function update_from_request (Note $note, $request, Activity $activity = null, Actor $actor = null)
     {
-        $note->activity_id = $activity->id;
-        $note->actor_id = $actor->id;
+        if ($activity)
+            $note->activity_id = $activity->id;
+
+        if ($actor)
+            $note->actor_id = $actor->id;
+        else
+        {
+            $actor = TypeActor::actor_exists ($request ["attributedTo"]);
+            if (!$actor)
+            {
+                $actor = TypeActor::obtain_actor_info($request ["attributedTo"]);
+                if (!$actor)
+                {
+                    Log::error ("TypeNote::update_from_request: Could not obtain actor info.");
+                }
+            }
+
+            $note->actor_id = $actor->id;
+        }
 
         $note->note_id = $request["id"] ?? null;
-        $note->in_reply_to = $request["inReplyTo"] ?? null;
+        // $note->in_reply_to = $request["inReplyTo"] ?? null;
         $note->summary = $request["summary"] ?? null;
         $note->url = $request["url"] ?? null;
         $note->attributedTo = $request["attributedTo"] ?? null;
@@ -116,6 +135,9 @@ class TypeNote
         {
             foreach ($request ["tag"] as $tag)
             {
+                if ($tag ["type"] != "Hashtag")
+                    continue;
+
                 $tag_name = $tag ["name"];
 
                 $hashtag_exists = Hashtag::where ("name", $tag_name)->first ();
@@ -131,6 +153,17 @@ class TypeNote
                 $note->get_hashtags ()->attach ($hashtag->id);
             }
         }
+
+        if ($request ["inReplyTo"])
+        {
+            $parent_exists = Note::where ("note_id", $request ["inReplyTo"])->first ();
+            if (!$parent_exists)
+            {
+                $parent = TypeNote::obtain_external ($request ["inReplyTo"]);
+                if ($parent)
+                    $note->in_reply_to = $parent->note_id;
+            }
+        }
     }
 
     public static function create_from_request ($request, Activity $activity, Actor $actor)
@@ -141,6 +174,36 @@ class TypeNote
         TypeNote::update_from_request ($note, $request, $activity, $actor);
 
         $note->save ();
+        return $note;
+    }
+
+    public static function obtain_external ($note_id)
+    {
+        $note = Note::where ("note_id", $note_id)->first ();
+        if ($note)
+            return $note;
+
+        try {
+            $client = new Client ();
+            $res = $client->request ("GET", $note_id, [
+                "headers" => [
+                    "Accept" => "application/activity+json"
+                ]
+            ]);
+            $body = $res->getBody ()->getContents ();
+
+            $note = Note::create ([
+                "note_id" => $note_id
+            ]);
+            TypeNote::update_from_request ($note, json_decode ($body, true));
+            $note->save ();
+        }
+        catch (\Exception $e)
+        {
+            Log::error ("TypeNote::obtain_external: " . $e->getMessage ());
+            return null;
+        }
+
         return $note;
     }
 

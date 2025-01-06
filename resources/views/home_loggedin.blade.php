@@ -139,7 +139,7 @@
                     <table class="comments-table" cellspacing="0" cellpadding="3" bordercollor="#ffffff" border="1">
                         <tbody>
                             @foreach (auth ()->user ()->feed () as $post)
-                                <x-comment_block :actor="$post->get_actor ()->first ()" :post="$post" />
+                                <x-comment_block :post="$post" />
                             @endforeach
                         </tbody>
                     </table>

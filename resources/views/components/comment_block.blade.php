@@ -1,6 +1,14 @@
 @php
 $actor_url = "";
 
+$display_post = null;
+if ($post instanceof App\Models\Note)
+    $display_post = $post;
+else if ($post instanceof App\Models\Announcement)
+    $display_post = $post->note ()->first ();
+
+$actor = $display_post->get_actor ()->first ();
+
 if ($actor->user_id)
     $actor_url = route ('users.show', [ 'user_name' => $actor->user->name ]);
 else
@@ -27,32 +35,32 @@ else
     <td>
         <p>
             <b>
-                <time>{{ $post->created_at->diffForHumans () }}</time>
+                <time>{{ $display_post->created_at->diffForHumans () }}</time>
             </b>
         </p>
 
-        @if ($post->in_reply_to)
+        @if ($display_post->in_reply_to)
             <small>
                 In response to
-                <a href="{{ route ('posts.show', [ 'note' => $post->get_parent ()->first ()->id ]) }}">this post</a>
+                <a href="{{ route ('posts.show', [ 'note' => $display_post->get_parent ()->first ()->id ]) }}">this post</a>
             </small>
         @endif
 
-        <h4>{{ $post->summary }}</h4>
+        <h4>{{ $display_post->summary }}</h4>
 
-        {!! $post->content !!}
+        {!! $display_post->content !!}
 
         <p>
-            @foreach ($post->attachments as $attachment)
+            @foreach ($display_post->attachments as $attachment)
                 <img loading="lazy" src="{{ $attachment->url }}" alt="{{ $attachment->name }}" width="100">
             @endforeach
         </p>
 
         <br>
 
-        @if ($post->get_replies ()->count () > 0)
+        @if ($display_post->get_replies ()->count () > 0)
             <div class="comment-replies">
-                @foreach ($post->get_replies ()->get () as $reply)
+                @foreach ($display_post->get_replies ()->get () as $reply)
                     <div class="comment-reply">
                         <h4>{{ $reply->summary }}</h4>
 
@@ -79,7 +87,7 @@ else
             </div>
         @endif
 
-        @if ($post->get_hashtags ()->count () > 0)
+        @if ($display_post->get_hashtags ()->count () > 0)
             <p>
                 <b>Tags:</b>
                 @foreach ($post->get_hashtags ()->get () as $hashtag)
@@ -93,13 +101,13 @@ else
         <hr>
 
         <p>
-            <b>Likes:</b> {{ $post->get_likes ()->count () }}
+            <b>Likes:</b> {{ $display_post->get_likes ()->count () }}
         </p>
         <p>
-            <b>Replies:</b> {{ $post->get_replies ()->count () }}
+            <b>Replies:</b> {{ $display_post->get_replies ()->count () }}
         </p>
 
-        <a href="{{ route ('posts.show', [ 'note' => $post ]) }}">
+        <a href="{{ route ('posts.show', [ 'note' => $display_post ]) }}">
             <button type="button">View</button>
         </a>
         {{-- @if ($actor->user && auth ()->check () && auth ()->user ()->is ($actor->user))

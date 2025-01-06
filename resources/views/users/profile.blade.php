@@ -303,7 +303,7 @@
                 </div>
                 <div class="inner">
                     <p>
-                        <b>{{ $actor->name }} has <span class="count">{{ count ($actor->posts) }}</span> posts.</b>
+                        <b>{{ $actor->name }} has <span class="count">{{ count ($actor->get_posts ()) }}</span> posts.</b>
                     </p>
 
                     @if (auth ()->user () && auth ()->user ()->is ($user))
@@ -314,8 +314,8 @@
 
                     <table class="comments-table" cellspacing="0" cellpadding="3" bordercollor="#ffffff" border="1">
                         <tbody>
-                            @foreach ($actor->posts as $post)
-                                <x-comment_block :actor="$actor" :post="$post" />
+                            @foreach ($actor->get_posts () as $post)
+                                <x-comment_block :post="$post" />
                             @endforeach
                         </tbody>
                     </table>

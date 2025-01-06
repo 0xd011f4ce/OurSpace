@@ -53,9 +53,14 @@ class Actor extends Model
         return $this->belongsTo (User::class);
     }
 
-    public function posts ()
+    public function get_posts ()
     {
-        return $this->hasMany (Note::class, "actor_id")->orderBy ("created_at", "desc");
+        $posts = $this->hasMany (Note::class, "actor_id")->orderBy ("created_at", "desc")->get ();
+        $announcements = $this->hasMany (Announcement::class, "actor_id")->orderBy ("created_at", "desc")->get ();
+
+        $all = $posts->merge ($announcements)->sortByDesc ("created_at");
+
+        return $all;
     }
 
     public function create_from_user (User $user)

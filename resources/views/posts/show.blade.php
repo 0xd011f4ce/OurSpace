@@ -100,7 +100,7 @@
                 <table class="comments-table" cellspacing="0" cellpadding="3" bordercolor="ffffff" border="1">
                     <tbody>
                         @foreach ($note->get_replies ()->get () as $reply)
-                            <x-comment_block :actor="$reply->get_actor ()->first ()" :post="$reply" />
+                            <x-comment_block :post="$reply" />
                         @endforeach
                     </tbody>
                 </table>

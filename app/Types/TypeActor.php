@@ -96,6 +96,9 @@ class TypeActor {
                 "url" => $actor->image
             ],
 
+            "published" => $actor->created_at,
+            "updated" => $actor->updated_at,
+
             "publicKey" => [
                 "id" => $actor->actor_id . "#main-key",
                 "owner" => $actor->actor_id,
