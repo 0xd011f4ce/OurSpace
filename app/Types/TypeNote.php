@@ -109,6 +109,7 @@ class TypeNote
         $note->attributedTo = $request["attributedTo"] ?? null;
         $note->content = $request["content"] ?? null;
         $note->tag = $request["tag"] ?? null;
+        $note->created_at = $request["published"] ?? null;
 
         $attachments = $note->attachments ()->get ();
         foreach ($attachments as $attachment)

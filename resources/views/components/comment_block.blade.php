@@ -5,7 +5,10 @@ $display_post = null;
 if ($post instanceof App\Models\Note)
     $display_post = $post;
 else if ($post instanceof App\Models\Announcement)
+{
+    $booster = $post->actor ()->first ();
     $display_post = $post->note ()->first ();
+}
 
 $actor = $display_post->get_actor ()->first ();
 
@@ -44,6 +47,17 @@ else
                 In response to
                 <a href="{{ route ('posts.show', [ 'note' => $display_post->get_parent ()->first ()->id ]) }}">this post</a>
             </small>
+            <br>
+        @endif
+
+        @if ($post instanceof App\Models\Announcement)
+            <small>
+                <b>
+                    <a href="{{ route ('users.show', [ 'user_name' => $booster->local_actor_id ? $booster->local_actor_id : $booster->name ]) }}">{{ $booster->name }}</a>
+                    Boosted
+                </b>
+            </small>
+            <br>
         @endif
 
         <h4>{{ $display_post->summary }}</h4>

@@ -13,7 +13,7 @@
         - [ ] Handle Rejection
     - [x] Likes
     - [x] Comments
-    - [ ] Boosts
+    - [x] Boosts
     - [x] Tags
     - [ ] Pinned Posts
 
@@ -52,3 +52,4 @@
 - [ ] Fixes
     - [x] Fix that weird json encoding in the object field of an activity
     - [ ] The profile attachments are not working, they are not being federalised somehow (the interests thingy)
+    - [ ] Endpoints for getting notes (/ap/v1/note/{note})
