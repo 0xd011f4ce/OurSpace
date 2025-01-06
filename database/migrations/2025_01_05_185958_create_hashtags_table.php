@@ -34,7 +34,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hashtags');
         Schema::dropIfExists('note_hashtag');
+        Schema::dropIfExists('hashtags');
     }
 };

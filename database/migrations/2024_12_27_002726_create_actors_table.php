@@ -32,7 +32,7 @@ return new class extends Migration
 
             $table->string ("preferredUsername")->nullable ();
             $table->string ("name")->nullable ();
-            $table->string ("summary")->nullable ();
+            $table->text ("summary")->nullable ();
 
             $table->text ("public_key")->nullable ();
             $table->text ("private_key")->nullable ();

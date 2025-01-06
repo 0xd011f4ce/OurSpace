@@ -168,6 +168,12 @@ Restart nginx:
 sudo systemctl restart nginx
 ```
 
+And finally, link the storage to the public folder:
+
+```bash
+php artisan storage:link
+```
+
 ## TODO:
 
 For a list of planned features and improvements, please refer to the [TODO](TODO) file.
