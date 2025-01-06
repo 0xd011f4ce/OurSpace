@@ -58,7 +58,7 @@ class HomeController extends Controller
             if (!$actor)
                 return redirect ()->route ("home");
 
-            return redirect ()->route ("users.show", "@$actor->preferredUsername@$domain");
+            return redirect ()->route ("users.show", "@$username@$domain");
         }
     }
 

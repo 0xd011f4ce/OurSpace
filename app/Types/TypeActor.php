@@ -171,7 +171,7 @@ class TypeActor {
         $actor->public_key = $request['publicKey']['publicKeyPem'] ?? '';
 
         $instances = Instance::where ("inbox", $actor->sharedInbox);
-        if (!$instances->first ())
+        if (!$instances->first () && $actor->sharedInbox)
         {
             $instance = new Instance ();
             $instance->inbox = $actor->sharedInbox;

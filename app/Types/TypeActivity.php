@@ -269,8 +269,11 @@ class TypeActivity {
         $instances = Instance::all ();
         foreach ($instances as $instance)
         {
+            if (!$instance->inbox)
+                continue;
+
             $response = TypeActivity::post_activity ($activity, $source, $instance->inbox, true);
-            if ($response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
+            if (!$response || $response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
             {
                 Log::info ("failed to post activity to " . $instance->inbox);
             }
