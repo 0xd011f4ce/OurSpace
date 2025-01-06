@@ -14,6 +14,7 @@
     - [x] Likes
     - [x] Comments
     - [x] Boosts
+        - [ ] Local Boost
     - [x] Tags
     - [ ] Pinned Posts
 
