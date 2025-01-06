@@ -8,7 +8,7 @@
 
     <link rel="icon" href="/resources/img/favicon.ico" type="image/x-icon">
 
-    @vite(["/resources/css/app.css"])
+    @vite(["resources/css/app.css"])
 </head>
 <body>
 
