@@ -34,8 +34,8 @@ return new class extends Migration
             $table->string ("name")->nullable ();
             $table->string ("summary")->nullable ();
 
-            $table->string ("public_key")->nullable ();
-            $table->string ("private_key")->nullable ();
+            $table->text ("public_key")->nullable ();
+            $table->text ("private_key")->nullable ();
 
             $table->string ("icon")->nullable ();
             $table->string ("image")->nullable ();
