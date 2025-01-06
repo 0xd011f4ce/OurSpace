@@ -11,6 +11,11 @@ else if ($post instanceof App\Models\Announcement)
 }
 
 $actor = $display_post->get_actor ()->first ();
+if (!$actor)
+{
+    // TODO: Check why this happens
+    return;
+}
 
 if ($actor->user_id)
     $actor_url = route ('users.show', [ 'user_name' => $actor->user->name ]);
