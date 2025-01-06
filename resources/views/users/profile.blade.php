@@ -59,29 +59,37 @@
                         @if (!auth ()->user ()->is ($user))
                             <div class="f-col">
                                 @if (auth ()->user ()->actor->friends_with ($actor))
+                                <a href="#">
                                     <form action="{{ route ('user.unfriend') }}" onclick="this.submit ()" method="post" style="cursor: pointer">
                                         @csrf
                                         <input type="hidden" name="object" value="{{ $actor->actor_id }}">
                                         <img loading="lazy" src="/resources/icons/delete.png" alt=""> Remove Friend
                                     </form>
+                                </a>
                                 @elseif (in_array ($actor->actor_id, auth ()->user ()->received_requests ()))
+                                <a href="#">
                                     <form action="{{ route ('user.friend') }}" onclick="this.submit ()" method="post" style="cursor: pointer">
                                         @csrf
                                         <input type="hidden" name="object" value="{{ $actor->actor_id }}">
                                         <img loading="lazy" src="/resources/icons/add.png" alt=""> Accept Friend Request
                                     </form>
+                                </a>
                                 @elseif (in_array ($actor->actor_id, auth ()->user ()->sent_requests ()))
+                                <a href="#">
                                     <form action="{{ route ('user.unfriend') }}" onclick="this.submit ()" method="post" style="cursor: pointer">
                                         @csrf
                                         <input type="hidden" name="object" value="{{ $actor->actor_id }}">
                                         <img loading="lazy" src="/resources/icons/hourglass.png" alt=""> Cancel Request
                                     </form>
+                                </a>
                                 @else
+                                <a href="#">
                                     <form action="{{ route ('user.friend') }}" onclick="this.submit ()" method="post" style="cursor: pointer">
                                         @csrf
                                         <input type="hidden" name="object" value="{{ $actor->actor_id }}">
                                         <img loading="lazy" src="/resources/icons/add.png" alt=""> Add to Friends
                                     </form>
+                                </a>
                                 @endif
                             </div>
                         @else

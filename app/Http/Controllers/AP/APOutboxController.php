@@ -173,8 +173,9 @@ class APOutboxController extends Controller
             "object" => $object_actor->id,
         ]);
 
-        if (!$response || $response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
-            return response ()->json ([ "error" => "failed to post activity" ], 500);
+        // TODO: Check if it was successfully sent
+        /* if (!$response || $response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
+            return response ()->json ([ "error" => "failed to post activity" ], 500); */
 
         return [
             "success" => "followed"
@@ -197,8 +198,9 @@ class APOutboxController extends Controller
         $unfollow_activity = TypeActivity::craft_undo ($follow_activity, $user->actor ()->first ());
         $response = TypeActivity::post_activity ($unfollow_activity, $user->actor ()->first (), $object_actor);
 
-        if (!$response || $response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
-            return response ()->json ([ "error" => "failed to post activity" ], 500);
+        // TODO: Check if it was successfully sent
+        /* if (!$response || $response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
+            return response ()->json ([ "error" => "failed to post activity" ], 500); */
 
         $follow_activity->delete ();
         return [
@@ -243,8 +245,9 @@ class APOutboxController extends Controller
 
         $response = TypeActivity::post_activity ($like_activity, $actor, $object->get_actor ()->first ());
 
-        if (!$response || $response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
-            return response ()->json ([ "error" => "failed to post activity" ], 500);
+        // TODO: Check if it was successfully sent
+        /* if (!$response || $response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
+            return response ()->json ([ "error" => "failed to post activity" ], 500); */
 
         return [
             "success" => "liked"

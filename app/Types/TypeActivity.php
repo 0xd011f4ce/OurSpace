@@ -6,6 +6,8 @@ use App\Models\Actor;
 use App\Models\Activity;
 use App\Models\Instance;
 
+use App\Jobs\PostActivityJob;
+
 use GuzzleHttp\Client;
 
 use Illuminate\Support\Facades\Log;
@@ -194,74 +196,11 @@ class TypeActivity {
 
     public static function post_activity (Activity $activity, Actor $source, $target, $should_sign = false)
     {
-        $crafted_activity = TypeActivity::craft_response ($activity);
+        PostActivityJob::dispatch ($activity, $source, $target, $should_sign);
 
-        if ($should_sign)
-        {
-            $crafted_activity["to"] = [
-                "https://www.w3.org/ns/activitystreams#Public"
-            ];
-
-            $crafted_activity["cc"] = [
-                $source->following
-            ];
-
-            $key = TypeActivity::get_private_key ($source);
-            $activity_json = json_encode ($crafted_activity, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
-            $signature = TypeActivity::sign ($activity_json, $key);
-
-            $crafted_activity ["signature"] = [
-                "type" => "RsaSignature2017",
-                "creator" => $source->actor_id . "#main-key",
-                "created" => gmdate ("Y-m-d\TH:i:s\Z"),
-                "signatureValue" => base64_encode ($signature)
-            ];
-
-            $activity_json = json_encode ($crafted_activity, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
-        }
-
-        $activity_json = json_encode ($crafted_activity, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
-        $activity_json = mb_convert_encoding ($activity_json, "UTF-8");
-
-        $headers = TypeActivity::craft_signed_headers ($activity_json, $source, $target);
-        if (!$headers)
-        {
-            Log::error ("Failed to craft headers");
-            return null;
-        }
-
-        try {
-            $target_inbox = null;
-
-            if ($target instanceof Actor)
-            {
-                $target_inbox = $target->inbox;
-            }
-            else
-            {
-                $target_inbox = $target;
-            }
-
-            $client = new Client ();
-            $response = $client->post ($target_inbox, [
-                "headers" => $headers,
-                "body" => $activity_json,
-                "debug" => true
-            ]);
-        }
-        catch (RequestException $e)
-        {
-            $response = $e->getResponse ();
-            if ($response)
-            {
-                Log::error ("Failed to post activity: " . $response->getBody ());
-            }
-
-            Log::error ("Failed to post activity: " . $e->getMessage ());
-            return null;
-        }
-
-        return $response;
+        return [
+            "success" => "activity posted"
+        ];
     }
 
     public static function post_to_instances (Activity $activity, Actor $source)
@@ -272,11 +211,12 @@ class TypeActivity {
             if (!$instance->inbox)
                 continue;
 
-            $response = TypeActivity::post_activity ($activity, $source, $instance->inbox, true);
-            if (!$response || $response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
+            TypeActivity::post_activity ($activity, $source, $instance->inbox, true);
+            // TODO: Check if it was successfully posted
+            /* if (!$response || $response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
             {
                 Log::info ("failed to post activity to " . $instance->inbox);
-            }
+            } */
         }
     }
 

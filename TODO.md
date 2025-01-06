@@ -54,3 +54,6 @@
     - [x] Fix that weird json encoding in the object field of an activity
     - [ ] The profile attachments are not working, they are not being federalised somehow (the interests thingy)
     - [ ] Endpoints for getting notes (/ap/v1/note/{note})
+    - [ ] Fix hashtags on post update
+    - [x] Use jobs when posting activities
+    - [ ] Sign the get activities for mastodon when secure mode is enable
