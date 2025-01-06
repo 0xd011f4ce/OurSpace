@@ -168,10 +168,26 @@ Restart nginx:
 sudo systemctl restart nginx
 ```
 
-And finally, link the storage to the public folder:
+Now link the storage to the public folder:
 
 ```bash
 php artisan storage:link
+```
+
+And finally, we need to create a service to handle the jobs that OurSpace needs to run. So run something `emacs /lib/systemd/system/ourspace-queue.service` and add the following content:
+
+```ini
+[Unit]
+Description=OurSpace queue worker
+
+[Service]
+User=www-data
+Group=www-data
+Restart=on-failure
+ExecStart=/usr/bin/php /var/www/html/ourspace/artisan queue:work --daemon --env=production
+
+[Install]
+WantedBy=multi-user.target
 ```
 
 ## TODO:

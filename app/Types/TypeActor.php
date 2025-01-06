@@ -108,6 +108,13 @@ class TypeActor {
 
         if ($actor->user)
         {
+            // appent to @context
+            $response ["@context"][] = [
+                "schema" => "http://schema.org#",
+                "PropertyValue" => "schema:PropertyValue",
+                "value" => "schema:value"
+            ];
+
             $response ["attachment"] = [
                 [
                     "type" => "PropertyValue",
