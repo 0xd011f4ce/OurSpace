@@ -11,6 +11,7 @@ class Note extends Model
         "actor_id",
 
         "note_id",
+        "private_id",
         "in_reply_to",
         "type",
         "summary",

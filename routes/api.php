@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AP\APActorController;
+use App\Http\Controllers\AP\APGeneralController;
 use App\Http\Controllers\AP\APInboxController;
 
 use App\Http\Controllers\AP\APInstanceInboxController;
@@ -13,11 +14,15 @@ use App\Http\Controllers\AP\APWebfingerController;
 Route::get ("/.well-known/webfinger", [ APWebfingerController::class, "webfinger" ])->name ("ap.webfinger");
 
 Route::prefix ("/ap/v1")->group (function () {
+    // users
     Route::post ("/user/{user:name}/inbox", [ APInboxController::class, "inbox" ])->name ("ap.inbox");
     Route::post ("/user/{user:name}/outbox", [ APOutboxController::class, "outbox" ])->name ("ap.outbox");
     Route::get ("/user/{user:name}/followers", [ APActorController::class, "followers" ])->name ("ap.followers");
     Route::get ("/user/{user:name}/following", [ APActorController::class, "following" ])->name ("ap.following");
     Route::get ("/user/{user:name}", [ APActorController::class, "user" ])->name ("ap.user");
+
+    // notes
+    Route::get ("/note/{note:private_id}", [ APGeneralController::class, "note" ])->name ("ap.note");
 
     Route::post ("/inbox", [ APInstanceInboxController::class, "inbox" ])->name ("ap.inbox");
 });

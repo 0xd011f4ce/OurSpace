@@ -192,4 +192,4 @@ WantedBy=multi-user.target
 
 ## TODO:
 
-For a list of planned features and improvements, please refer to the [TODO](TODO) file.
+For a list of planned features and improvements, please refer to the [TODO](TODO.md) file.

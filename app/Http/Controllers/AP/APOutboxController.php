@@ -95,10 +95,6 @@ class APOutboxController extends Controller
                 {
                     Storage::disk ("public")->delete ($processed_path);
                 }
-                else
-                {
-                    Log::error ("Attachment not found: " . $attachment->url . " " . $processed_path);
-                }
 
                 $attachment->delete ();
             }

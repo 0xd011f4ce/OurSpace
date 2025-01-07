@@ -17,6 +17,7 @@
         - [ ] Local Boost
     - [x] Tags
     - [ ] Pinned Posts
+    - [ ] Nodeinfo
 
 - [-] Social features
     - [x] Profile
@@ -52,8 +53,9 @@
 
 - [ ] Fixes
     - [x] Fix that weird json encoding in the object field of an activity
-    - [ ] The profile attachments are not working, they are not being federalised somehow (the interests thingy)
-    - [ ] Endpoints for getting notes (/ap/v1/note/{note})
+    - [x] The profile attachments are not working, they are not being federalised somehow (the interests thingy)
+    - [x] Endpoints for getting notes (/ap/v1/note/{note})
     - [ ] Fix hashtags on post update
     - [x] Use jobs when posting activities
     - [ ] Sign the get activities for mastodon when secure mode is enable
+    - [x] Set a minimum font size for the tags cloud

@@ -62,10 +62,13 @@ class TypeNote
     public static function craft_from_outbox (Actor $actor, $request)
     {
         // TODO: url should be route ('posts.show', $note->id)
+        $private_id = uniqid ();
+
         $note = Note::create ([
             "actor_id" => $actor->id,
             "summary" => $request ["summary"],
-            "note_id" => env ("APP_URL") . "/ap/v1/note/" . uniqid (),
+            "note_id" => env ("APP_URL") . "/ap/v1/note/" . $private_id,
+            "private_id" => $private_id,
             "in_reply_to" => $request ["inReplyTo"] ?? null,
             "type" => "Note",
             "summary" => $request ["summary"] ?? null,

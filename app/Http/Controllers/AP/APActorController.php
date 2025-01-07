@@ -5,6 +5,7 @@ namespace App\Http\Controllers\AP;
 use App\Models\User;
 use App\Models\Actor;
 use App\Models\Activity;
+use App\Models\Follow;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -15,6 +16,10 @@ class APActorController extends Controller
 {
     public function user (User $user)
     {
+        if (str_contains (request ()->header ("Accept"), "text/html")) {
+            return redirect (route ("users.show", ["user_name" => $user->name]));
+        }
+
         $actor = $user->actor ()->get ();
         $response = Actor::build_response ($actor->first ());
         return response ()->json ($response)->header ("Content-Type", "application/activity+json");
@@ -22,8 +27,9 @@ class APActorController extends Controller
 
     public function followers (User $user)
     {
-        // TODO: Rewrite this using the follow model
-        $followers = Activity::where ("type", "Follow")->where ("object", $user->actor->actor_id);
+        $follower_ids = Follow::where ("object", $user->actor->id)->get ();
+        $followers = Actor::whereIn ("id", $follower_ids->pluck ("actor")->toArray ());
+
         $ordered_collection = new TypeOrderedCollection ();
         $ordered_collection->collection = $followers->get ()->pluck ("actor")->toArray ();
         $ordered_collection->url = route ("ap.followers", $user->name);
@@ -39,8 +45,9 @@ class APActorController extends Controller
 
     public function following (User $user)
     {
-        // TODO: Rewrite this using the follow model
-        $following = Activity::where ("type", "Follow")->where ("actor", $user->actor->actor_id);
+        $following_ids = Follow::where ("actor", $user->actor->id)->get ();
+        $following = Actor::whereIn ("id", $following_ids->pluck ("object")->toArray ());
+
         $ordered_collection = new TypeOrderedCollection ();
         $ordered_collection->collection = $following->get ()->pluck ("object")->toArray ();
         $ordered_collection->url = route ("ap.following", $user->name);

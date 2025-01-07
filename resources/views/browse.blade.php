@@ -67,7 +67,9 @@
 
             links.forEach ((link) => {
                 const weight = parseInt (link.getAttribute ("data-weight"));
-                const size = Math.round ((weight / max_weight) * 210);
+                // set a minimum size
+                const min_size = 100;
+                const size = min_size + (weight / max_weight) * 100;
 
                 link.style.fontSize = `${size}%`;
             });
