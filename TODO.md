@@ -20,7 +20,7 @@
         - [ ] Local mentions
         - [ ] Private post
     - [ ] Pinned Posts
-    - [ ] Nodeinfo
+    - [x] Nodeinfo
     - [ ] Notifications
 
 - [-] Social features
