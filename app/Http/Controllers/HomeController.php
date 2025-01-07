@@ -29,18 +29,18 @@ class HomeController extends Controller
         $notes = [];
         if (request ()->get ("users") == "all")
         {
-            $users = Actor::latest ()->take (8)->get ();
+            $users = Actor::latest ()->take (10)->get ();
         }
         else
         {
-            $users = User::latest ()->take (8)->get ();
+            $users = User::latest ()->take (10)->get ();
         }
 
         $popular_hashtags = Hashtag::withCount ("get_notes")->orderBy ("get_notes_count", "desc")->take (16)->get ()->shuffle ();
 
         if (request ()->get ("posts") == "latest")
         {
-            $notes = Note::latest ()->where ("in_reply_to", null)->take (8)->get ();
+            $notes = Note::latest ()->where ("in_reply_to", null)->take (10)->get ();
         }
         else
         {
@@ -96,7 +96,7 @@ class HomeController extends Controller
         $local_users = User::where ("name", "like", "%$query%")->get ();
         $actors = Actor::where ("name", "like", "%$query%")->orWhere ("preferredUsername", "like", "%$query%")->get ();
 
-        $users = $local_users->merge ($actors);
+        $users = $local_users->merge ($actors)->take (10);
         $hashtags = Hashtag::withCount ("get_notes")->where ("name", "like", "%$query%")->orderBy ("get_notes_count", "desc")->take (16)->get ()->shuffle ();
         $posts = Note::where ("content", "like", "%$query%")->paginate (10);
 

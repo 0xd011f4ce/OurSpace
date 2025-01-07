@@ -47,7 +47,7 @@ else
             </b>
         </p>
 
-        @if ($display_post->in_reply_to)
+        @if ($display_post->in_reply_to && $display_post->get_parent ()->first ())
             <small>
                 In response to
                 <a href="{{ route ('posts.show', [ 'note' => $display_post->get_parent ()->first ()->id ]) }}">this post</a>
