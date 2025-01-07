@@ -27,8 +27,8 @@ class APNodeInfoController extends Controller
     public function nodeinfo ()
     {
         $total_users = User::count ();
-        $active_month_users = User::where ("last_seen_at", ">=", now ()->subMonth ())->count ();
-        $active_half_year_users = User::where ("last_seen_at", ">=", now ()->subMonths (6))->count ();
+        $active_month_users = User::where ("last_online_at", ">=", now ()->subMonth ())->count ();
+        $active_half_year_users = User::where ("last_online_at", ">=", now ()->subMonths (6))->count ();
         $local_posts = Note::where ("private_id", "!=", null)->count ();
 
         $response = [
