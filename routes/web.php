@@ -38,6 +38,7 @@ Route::middleware ("update_online")->group (function () {
 
     // other routes
     Route::get ("/browse", [ HomeController::class, "browse" ])->name ("browse");
+    Route::get ("/search", [ HomeController::class, "search" ])->name ("search");
     Route::get ("/tags/{tag}", [ HomeController::class, "tag" ])->name ("tags"); // TODO: This
     Route::get ("/search", [ HomeController::class, "search" ])->name ("search");
     Route::get ("/requests", [ HomeController::class, "requests" ])->name ("requests")->middleware ("auth");

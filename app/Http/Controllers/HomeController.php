@@ -25,13 +25,31 @@ class HomeController extends Controller
 
     public function browse ()
     {
-        $latest_users = User::latest ()->take (8)->get ();
-        $popular_hashtags = Hashtag::withCount ("get_notes")->orderBy ("get_notes_count", "desc")->take (16)->get ()->shuffle ();
-        $popular_notes = Note::withCount ([ "get_likes" => function ($query) {
-            $query->where ("created_at", ">=", now ()->subDay ());
-        }])->where ("in_reply_to", null)->orderBy ("get_likes_count", "desc")->take (8)->get ();
+        $users = [];
+        $notes = [];
+        if (request ()->get ("users") == "all")
+        {
+            $users = Actor::latest ()->take (8)->get ();
+        }
+        else
+        {
+            $users = User::latest ()->take (8)->get ();
+        }
 
-        return view ("browse", compact ("latest_users", "popular_hashtags", "popular_notes"));
+        $popular_hashtags = Hashtag::withCount ("get_notes")->orderBy ("get_notes_count", "desc")->take (16)->get ()->shuffle ();
+
+        if (request ()->get ("posts") == "latest")
+        {
+            $notes = Note::latest ()->where ("in_reply_to", null)->take (8)->get ();
+        }
+        else
+        {
+            $notes = Note::withCount ([ "get_likes" => function ($query) {
+                $query->where ("created_at", ">=", now ()->subDay ());
+            }])->where ("in_reply_to", null)->orderBy ("get_likes_count", "desc")->take (8)->get ();
+        }
+
+        return view ("browse", compact ("users", "popular_hashtags", "notes"));
     }
 
     public function tag ($tag)
@@ -44,22 +62,45 @@ class HomeController extends Controller
         $query = request ()->get ("query");
 
         // check if the query is empty
-        if (empty ($query)) {
-            return redirect ()->route ("home");
+        if ($query == null) {
+            return view ("search");
         }
 
         // check if the search is a federated user
         $user_handle = array_slice (explode ("@", $query), 1);
-        if (count ($user_handle) > 1) {
-            $username = $user_handle[0];
-            $domain = $user_handle[1];
+        $at_count = count ($user_handle);
+        if ($at_count >= 1) {
+            switch ($at_count)
+            {
+                case 1:
+                    $user = User::where ("name", $user_handle[0])->first ();
+                    if (!$user)
+                        break;
 
-            $actor = TypeActor::actor_exists_or_obtain_from_handle ($username, $domain);
-            if (!$actor)
-                return redirect ()->route ("home");
+                    return redirect ()->route ("users.show", $user->name);
+                    break;
 
-            return redirect ()->route ("users.show", "@$username@$domain");
+                case 2:
+                    $username = $user_handle[0];
+                    $domain = $user_handle[1];
+
+                    $actor = TypeActor::actor_exists_or_obtain_from_handle ($username, $domain);
+                    if (!$actor)
+                        break;
+
+                    return redirect ()->route ("users.show", "@$username@$domain");
+                    break;
+            }
         }
+
+        $local_users = User::where ("name", "like", "%$query%")->get ();
+        $actors = Actor::where ("name", "like", "%$query%")->orWhere ("preferredUsername", "like", "%$query%")->get ();
+
+        $users = $local_users->merge ($actors);
+        $hashtags = Hashtag::withCount ("get_notes")->where ("name", "like", "%$query%")->orderBy ("get_notes_count", "desc")->take (16)->get ()->shuffle ();
+        $posts = Note::where ("content", "like", "%$query%")->paginate (10);
+
+        return view ("search", compact ("users", "hashtags", "posts"));
     }
 
     public function requests ()

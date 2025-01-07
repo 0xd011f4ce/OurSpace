@@ -1506,16 +1506,6 @@ table.forum-table,
     vertical-align: 2px;
 }
 
-.pagination {
-    width: 100%;
-    margin: 15px 0 5px 0;
-    min-height: 20px;
-}
-
-.pagination .next {
-    float: right;
-}
-
 .blog-entries .entry {
     background: #BFDBFE;
     background: var(--even-lighter-blue);
@@ -3746,4 +3736,54 @@ ul.cloud a {
     padding: 0.125rem 0.25rem;
     text-decoration: none;
     position: relative;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0;
+    list-style: none;
+    margin: 0;
+    font-family: "Arial", sans-serif;
+    font-size: 0.9rem;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0;
+    list-style: none;
+    margin: 0;
+    font-family: "Arial", sans-serif;
+    font-size: 0.9rem;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination li a,
+.pagination li span {
+    color: #1e90ff; /* Light blue for links */
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.pagination li a:hover {
+    color: #0056b3; /* Darker blue on hover */
+}
+
+.pagination li.active span {
+    font-weight: bold;
+    color: #0056b3; /* Darker blue for the active link */
+    cursor: default;
+}
+
+.pagination li.disabled span {
+    color: #99c3e0; /* Muted blue for disabled links */
+    cursor: not-allowed;
 }

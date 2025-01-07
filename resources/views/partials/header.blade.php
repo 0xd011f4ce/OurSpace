@@ -43,7 +43,7 @@
             </li>
 
             <li>
-                <a href="#">&nbsp;Search </a>
+                <a href="{{ route ('search') }}">&nbsp;Search </a>
             </li>
 
             <li>

@@ -59,3 +59,4 @@
     - [x] Use jobs when posting activities
     - [ ] Sign the get activities for mastodon when secure mode is enable
     - [x] Set a minimum font size for the tags cloud
+    - [ ] Pagination, pagination, AND MORE PAGINATION

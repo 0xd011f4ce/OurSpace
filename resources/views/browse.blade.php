@@ -6,6 +6,13 @@
     <div class="simple-container">
         <h1>Browse Users</h1>
 
+        <p>
+            Filter:
+            <a @if(request ()->get("users") == null) class="filter-active" @endif href="?users=">Local</a>
+            |
+            <a @if(request ()->get("users") == "all") class="filter-active" @endif href="?users=all">All</a>
+        </p>
+
         <div class="new-people">
             <div class="top">
                 <h4>Active Users</h4>
@@ -13,7 +20,7 @@
             </div>
 
             <div class="inner">
-                @foreach ($latest_users as $user)
+                @foreach ($users as $user)
                     <x-user_block :user="$user" />
                 @endforeach
             </div>
@@ -27,52 +34,24 @@
             </div>
 
             <div class="inner">
-                <ul class="cloud">
-                    @foreach ($popular_hashtags as $hashtag)
-                    <li>
-                        <a href="{{ route ('tags', [ 'tag' => substr ($hashtag->name, 1) ]) }}"
-                            data-weight="{{ $hashtag->get_notes_count }}">
-                            {{ $hashtag->name }}
-                        </a>
-                    </li>
-                    @endforeach
-                </ul>
+                <x-tag_cloud :hashtags="$popular_hashtags" />
             </div>
         </div>
 
-        <h1>Trending Posts</h1>
-        <small>The posts with the most likes in the last 24 hours</small>
+        <h1>Posts</h1>
+        <p>
+            Filter:
+            <a @if(request ()->get("posts") == null) class="filter-active" @endif href="?posts=">Trending</a>
+            |
+            <a @if(request ()->get("posts") == "latest") class="filter-active" @endif href="?posts=latest">Newest</a>
+        </p>
 
         <table class="comments-table" cellspacing="0" cellpadding="3" bordercollor="#ffffff" border="1">
             <tbody>
-                @foreach ($popular_notes as $post)
+                @foreach ($notes as $post)
                     <x-comment_block :post="$post" />
                 @endforeach
             </tbody>
         </table>
     </div>
-
-    <script>
-        document.addEventListener ("DOMContentLoaded", () => {
-            const links = document.querySelectorAll ("ul.cloud a");
-            let max_weight = 0;
-
-            links.forEach ((link) => {
-                const weight = parseInt (link.getAttribute ("data-weight"));
-
-                if (weight > max_weight) {
-                    max_weight = weight;
-                }
-            });
-
-            links.forEach ((link) => {
-                const weight = parseInt (link.getAttribute ("data-weight"));
-                // set a minimum size
-                const min_size = 100;
-                const size = min_size + (weight / max_weight) * 100;
-
-                link.style.fontSize = `${size}%`;
-            });
-        })
-    </script>
 @endsection
