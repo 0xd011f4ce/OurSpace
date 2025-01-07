@@ -83,6 +83,19 @@ class PostController extends Controller
         return back ()->with ("success", "Post liked successfully.");
     }
 
+    public function boost (Note $note)
+    {
+        if (!auth ()->check ())
+            return back ()->with ("error", "You need to be logged in to boost a post.");
+
+        $user = auth ()->user ();
+        $actor = $user->actor ()->first ();
+
+        $response = ActionsPost::boost_post ($actor, $note);
+
+        return back ()->with ("success", "Post boosted successfully.");
+    }
+
     public function delete (Note $note)
     {
         $actor = auth ()->user ()->actor ()->first ();

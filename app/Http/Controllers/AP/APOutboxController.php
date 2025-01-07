@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AP;
 
 use App\Models\Note;
 use App\Models\NoteAttachment;
+use App\Models\Announcement;
 use App\Models\User;
 use App\Models\Actor;
 use App\Models\Activity;
@@ -53,6 +54,10 @@ class APOutboxController extends Controller
 
             case "Like":
                 return $this->handle_like ($user, $request->get ("object"));
+                break;
+
+            case "Boost":
+                return $this->handle_boost ($user, $request->get ("object"));
                 break;
 
             case "Post":
@@ -247,6 +252,46 @@ class APOutboxController extends Controller
 
         return [
             "success" => "liked"
+        ];
+    }
+
+    public function handle_boost (User $user, $object)
+    {
+        $object = Note::where ("note_id", $object)->first ();
+        if (!$object)
+            return response ()->json ([ "error" => "object not found" ], 404);
+
+        $actor = $user->actor ()->first ();
+        $already_boosted = $actor->boosted_note ($object);
+        if ($already_boosted)
+        {
+            $boost_activity = $already_boosted->activity;
+            $undo_activity = TypeActivity::craft_undo ($boost_activity, $actor);
+
+            $response = TypeActivity::post_to_instances ($undo_activity, $actor);
+
+            $boost_exists = Announcement::where ("note_id", $object->id)
+                ->where ("actor_id", $actor->id)
+                ->first ();
+            if ($boost_exists)
+                $boost_exists->delete ();
+
+            return [
+                "success" => "unboosted"
+            ];
+        }
+
+        $boost_activity = TypeActivity::craft_announce ($actor, $object->note_id);
+        $announcement = Announcement::create ([
+            "activity_id" => $boost_activity->id,
+            "actor_id" => $actor->id,
+            "note_id" => $object->id,
+        ]);
+
+        $response = TypeActivity::post_to_instances ($boost_activity, $actor);
+
+        return [
+            "success" => "boosted"
         ];
     }
 

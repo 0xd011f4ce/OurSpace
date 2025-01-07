@@ -133,6 +133,18 @@ class TypeActivity {
         return $like_activity;
     }
 
+    public static function craft_announce (Actor $actor, $id)
+    {
+        $announce_activity = new Activity ();
+        $announce_activity->activity_id = env ("APP_URL") . "/activity/" . uniqid ();
+        $announce_activity->type = "Announce";
+        $announce_activity->actor = $actor->actor_id;
+        $announce_activity->object = $id;
+        $announce_activity->save ();
+
+        return $announce_activity;
+    }
+
     public static function get_private_key (Actor $actor)
     {
         return openssl_get_privatekey ($actor->private_key);

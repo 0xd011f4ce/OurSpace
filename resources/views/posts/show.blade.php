@@ -70,16 +70,22 @@
         <br>
 
         @auth
-            <div class="buttons">
+            <div class="buttons" style="display: flex; gap: 10px;">
                 <form action="{{ route ('posts.like', [ 'note' => $note->id ]) }}" method="POST">
                     @csrf
                     <button type="submit">{{ auth ()->user ()->actor ()->first ()->liked_note ($note) ? "Undo Like" : "Like" }}</button>
+                </form>
+
+                <form action="{{ route ('posts.boost', [ 'note' => $note->id ]) }}" method="POST">
+                    @csrf
+                    <button type="submit">{{ auth ()->user ()->actor ()->first ()->boosted_note ($note) ? "Unboost" : "Boost" }}</button>
                 </form>
             </div>
         @endauth
 
         <p>
-            <b>Likes</b>: {{ $note->get_likes ()->count () }}
+            <b>Likes</b>: {{ $note->get_likes ()->count () }}<br>
+            <b>Boosts</b>: {{ $note->get_boosts ()->count () }}
         </p>
 
         <div class="comments" id="comments">

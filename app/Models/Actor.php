@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
-use App\Models\Activity;
+use App\Models\Announcement;
 use App\Models\Note;
 
 use App\Types\TypeActor;
@@ -85,5 +85,10 @@ class Actor extends Model
     public function liked_note (Note $note)
     {
         return Like::where ("actor_id", $this->id)->where ("note_id", $note->id)->first ();
+    }
+
+    public function boosted_note (Note $note)
+    {
+        return Announcement::where ("actor_id", $this->id)->where ("note_id", $note->id)->first ();
     }
 }

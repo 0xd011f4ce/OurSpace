@@ -14,10 +14,14 @@
     - [x] Likes
     - [x] Comments
     - [x] Boosts
-        - [ ] Local Boost
+        - [x] Local Boost
     - [x] Tags
+    - [ ] Mentions
+        - [ ] Local mentions
+        - [ ] Private post
     - [ ] Pinned Posts
     - [ ] Nodeinfo
+    - [ ] Notifications
 
 - [-] Social features
     - [x] Profile
@@ -37,7 +41,7 @@
         - [x] Delete posts
         - [x] Like posts
         - [x] Comment posts
-        - [ ] Boost posts
+        - [x] Boost posts
         - [x] Post tags
     - [ ] Blog
     - [ ] Bulletin

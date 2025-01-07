@@ -36,6 +36,11 @@ class Note extends Model
         return $this->hasMany (Like::class);
     }
 
+    public function get_boosts ()
+    {
+        return $this->hasMany (Announcement::class);
+    }
+
     public function get_replies ()
     {
         return $this->hasMany (Note::class, "in_reply_to", "note_id");

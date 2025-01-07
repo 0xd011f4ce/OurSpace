@@ -127,4 +127,25 @@ class ActionsPost
 
         return $response;
     }
+
+    public static function boost_post (Actor $actor, Note $note)
+    {
+        $client = new Client ();
+
+        try
+        {
+            $response = $client->post ($actor->outbox, [
+                "json" => [
+                    "type" => "Boost",
+                    "object" => $note->note_id,
+                ]
+            ]);
+        }
+        catch (\Exception $e)
+        {
+            return ["error" => "Could not connect to server: " . $e->getMessage ()];
+        }
+
+        return $response;
+    }
 }

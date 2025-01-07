@@ -93,12 +93,12 @@ class HomeController extends Controller
             }
         }
 
-        $local_users = User::where ("name", "like", "%$query%")->get ();
-        $actors = Actor::where ("name", "like", "%$query%")->orWhere ("preferredUsername", "like", "%$query%")->get ();
+        $local_users = User::where ("name", "like", "%$query%")->orderBy ("created_at", "desc")->get ();
+        $actors = Actor::where ("name", "like", "%$query%")->orWhere ("preferredUsername", "like", "%$query%")->orderBy ("created_at", "desc")->get ();
 
         $users = $local_users->merge ($actors)->take (10);
         $hashtags = Hashtag::withCount ("get_notes")->where ("name", "like", "%$query%")->orderBy ("get_notes_count", "desc")->take (16)->get ()->shuffle ();
-        $posts = Note::where ("content", "like", "%$query%")->paginate (10);
+        $posts = Note::where ("content", "like", "%$query%")->orderBy ("created_at", "desc")->paginate (10);
 
         return view ("search", compact ("users", "hashtags", "posts"));
     }

@@ -118,7 +118,7 @@ class TypeNote
         foreach ($attachments as $attachment)
             $attachment->delete ();
 
-        if ($request ["attachment"])
+        if (isset ($request ["attachment"]) && $request ["attachment"])
         {
 
             foreach ($request ["attachment"] as $attachment)
@@ -135,7 +135,7 @@ class TypeNote
             }
         }
 
-        if ($request ["tag"])
+        if (isset ($request ["tag"]) && $request ["tag"])
         {
             foreach ($request ["tag"] as $tag)
             {
