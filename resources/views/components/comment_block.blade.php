@@ -125,6 +125,9 @@ else
         <p>
             <b>Replies:</b> {{ $display_post->get_replies ()->count () }}
         </p>
+        <p>
+            <b>Boosts:</b> {{ $display_post->get_boosts ()->count () }}
+        </p>
 
         <a href="{{ route ('posts.show', [ 'note' => $display_post ]) }}">
             <button type="button">View</button>

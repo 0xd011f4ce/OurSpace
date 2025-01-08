@@ -327,6 +327,8 @@
                             @endforeach
                         </tbody>
                     </table>
+
+                    {{ $actor->get_posts ()->links ("pagination::default") }}
                 </div>
             </div>
         </div>

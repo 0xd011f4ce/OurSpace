@@ -55,6 +55,10 @@
     - [ ] Music
     - [ ] Announcements
 
+- [ ] Security
+    - [ ] Token system for user, there should be a token that is used to consume the API and another one to use the outbox (only the server must know the one for the outbox)
+    - [ ] Verify the signature of the incoming activities
+
 - [ ] Fixes
     - [x] Fix that weird json encoding in the object field of an activity
     - [x] The profile attachments are not working, they are not being federalised somehow (the interests thingy)

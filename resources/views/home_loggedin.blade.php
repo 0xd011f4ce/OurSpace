@@ -143,6 +143,8 @@
                             @endforeach
                         </tbody>
                     </table>
+
+                    {{ auth ()->user ()->feed ()->links ("pagination::default") }}
                 </div>
             </div>
         </div>

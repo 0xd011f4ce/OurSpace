@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\Announcement;
 use App\Models\Note;
 
+use App\Helpers\PaginationHelper;
+
 use App\Types\TypeActor;
 
 use Illuminate\Database\Eloquent\Model;
@@ -60,7 +62,7 @@ class Actor extends Model
 
         $all = $posts->merge ($announcements)->sortByDesc ("created_at");
 
-        return $all;
+        return PaginationHelper::paginate ($all);
     }
 
     public function create_from_user (User $user)

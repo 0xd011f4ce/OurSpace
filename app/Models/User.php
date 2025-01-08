@@ -3,6 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Helpers\PaginationHelper;
+
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -151,7 +154,6 @@ class User extends Authenticatable
         $announcements = Announcement::whereIn ("actor_id", $friends_id)->orderBy ("created_at", "desc")->get ();
 
         $feed = $notes->merge ($announcements)->sortByDesc ("created_at");
-
-        return $feed;
+        return PaginationHelper::paginate ($feed, 20, "feed");
     }
 }

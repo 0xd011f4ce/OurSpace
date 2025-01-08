@@ -12,7 +12,7 @@
 </head>
 <body>
 
-    <div class="master-container">
+    <div class="container">
         @include ("partials.header")
 
         <main>
