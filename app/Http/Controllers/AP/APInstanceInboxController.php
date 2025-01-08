@@ -15,6 +15,7 @@ use App\Types\TypeActivity;
 use App\Types\TypeNote;
 
 use App\Http\Controllers\Controller;
+use App\Models\ProfilePin;
 
 class APInstanceInboxController extends Controller
 {
@@ -30,6 +31,14 @@ class APInstanceInboxController extends Controller
         {
             case "Announce":
                 return $this->handle_announce ($activity);
+                break;
+
+            case "Add":
+                return $this->handle_add ($activity);
+                break;
+
+            case "Remove":
+                return $this->handle_remove ($activity);
                 break;
 
             case "Undo":
@@ -87,6 +96,50 @@ class APInstanceInboxController extends Controller
         return response ()->json (["status" => "ok"]);
     }
 
+    public function handle_add ($activity)
+    {
+        $actor = TypeActor::actor_exists_or_obtain ($activity ["actor"]);
+        if (!$actor)
+            return response ()->json (["status" => "error"]);
+
+        if ($activity["target"] != $actor->featured)
+            // For now we only support adding notes to the featured actor
+            return response ()->json (["error" => "not implemented"], 501);
+
+        $note = TypeNote::note_exists ($activity ["object"]);
+        if (!$note)
+            $note = TypeNote::obtain_external ($activity ["object"]);
+
+        $pin_exists = ProfilePin::where ("actor_id", $actor->id)->where ("note_id", $note->id)->first ();
+        if ($pin_exists)
+            return response ()->json (["status" => "ok"]);
+
+        ProfilePin::create ([
+            "actor_id" => $actor->id,
+            "note_id" => $note->id
+        ]);
+
+        return response ()->json (["status" => "ok"]);
+    }
+
+    public function handle_remove ($activity)
+    {
+        $actor = TypeActor::actor_exists_or_obtain ($activity ["actor"]);
+        if (!$actor)
+            return response ()->json (["status" => "error"]);
+
+        if ($activity ["target"] != $actor->featured)
+            // For now we only support removing notes from the featured actor
+            return response ()->json (["error" => "not implemented"], 501);
+
+        $note = TypeNote::note_exists ($activity ["object"]);
+        $pin_exists = ProfilePin::where ("actor_id", $actor->id)->where ("note_id", $note->id)->first ();
+        if (!$pin_exists)
+            return response ()->json (["status" => "ok"]);
+
+        $pin_exists->delete ();
+    }
+
     public function handle_undo ($activity)
     {
         return response ()->json (ActionsActivity::activity_undo($activity));
@@ -130,11 +183,11 @@ class APInstanceInboxController extends Controller
 
     public function handle_update ($activity)
     {
-        if (TypeActivity::activity_exists ($activity ["id"]))
-            return response ()->json (["status" => "ok"]);
-
-        $activity ["activity_id"] = $activity ["id"];
-        $new_activity = Activity::create ($activity);
+        if (!TypeActivity::activity_exists ($activity ["id"]))
+        {
+            $activity ["activity_id"] = $activity ["id"];
+            $new_activity = Activity::create ($activity);
+        }
 
         $object = $activity ["object"];
 

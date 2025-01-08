@@ -25,6 +25,8 @@ class Actor extends Model
         "followers",
 
         "liked",
+        "featured",
+        "featured_tags",
 
         "inbox",
         "outbox",
@@ -53,6 +55,12 @@ class Actor extends Model
     public function user ()
     {
         return $this->belongsTo (User::class);
+    }
+
+    public function get_pinned_posts ()
+    {
+        $pinned = $this->hasMany (ProfilePin::class, "actor_id")->orderBy ("created_at", "desc")->get ();
+        return Note::whereIn ("id", $pinned->pluck ("note_id"))->get ();
     }
 
     public function get_posts ()

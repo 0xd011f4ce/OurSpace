@@ -320,6 +320,19 @@
 
                     <br>
 
+                    @if ($actor->get_pinned_posts ()->count () > 0)
+                        <table class="comments-table" cellspacing="0" cellpadding="3" bordercollor="#ffffff" border="1">
+                            <tbody>
+                                <p><b>Pinned</b></p>
+                                @foreach ($actor->get_pinned_posts () as $post)
+                                    <x-comment_block :post="$post" />
+                                @endforeach
+                            </tbody>
+                        </table>
+
+                        <hr>
+                    @endif
+
                     <table class="comments-table" cellspacing="0" cellpadding="3" bordercollor="#ffffff" border="1">
                         <tbody>
                             @foreach ($actor->get_posts () as $post)

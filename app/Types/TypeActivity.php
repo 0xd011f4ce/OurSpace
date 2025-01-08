@@ -145,6 +145,32 @@ class TypeActivity {
         return $announce_activity;
     }
 
+    public static function craft_add (Actor $actor, $object, $target)
+    {
+        $add_activity = new Activity ();
+        $add_activity->activity_id = env ("APP_URL") . "/activity/" . uniqid ();
+        $add_activity->type = "Add";
+        $add_activity->actor = $actor->actor_id;
+        $add_activity->object = $object;
+        $add_activity->target = $target;
+        $add_activity->save ();
+
+        return $add_activity;
+    }
+
+    public static function craft_remove (Actor $actor, $object, $target)
+    {
+        $remove_activity = new Activity ();
+        $remove_activity->activity_id = env ("APP_URL") . "/activity/" . uniqid ();
+        $remove_activity->type = "Remove";
+        $remove_activity->actor = $actor->actor_id;
+        $remove_activity->object = $object;
+        $remove_activity->target = $target;
+        $remove_activity->save ();
+
+        return $remove_activity;
+    }
+
     public static function get_private_key (Actor $actor)
     {
         return openssl_get_privatekey ($actor->private_key);
@@ -217,6 +243,9 @@ class TypeActivity {
 
     public static function post_to_instances (Activity $activity, Actor $source)
     {
+        Log::info ("posting activity to instances");
+        Log::info (json_encode (TypeActivity::craft_response ($activity)));
+
         $instances = Instance::all ();
         foreach ($instances as $instance)
         {

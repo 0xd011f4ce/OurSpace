@@ -96,6 +96,19 @@ class PostController extends Controller
         return back ()->with ("success", "Post boosted successfully.");
     }
 
+    public function pin (Note $note)
+    {
+        if (!auth ()->check ())
+            return back ()->with ("error", "You need to be logged in to pin a post.");
+
+        $user = auth ()->user ();
+        $actor = $user->actor ()->first ();
+
+        $response = ActionsPost::pin_post ($actor, $note);
+
+        return back ()->with ("success", "Post pinned successfully.");
+    }
+
     public function delete (Note $note)
     {
         $actor = auth ()->user ()->actor ()->first ();

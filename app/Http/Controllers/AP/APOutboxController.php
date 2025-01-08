@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\ProfilePin;
 use Illuminate\Support\Facades\Storage;
 
 class APOutboxController extends Controller
@@ -58,6 +59,10 @@ class APOutboxController extends Controller
 
             case "Boost":
                 return $this->handle_boost ($user, $request->get ("object"));
+                break;
+
+            case "Pin":
+                return $this->handle_pin ($user, $request->get ("object"));
                 break;
 
             case "Post":
@@ -292,6 +297,46 @@ class APOutboxController extends Controller
 
         return [
             "success" => "boosted"
+        ];
+    }
+
+    public function handle_pin (User $user, $object)
+    {
+        $object = Note::where ("note_id", $object)->first ();
+        if (!$object)
+            return response ()->json ([ "error" => "object not found" ], 404);
+
+        $actor = $user->actor ()->first ();
+        $already_pinned = $object->is_pinned ($actor);
+        if ($already_pinned)
+        {
+            $pin_activity = $already_pinned->activity;
+            $remove_activity = TypeActivity::craft_remove ($actor, $object->note_id, $actor->featured);
+
+            $response = TypeActivity::post_to_instances ($remove_activity, $actor);
+
+            $pin_exists = ProfilePin::where ("note_id", $object->id)
+                ->where ("actor_id", $actor->id)
+                ->first ();
+            if ($pin_exists)
+                $pin_exists->delete ();
+
+            return [
+                "success" => "unpinned"
+            ];
+        }
+
+        $pin_activity = TypeActivity::craft_add ($actor, $object->note_id, $actor->featured);
+        $pin = ProfilePin::create ([
+            "activity_id" => $pin_activity->id,
+            "actor_id" => $actor->id,
+            "note_id" => $object->id,
+        ]);
+
+        $response = TypeActivity::post_to_instances ($pin_activity, $actor);
+
+        return [
+            "success" => "pinned"
         ];
     }
 

@@ -168,6 +168,11 @@ class TypeNote
                     $note->in_reply_to = $parent->note_id;
             }
         }
+
+        if (isset ($request ["replies"]))
+        {
+            // TODO: Handle replies
+        }
     }
 
     public static function create_from_request ($request, Activity $activity, Actor $actor)

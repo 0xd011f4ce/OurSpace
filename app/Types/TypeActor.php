@@ -5,6 +5,7 @@ namespace App\Types;
 use App\Models\User;
 use App\Models\Actor;
 use App\Models\Instance;
+use App\Models\ProfilePin;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
@@ -43,6 +44,8 @@ class TypeActor {
             "followers" => $app_url . "/ap/v1/user/" . $user->name . "/followers",
 
             "liked" => $app_url . "/ap/v1/user/" . $user->name . "/liked",
+            "featured" => $app_url . "/ap/v1/user/" . $user->name . "/collections/featured",
+            "featured_tags" => $app_url . "/ap/v1/user/" . $user->name . "/collections/featured/tags",
 
             "inbox" => $app_url . "/ap/v1/user/" . $user->name . "/inbox",
             "outbox" => $app_url . "/ap/v1/user/" . $user->name . "/outbox",
@@ -63,7 +66,17 @@ class TypeActor {
         $response = [
             "@context" => [
                 "https://www.w3.org/ns/activitystreams",
-                "https://w3id.org/security/v1"
+                "https://w3id.org/security/v1",
+                [
+                    "featured" => [
+                        "@id" => "http://joinmastodon.org/ns#featured",
+                        "@type" => "@id"
+                    ],
+                    "featuredTags" => [
+                        "@id" => "http://joinmastodon.org/ns#featuredTags",
+                        "@type" => "@id"
+                    ]
+                ]
             ],
             "id" => $actor->actor_id,
             "type" => $actor->type,
@@ -72,6 +85,8 @@ class TypeActor {
             "followers" => $actor->followers,
 
             "liked" => $actor->liked,
+            "featured" => $actor->featured,
+            "featuredTags" => $actor->featured_tags,
 
             "inbox" => $actor->inbox,
             "outbox" => $actor->outbox,
@@ -163,6 +178,8 @@ class TypeActor {
         $actor->followers = $request['followers'] ?? '';
 
         $actor->liked = $request['liked'] ?? '';
+        $actor->featured = $request['featured'] ?? '';
+        $actor->featured_tags = $request['featuredTags'] ?? '';
 
         $actor->inbox = $request['inbox'] ?? '';
         $actor->outbox = $request['outbox'] ?? '';
@@ -186,6 +203,27 @@ class TypeActor {
             $instance = new Instance ();
             $instance->inbox = $actor->sharedInbox;
             $instance->save ();
+        }
+
+        $featured_items = TypeActor::actor_process_featured ($actor);
+        ProfilePin::where ("actor_id", $actor->id)->delete ();
+
+        foreach ($featured_items as $item)
+        {
+            if ($item ["type"] == "Note")
+            {
+                $note = TypeNote::note_exists ($item ["id"]);
+                if (!$note)
+                    $note = TypeNote::obtain_external ($item ["id"]);
+
+                if (!$note)
+                    continue;
+
+                ProfilePin::create ([
+                    "actor_id" => $actor->id,
+                    "note_id" => $note->id
+                ]);
+            }
         }
 
         return $actor;
@@ -316,5 +354,84 @@ class TypeActor {
         if (!$actor->user)
             return null;
         return $actor;
+    }
+
+    public static function actor_process_featured (Actor $actor)
+    {
+        $pinned = [];
+
+        if (!$actor->featured)
+            return $pinned;
+
+        return TypeActor::actor_process_ordered_collection ($actor->featured);
+    }
+
+    public static function actor_process_ordered_collection ($collection_link)
+    {
+        $items = [];
+
+        try
+        {
+            $client = new Client ();
+            $response = $client->get ($collection_link, [
+                "headers" => [
+                    "Accept" => "application/json"
+                ]
+            ]);
+
+            $collection = json_decode ($response->getBody ()->getContents (), true);
+
+            if (isset ($collection ["first"]) && isset ($collection ["last"]))
+            {
+                $first = $collection["first"];
+                $last = $collection["last"];
+
+                $current_url = $first;
+                $current_page = 1;
+                do {
+                    $items = array_merge ($items, TypeActor::actor_processed_order_collection_page ($current_url));
+
+                    $current_page++;
+                    $current_url = $collection_link . "?page=" . $current_page;
+                } while ($current_url != $last);
+            }
+            else
+            {
+                return $collection["orderedItems"];
+            }
+        }
+        catch (\Exception $e)
+        {
+            Log::error ("TypeActor::actor_process_ordered_collection: " . $e->getMessage ());
+        }
+
+        return $items;
+    }
+
+    public static function actor_processed_order_collection_page ($page_link)
+    {
+        $items = [];
+
+        try
+        {
+            $client = new Client ();
+            $response = $client->get ($page_link, [
+                "headers" => [
+                    "Accept" => "application/json"
+                ]
+            ]);
+
+            $collection = json_decode ($response->getBody ()->getContents (), true);
+            foreach ($collection["orderedItems"] as $item)
+            {
+                $items[] = $item;
+            }
+        }
+        catch (\Exception $e)
+        {
+            Log::error ("TypeActor::actor_processed_order_collection_page: " . $e->getMessage ());
+        }
+
+        return $items;
     }
 }

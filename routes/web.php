@@ -34,6 +34,7 @@ Route::middleware ("update_online")->group (function () {
     Route::post ("/post/{note}/edit", [ PostController::class, "update" ])->middleware ("auth");
     Route::post ("/post/{note}/like", [ PostController::class, "like" ])->name ("posts.like")->middleware ("auth");
     Route::post ("/post/{note}/boost", [ PostController::class, "boost" ])->name ("posts.boost")->middleware ("auth");
+    Route::post ("/post/{note}/pin", [ PostController::class, "pin" ])->name ("posts.pin")->middleware ("auth");
     Route::get ("/post/{note}", [ PostController::class, "show" ])->name ("posts.show");
     Route::delete ("/post/{note}", [ PostController::class, "delete" ])->name ("posts.delete")->middleware ("auth");
 

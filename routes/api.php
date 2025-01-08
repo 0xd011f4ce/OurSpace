@@ -23,6 +23,7 @@ Route::prefix ("/ap/v1")->group (function () {
     Route::post ("/user/{user:name}/outbox", [ APOutboxController::class, "outbox" ])->name ("ap.outbox");
     Route::get ("/user/{user:name}/followers", [ APActorController::class, "followers" ])->name ("ap.followers");
     Route::get ("/user/{user:name}/following", [ APActorController::class, "following" ])->name ("ap.following");
+    Route::get ("/user/{user:name}/collections/featured", [ APActorController::class, "featured" ])->name ("ap.featured");
     Route::get ("/user/{user:name}", [ APActorController::class, "user" ])->name ("ap.user");
 
     // notes

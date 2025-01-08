@@ -61,4 +61,9 @@ class Note extends Model
     {
         return $this->hasMany (NoteAttachment::class);
     }
+
+    public function is_pinned (Actor $actor)
+    {
+        return ProfilePin::where ("actor_id", $actor->id)->where ("note_id", $this->id)->first ();
+    }
 }

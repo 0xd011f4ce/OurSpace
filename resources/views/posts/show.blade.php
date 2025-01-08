@@ -40,6 +40,7 @@
     <div class="col right">
         <h1 class="title">{{ $actor->name }}'s Post</h1>
         @if (auth ()->check () && auth ()->user ()->is ($actor->user))
+        <div class="buttons" style="display: flex; gap: 5px;">
             <form action="#" method="POST">
                 @csrf
                 @method("DELETE")
@@ -48,6 +49,12 @@
                 </a>
                 <button type="submit">Delete</button>
             </form>
+
+            <form action="{{ route ('posts.pin', [ 'note' => $note ]) }}" method="POST">
+                @csrf
+                <button type="submit">{{ $note->is_pinned ($actor) ? "Unpin" : "Pin" }}</button>
+            </form>
+        </div>
         @endif
 
         @if ($note->in_reply_to)
