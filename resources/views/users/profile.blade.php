@@ -292,7 +292,7 @@
 
                         <div class="friends-grid">
                             @foreach ($user->mutual_friends () as $key => $friend)
-                                @if ($key > 8)
+                                @if ($key > 7)
                                     @break
                                 @endif
 

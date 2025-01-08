@@ -397,7 +397,7 @@ class TypeActor {
             }
             else
             {
-                return $collection["orderedItems"];
+                return isset ($collection ["orderedItems"]) ? $collection ["orderedItems"] : [];
             }
         }
         catch (\Exception $e)
@@ -422,6 +422,9 @@ class TypeActor {
             ]);
 
             $collection = json_decode ($response->getBody ()->getContents (), true);
+            if (!isset ($collection ["orderedItems"]))
+                return [];
+
             foreach ($collection["orderedItems"] as $item)
             {
                 $items[] = $item;
