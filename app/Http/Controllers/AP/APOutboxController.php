@@ -374,7 +374,7 @@ class APOutboxController extends Controller
         {
             foreach ($request ["mentions"] as $mention)
             {
-                $mention_exists = NoteMention::where ("note_id", $note->id)->where ("object", $mention ["href"])->first ();
+                $mention_exists = NoteMention::where ("note_id", $note->id)->where ("actor_id", $mention ["href"])->first ();
                 if ($mention_exists)
                     continue;
 
