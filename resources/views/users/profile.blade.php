@@ -169,7 +169,33 @@
                 @endif
             </div>
 
-            @if ($user != null)
+            @if ($user == null)
+                <div class="table-section">
+                    <div class="heading">
+                        <h4>{{ $actor->name }}'s Information</h4>
+                    </div>
+
+                    <div class="inner">
+                        <table class="details-table" cellspacing="3" cellpadding="3">
+                            <tbody>
+
+                                @foreach ($actor->profile_attachment as $attachment)
+                                    <tr>
+                                        <td>
+                                            <p>{{ $attachment->name }}</p>
+                                        </td>
+
+                                        <td>
+                                            <p>{!! $attachment->content !!}</p>
+                                        </td>
+                                    </tr>
+                                @endforeach
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @else
                 <div class="table-section">
                     <div class="heading">
                         <h4>{{ $user->name }}'s Interests</h4>

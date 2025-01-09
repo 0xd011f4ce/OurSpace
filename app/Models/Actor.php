@@ -57,6 +57,11 @@ class Actor extends Model
         return $this->belongsTo (User::class);
     }
 
+    public function profile_attachment ()
+    {
+        return $this->hasMany (ProfileAttachment::class);
+    }
+
     public function get_pinned_posts ()
     {
         $pinned = $this->hasMany (ProfilePin::class, "actor_id")->orderBy ("created_at", "desc")->get ();

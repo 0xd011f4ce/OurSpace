@@ -4,6 +4,7 @@ namespace App\Types;
 
 use App\Models\User;
 use App\Models\Actor;
+use App\Models\ProfileAttachment;
 use App\Models\Instance;
 use App\Models\ProfilePin;
 
@@ -203,6 +204,16 @@ class TypeActor {
             $instance = new Instance ();
             $instance->inbox = $actor->sharedInbox;
             $instance->save ();
+        }
+
+        ProfileAttachment::where ("actor_id", $actor->id)->delete ();
+        foreach ($request ["attachment"] as $attachment)
+        {
+            $profile_attachment = ProfileAttachment::create ([
+                "actor_id" => $actor->id,
+                "name" => $attachment ["name"],
+                "content" => $attachment ["value"]
+            ]);
         }
 
         $featured_items = TypeActor::actor_process_featured ($actor);
