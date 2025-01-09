@@ -14,7 +14,7 @@
                 <br>
                 <p>
                     <b>
-                        <span class="count">{{ count ($user->received_requests ()) }}</span>
+                        <span class="count">{{ $received_requests->total () }}</span>
                         Open Friend Requests
                     </b>
 
@@ -53,12 +53,14 @@
                             @endforeach
                         </tbody>
                     </table>
+
+                    {{ $received_requests->withQueryString ()->links("pagination::default") }}
                 </p>
 
                 <br>
                 <p>
                     <b>
-                        <span class="count">{{ count ($user->sent_requests ()) }}</span>
+                        <span class="count">{{ $sent_requests->total () }}</span>
                         Pending Friend Requests
                     </b>
                     <br>
@@ -92,6 +94,8 @@
                             @endforeach
                         </tbody>
                     </table>
+
+                    {{ $sent_requests->withQueryString ()->links("pagination::default") }}
                 </p>
             </div>
         </div>

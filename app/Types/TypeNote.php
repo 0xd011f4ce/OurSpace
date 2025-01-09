@@ -182,20 +182,26 @@ class TypeNote
 
                     case "Mention":
                         $mention_name = $tag["name"];
+                        $exploded_name = explode ("@", $mention_name);
                         $mention_actor = null;
 
-                        $actor_exists = Actor::where ("local_actor_id", $mention_name)->first ();
-                        if (!$actor_exists)
+                        $actor_exists = null;
+                        Log::info (json_encode ($exploded_name));
+
+                        if (count ($exploded_name) == 2)
                         {
                             // let's check if maybe it's local
-                            $processed_name = explode ("@", $mention_name);
-                            if (count ($processed_name) < 2)
-                                continue;
-
-                            $actor_exists = Actor::where ("preferredUsername", $processed_name [1])->first ();
+                            $actor_exists = Actor::where ("preferredUsername", $exploded_name [1])->first ();
                             if (!$actor_exists)
                                 continue;
                         }
+                        else if (count ($exploded_name) == 3)
+                        {
+                            // maybe it's remote
+                            $actor_exists = TypeActor::actor_exists_or_obtain_from_handle($exploded_name [1], $exploded_name [2]);
+                        }
+                        else
+                            continue;
 
                         $mention = NoteMention::create ([
                             "note_id" => $note->id,

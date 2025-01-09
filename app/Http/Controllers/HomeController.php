@@ -10,6 +10,8 @@ use App\Models\Actor;
 use App\Models\Note;
 use App\Models\Hashtag;
 
+use App\Helpers\PaginationHelper;
+
 use GuzzleHttp\Client;
 
 use Illuminate\Http\Request;
@@ -126,6 +128,9 @@ class HomeController extends Controller
 
             $sent_requests[] = $actor;
         }
+
+        $received_requests = PaginationHelper::paginate (collect ($received_requests), 20, "received");
+        $sent_requests = PaginationHelper::paginate (collect ($sent_requests), 20, "sent");
 
         return view ("users.requests", compact ("user", "received_requests", "sent_requests"));
     }

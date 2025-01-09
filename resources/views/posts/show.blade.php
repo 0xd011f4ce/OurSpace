@@ -70,7 +70,7 @@
             {!! $note->content !!}
 
             @foreach ($note->attachments as $attachment)
-                <img loading="lazy" src="{{ $attachment->url }}" width="250">
+                <img loading="lazy" src="{{ $attachment->url }}" width="250" class="expandable">
             @endforeach
         </div>
 

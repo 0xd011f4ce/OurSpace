@@ -206,6 +206,9 @@ class TypeActor {
             $instance->save ();
         }
 
+        // we need to save the model first
+        $actor->save ();
+
         ProfileAttachment::where ("actor_id", $actor->id)->delete ();
         foreach ($request ["attachment"] as $attachment)
         {
@@ -245,7 +248,6 @@ class TypeActor {
         $actor = new Actor ();
         TypeActor::update_from_request ($actor, $request);
 
-        $actor->save ();
         return $actor;
     }
 
