@@ -19,7 +19,24 @@ class Note extends Model
         "attributedTo",
         "content",
         "tag",
+        "to",
+        "cc"
     ];
+
+    protected $casts = [
+        "to" => "array",
+        "cc" => "array"
+    ];
+
+    public function setToAttribute ($value)
+    {
+        $this->attributes["to"] = json_encode ($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+    }
+
+    public function setCcAttribute ($value)
+    {
+        $this->attributes["cc"] = json_encode ($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION);
+    }
 
     public function get_activity ()
     {
@@ -55,6 +72,11 @@ class Note extends Model
     public function get_hashtags ()
     {
         return $this->belongsToMany (Hashtag::class, "note_hashtag");
+    }
+
+    public function get_mentions ()
+    {
+        return $this->hasMany (NoteMention::class);
     }
 
     public function attachments ()

@@ -7,7 +7,7 @@ use App\Models\Hashtag;
 use App\Models\Actor;
 use App\Models\Activity;
 use App\Models\NoteAttachment;
-
+use App\Models\NoteMention;
 use GuzzleHttp\Client;
 
 use Illuminate\Support\Facades\Log;
@@ -27,12 +27,8 @@ class TypeNote
             "updated" => $note->updated_at,
             "url" => $note->url,
             "attributedTo" => $note->attributedTo,
-            "to" => [
-                "https://www.w3.org/ns/activitystreams#Public"
-            ],
-            "cc" => [
-                $author->following
-            ],
+            "to" => $note->to,
+            "cc" => $note->cc,
             "content" => $note->content
         ];
 
@@ -56,6 +52,18 @@ class TypeNote
             ];
         }
 
+        $mentions = $note->get_mentions ()->get ();
+        foreach ($mentions as $mention)
+        {
+            $response ["tag"] [] = [
+                "type" => "Mention",
+                "href" => $mention->actor->actor_id,
+                "name" => $mention->actor->local_actor_id ?? "@" . $mention->actor->preferredUsername
+            ];
+        }
+
+        Log::info (json_encode ($response));
+
         return $response;
     }
 
@@ -74,7 +82,12 @@ class TypeNote
             "summary" => $request ["summary"] ?? null,
             "attributedTo" => $actor->actor_id,
             "content" => $request ["content"] ?? null,
-            "tag" => $request ["tag"] ?? null
+            "tag" => $request ["tag"] ?? null,
+
+            // TODO: This should change when I implement visibilities and private notes
+            "cc" => [
+                $actor->followers
+            ]
         ]);
 
         $note->url = route ('posts.show', $note->id);
@@ -135,37 +148,61 @@ class TypeNote
             }
         }
 
-        if (isset ($request ["tag"]) && $request ["tag"])
-        {
-            foreach ($request ["tag"] as $tag)
-            {
-                if ($tag ["type"] != "Hashtag")
-                    continue;
-
-                $tag_name = $tag ["name"];
-
-                $hashtag_exists = Hashtag::where ("name", $tag_name)->first ();
-                if ($hashtag_exists)
-                {
-                    $note->get_hashtags ()->attach ($hashtag_exists->id);
-                    continue;
-                }
-
-                $hashtag = Hashtag::create ([
-                    "name" => $tag_name
-                ]);
-                $note->get_hashtags ()->attach ($hashtag->id);
-            }
-        }
-
         if ($request ["inReplyTo"])
         {
             $parent_exists = Note::where ("note_id", $request ["inReplyTo"])->first ();
             if (!$parent_exists)
+                $parent_exists = TypeNote::obtain_external ($request ["inReplyTo"]);
+
+            $note->in_reply_to = $parent_exists ? $parent_exists->note_id : null;
+        }
+
+        if (isset ($request ["tag"]) && $request ["tag"])
+        {
+            foreach ($request ["tag"] as $tag)
             {
-                $parent = TypeNote::obtain_external ($request ["inReplyTo"]);
-                if ($parent)
-                    $note->in_reply_to = $parent->note_id;
+                // TODO: refactor this, this code is shit but I want to get first working first
+                switch ($tag ["type"])
+                {
+                    case "Hashtag":
+                        $tag_name = $tag ["name"];
+
+                        $hashtag_exists = Hashtag::where ("name", $tag_name)->first ();
+                        if ($hashtag_exists)
+                        {
+                            $note->get_hashtags ()->attach ($hashtag_exists->id);
+                            continue;
+                        }
+
+                        $hashtag = Hashtag::create ([
+                            "name" => $tag_name
+                        ]);
+                        $note->get_hashtags ()->attach ($hashtag->id);
+                        break;
+
+                    case "Mention":
+                        $mention_name = $tag["name"];
+                        $mention_actor = null;
+
+                        $actor_exists = Actor::where ("local_actor_id", $mention_name)->first ();
+                        if (!$actor_exists)
+                        {
+                            // let's check if maybe it's local
+                            $processed_name = explode ("@", $mention_name);
+                            if (count ($processed_name) < 2)
+                                continue;
+
+                            $actor_exists = Actor::where ("preferredUsername", $processed_name [1])->first ();
+                            if (!$actor_exists)
+                                continue;
+                        }
+
+                        $mention = NoteMention::create ([
+                            "note_id" => $note->id,
+                            "actor_id" => $actor_exists->id
+                        ]);
+                        break;
+                }
             }
         }
 

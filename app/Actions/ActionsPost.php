@@ -33,6 +33,36 @@ class ActionsPost
             ];
         }
 
+        preg_match_all ("/@([a-zA-Z0-9_]+)(@[a-zA-Z0-9_.-]+)?/", $request->get ("content"), $mention_matches);
+        $mentions = $mention_matches [0];
+        $processed_mentions = [];
+
+        foreach ($mentions as $mention)
+        {
+            $ats = explode ("@", $mention);
+            $actor = null;
+
+            if (count ($ats) == 2)
+            {
+                // it's a local user
+                $actor = Actor::where ("preferredUsername", $ats [1])->first ();
+                if (!$actor)
+                    continue;
+            }
+            else
+            {
+                $actor = Actor::where ("local_actor_id", $mention)->first ();
+                if (!$actor)
+                    continue;
+            }
+
+            $processed_mentions[] = [
+                "type" => "Mention",
+                "href" => $actor->actor_id,
+                "name" => $mention
+            ];
+        }
+
         $processed_content = Str::markdown ($request->get ("content"));
         $attachments = [];
 
@@ -57,7 +87,8 @@ class ActionsPost
             "content" => $processed_content,
             "attachments" => $attachments,
             "inReplyTo" => $request->inReplyTo ?? null,
-            "tags" => $processed_tags
+            "tags" => $processed_tags,
+            "mentions" => $processed_mentions
         ];
     }
 
@@ -96,6 +127,7 @@ class ActionsPost
                     "attachments" => $processed ["attachments"],
                     "inReplyTo" => $processed ["inReplyTo"] ?? null,
                     "tags" => $processed ["tags"] ?? null,
+                    "mentions" => $processed ["mentions"] ?? null
                 ]
             ]);
         }

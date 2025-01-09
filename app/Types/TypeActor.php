@@ -366,6 +366,7 @@ class TypeActor {
         return TypeActor::actor_process_ordered_collection ($actor->featured);
     }
 
+    // TODO: Move this to TypeOrderedCollection
     public static function actor_process_ordered_collection ($collection_link)
     {
         $items = [];

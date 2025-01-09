@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AP;
 
 use App\Models\Note;
 use App\Models\NoteAttachment;
+use App\Models\NoteMention;
 use App\Models\Announcement;
 use App\Models\User;
 use App\Models\Actor;
@@ -208,6 +209,7 @@ class APOutboxController extends Controller
         /* if (!$response || $response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
             return response ()->json ([ "error" => "failed to post activity" ], 500); */
 
+        Log::info ($follow_activity);
         $follow_activity->delete ();
         return [
             "success" => "unfollowed"
@@ -368,8 +370,27 @@ class APOutboxController extends Controller
             }
         }
 
-        $create_activity = TypeActivity::craft_create ($actor, $note);
+        if (isset ($request ["mentions"]))
+        {
+            foreach ($request ["mentions"] as $mention)
+            {
+                $mention_exists = NoteMention::where ("note_id", $note->id)->where ("object", $mention ["href"])->first ();
+                if ($mention_exists)
+                    continue;
 
+                $object = TypeActor::actor_exists ($mention ["href"]);
+                if (!$object)
+                    // we don't obtain actors when we are just mentioning them
+                    continue;
+
+                $mention = NoteMention::create ([
+                    "note_id" => $note->id,
+                    "actor_id" => $object->id
+                ]);
+            }
+        }
+
+        $create_activity = TypeActivity::craft_create ($actor, $note);
         $note->activity_id = $create_activity->id;
         $note->save ();
 

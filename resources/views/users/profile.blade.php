@@ -317,7 +317,7 @@
                 </div>
                 <div class="inner">
                     <p>
-                        <b>{{ $actor->name }} has <span class="count">{{ count ($actor->get_posts ()) }}</span> posts.</b>
+                        <b>{{ $actor->name }} has <span class="count">{{ $actor->get_posts ()->total () }}</span> posts.</b>
                     </p>
 
                     @if (auth ()->user () && auth ()->user ()->is ($user))

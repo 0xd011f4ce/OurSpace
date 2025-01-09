@@ -21,6 +21,8 @@ class TypeActivity {
             "type" => $activity->type,
             "actor" => $activity->actor,
             "object" => $activity->object,
+            "to" => $activity->to,
+            "cc" => $activity->cc,
             "published" => $activity->created_at,
         ];
 
@@ -96,6 +98,7 @@ class TypeActivity {
         {
             case "Note":
                 $create_activity->object = TypeNote::build_response ($fields);
+                $create_activity->cc = $fields["cc"];
                 break;
         }
 

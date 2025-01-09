@@ -44,10 +44,6 @@ class PostActivityJob implements ShouldQueue
 
         if ($this->should_sign)
         {
-            $crafted_activity ["to"] = [
-                "https://www.w3.org/ns/activitystreams#Public",
-            ];
-
             $crafted_activity ["cc"] = [
                 $this->actor->following
             ];
