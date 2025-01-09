@@ -117,6 +117,17 @@ else
             </p>
         @endif
 
+        @if ($display_post->get_mentions ()->count () > 0)
+            <p>
+                <b>Mentions:</b>
+                @foreach ($display_post->get_mentions ()->get () as $mention)
+                    <a href="{{ route ('users.show', [ 'user_name' => $mention->actor->local_actor_id ?? $mention->actor->preferredUsername ]) }}">
+                        <span class="mention">{{ $mention->actor->local_actor_id ?? '@' . $mention->actor->preferredUsername }}</span>
+                    </a>
+                @endforeach
+            </p>
+        @endif
+
         <hr>
 
         <p>
