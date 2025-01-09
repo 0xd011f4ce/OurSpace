@@ -3787,3 +3787,11 @@ ul.cloud a {
     color: #99c3e0; /* Muted blue for disabled links */
     cursor: not-allowed;
 }
+
+img.expandable {
+    cursor: pointer;
+}
+
+img.expanded {
+    width: 100%;
+}

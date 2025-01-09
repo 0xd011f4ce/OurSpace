@@ -84,7 +84,7 @@ class ProfileController extends Controller
             $image_data = $image->cover (256, 256)->toJpeg ();
             Storage::disk ("public")->put ("avatars/" . $fname . ".jpg", $image_data);
 
-            $old_avatar = $user->avatar;
+            $old_avatar = "avatars/" . $user->avatar;
 
             $user->avatar = $fname . ".jpg";
             $user->actor->icon = env ("APP_URL") . $user->avatar;
@@ -97,7 +97,7 @@ class ProfileController extends Controller
             $file = $request->file ("song");
             Storage::disk ("public")->put ("songs/" . $fname . ".mp3", file_get_contents ($file));
 
-            $old_song = $user->profile_song;
+            $old_song = "songs/" . $user->profile_song;
             $user->profile_song = $fname . ".mp3";
             $changing_song = true;
         }

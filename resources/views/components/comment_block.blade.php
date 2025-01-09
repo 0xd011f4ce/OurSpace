@@ -71,7 +71,7 @@ else
 
         <p>
             @foreach ($display_post->attachments as $attachment)
-                <img loading="lazy" src="{{ $attachment->url }}" alt="{{ $attachment->name }}" width="100">
+                <img loading="lazy" src="{{ $attachment->url }}" alt="{{ $attachment->name }}" width="100" class="expandable">
             @endforeach
         </p>
 
@@ -87,7 +87,7 @@ else
 
                         <p>
                             @foreach ($reply->attachments as $attachment)
-                                <img loading="lazy" src="{{ $attachment->url }}" alt="{{ $attachment->name }}" width="100">
+                                <img loading="lazy" src="{{ $attachment->url }}" alt="{{ $attachment->name }}" width="100" class="expandable">
                             @endforeach
                         </p>
 

@@ -63,7 +63,7 @@
     - [x] Fix that weird json encoding in the object field of an activity
     - [x] The profile attachments are not working, they are not being federalised somehow (the interests thingy)
     - [x] Endpoints for getting notes (/ap/v1/note/{note})
-    - [ ] Fix hashtags on post update
+    - [ ] Fix hashtags and mentions on post update
     - [x] Use jobs when posting activities
     - [ ] Sign the get activities for mastodon when secure mode is enable
     - [x] Set a minimum font size for the tags cloud
