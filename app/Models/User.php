@@ -42,7 +42,10 @@ class User extends Authenticatable
         "interests_books",
         "interests_heroes",
 
-        "blurbs"
+        "blurbs",
+
+        "profile_song",
+        "notification_sound"
     ];
 
     /**

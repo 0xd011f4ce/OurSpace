@@ -30,6 +30,13 @@
                 <p class="error">{{ $message }}</p>
             @enderror
             <small>Max file size: 4MB (jpg/png/gif)</small>
+            <br><br>
+            <small>Select song:</small>
+            <input type="file" name="song" accept="audio/*"><br>
+            @error("song")
+                <p class="error">{{ $message }}</p>
+            @enderror
+            <small>Max file size: 1MB</small>
             <br>
             <h1>Bio:</h1>
             <br>

@@ -373,7 +373,7 @@ class APOutboxController extends Controller
         $note->activity_id = $create_activity->id;
         $note->save ();
 
-        $response = TypeActivity::post_to_instances ($create_activity, $actor);
+        $response = TypeActivity::post_to_instances ($create_activity, $actor, true);
         return response ()->json ("success", 200);
     }
 }

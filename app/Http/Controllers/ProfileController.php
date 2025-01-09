@@ -55,6 +55,7 @@ class ProfileController extends Controller
 
         $incoming_fields = $request->validate ([
             "avatar" => "image|max:4096",
+            "song" => "file|mimes:audio/mpeg,mp3|max:1024",
             "bio" => "sometimes|nullable|string",
             "about_you" => "sometimes|nullable|string",
             "status" => "sometimes|nullable|string",
@@ -69,22 +70,36 @@ class ProfileController extends Controller
         ]);
 
         $user = auth ()->user ();
-        $fname = $user->id . "-" . uniqid () . ".jpg";
+        $fname = $user->id . "-" . uniqid ();
 
         $changing_avatar = false;
+        $changing_song = false;
+
+        $old_avatar = null;
+        $old_song = null;
         if (isset ($incoming_fields["avatar"]) && !empty ($incoming_fields["avatar"]))
         {
             $manager = new ImageManager (new Driver ());
             $image = $manager->read ($request->file ("avatar"));
             $image_data = $image->cover (256, 256)->toJpeg ();
-            Storage::disk ("public")->put ("avatars/" . $fname, $image_data);
+            Storage::disk ("public")->put ("avatars/" . $fname . ".jpg", $image_data);
 
             $old_avatar = $user->avatar;
 
-            $user->avatar = $fname;
+            $user->avatar = $fname . ".jpg";
             $user->actor->icon = env ("APP_URL") . $user->avatar;
 
             $changing_avatar = true;
+        }
+
+        if (isset ($incoming_fields["song"]) && !empty ($incoming_fields["song"]))
+        {
+            $file = $request->file ("song");
+            Storage::disk ("public")->put ("songs/" . $fname . ".mp3", file_get_contents ($file));
+
+            $old_song = $user->profile_song;
+            $user->profile_song = $fname . ".mp3";
+            $changing_song = true;
         }
 
         $user->bio = $incoming_fields["bio"];
@@ -106,9 +121,10 @@ class ProfileController extends Controller
         $user->actor->save ();
 
         if ($changing_avatar)
-        {
             Storage::disk ("public")->delete (str_replace ("/storage/", "", $old_avatar));
-        }
+
+        if ($changing_song)
+            Storage::disk ("public")->delete (str_replace ("/storage/", "", $old_song));
 
         $response = ActionsUser::update_profile ();
         if (isset ($response["error"]))

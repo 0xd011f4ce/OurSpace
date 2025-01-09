@@ -35,11 +35,17 @@
                         @endif
                         <p><b>Joined: </b> {{ $user->created_at->diffForHumans () }}</p>
                     </div>
+
+                    <audio src="{{ $user->profile_song ? '/storage/songs/' . $user->profile_song : '#' }}" id="music" autoplay loop controls></audio>
+
+                    <script>
+                        let music = document.getElementById ('music');
+                        music.volume = 0.1;
+                        music.play ()
+                    </script>
                 @endif
 
             </div>
-
-            <audio src="#" id="music" autoplay loop controls></audio>
 
             <div class="mood">
                 @if ($user != null)
