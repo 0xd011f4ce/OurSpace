@@ -29,11 +29,8 @@ class NoteRepliedListener
     {
         $note_actor = $event->object->get_actor ()->first ();
 
-        Log::info ("hi");
         if (!$note_actor || !$note_actor->user)
             return;
-
-        Log::info ("bai");
 
         $note_actor->user->notify (new UserNotification(
             "Reply",

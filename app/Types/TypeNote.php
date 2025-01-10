@@ -222,8 +222,8 @@ class TypeNote
                         {
                             $actor_exists->user->notify (new UserNotification(
                                 "Mention",
-                                $actor,
-                                $actor_exists
+                                $actor->id,
+                                $actor_exists->id
                             ));
                         }
                         break;
