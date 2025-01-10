@@ -143,7 +143,8 @@ class TypeNote
                 if (!$exists)
                     $note_attachment = NoteAttachment::create ([
                         "note_id" => $note->id,
-                        "url" => $attachment ["url"]
+                        "url" => $attachment ["url"],
+                        "media_type" => $attachment ["mediaType"]
                     ]);
             }
         }

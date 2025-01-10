@@ -70,7 +70,12 @@
             {!! $note->content !!}
 
             @foreach ($note->attachments as $attachment)
-                <img loading="lazy" src="{{ $attachment->url }}" width="250" class="expandable">
+                {{-- check if $attachment->media_type starts with image/ --}}
+                @if (str_starts_with ($attachment->media_type, "image/") || $attachment->media_type == null)
+                    <img loading="lazy" src="{{ $attachment->url }}" width="250" class="expandable">
+                @else
+                    <p><i>Attachment {{ $attachment->media_type }} is not supported yet</i></p>
+                @endif
             @endforeach
         </div>
 
@@ -92,7 +97,23 @@
 
         <p>
             <b>Likes</b>: {{ $note->get_likes ()->count () }}<br>
-            <b>Boosts</b>: {{ $note->get_boosts ()->count () }}
+            <b>Boosts</b>: {{ $note->get_boosts ()->count () }}<br>
+            <b>Hashtags:</b>
+            <span>
+                @foreach ($note->get_hashtags ()->get () as $hashtag)
+                    <a href="{{ route ('tags', [ 'tag' => $hashtag->name ]) }}">
+                        {{ $hashtag->name }}
+                    </a>
+                @endforeach
+            </span><br>
+            <b>Mentions:</b>
+            <span>
+                @foreach ($note->get_mentions ()->get () as $mention)
+                    <a href="{{ route ('users.show', [ 'user_name' => $mention->actor->local_actor_id ?? $mention->actor->preferredUsername ]) }}">
+                        {{ $mention->actor->local_actor_id ?? '@' . $mention->actor->preferredUsername }}
+                    </a>
+                @endforeach
+            </span>
         </p>
 
         <div class="comments" id="comments">

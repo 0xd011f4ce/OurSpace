@@ -8,6 +8,7 @@ class NoteAttachment extends Model
 {
     protected $fillable = [
         "note_id",
-        "url"
+        "url",
+        "media_type"
     ];
 }
