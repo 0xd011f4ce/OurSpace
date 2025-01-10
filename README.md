@@ -118,7 +118,7 @@ chown -R www-data:www-data /var/www/html/OurSpace
 chmod -R 755 /var/www/html/OurSpace
 ```
 
-Finally, create a virtual host for OurSpace. You can create a file in `/etc/nginx/sites-available/ourspace` with the following content:
+Now, create a virtual host for OurSpace. You can create a file in `/etc/nginx/sites-available/ourspace.conf` with the following content:
 
 ```nginx
 server {
@@ -156,10 +156,42 @@ server {
 }
 ```
 
+And we need another one for serving Laravel Reverb. We can create it in `/etc/nginx/sites-available/ws.conf` with the following content:
+
+```nginx
+server {
+    listen 80;
+    server_name ws.ourspace.lat;
+    root /var/www/html/ourspace/public;
+
+    location / {
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header Scheme $scheme;
+        proxy_set_header SERVER_PORT $server_port;
+        proxy_set_header REMOTE_ADDR $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+
+        proxy_pass http://0.0.0.0:8080;
+    }
+
+    location ~ ^/apps/(?<reverbid>[^/]+)/events$ { # variable reverbid
+        proxy_pass http://0.0.0.0:8080/apps/$reverbid/events;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
 Enable the config:
 
 ```bash
 sudo ln -s /etc/nginx/sites-available/ourspace.conf /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/ws.conf /etc/nginx/sites-enabled/
 ```
 
 Restart nginx:
@@ -168,15 +200,17 @@ Restart nginx:
 sudo systemctl restart nginx
 ```
 
-Now link the storage to the public folder:
+Now link the storage to the public folder and install the dependencies for reverb:
 
 ```bash
 php artisan storage:link
+php artisan install:broadcasting
 ```
 
-And finally, we need to create a service to handle the jobs that OurSpace needs to run. So run something `emacs /lib/systemd/system/ourspace-queue.service` and add the following content:
+Now, we need to create two services to handle the jobs that OurSpace needs to run and another one to run Laravel Reverb. So run something `emacs /lib/systemd/system/ourspace-queue.service` and `emacs /lib/systemd/system/ourspace-ws.service` and add the following content:
 
 ```ini
+# /lib/systemd/system/ourspace-queue.service
 [Unit]
 Description=OurSpace queue worker
 
@@ -189,6 +223,22 @@ ExecStart=/usr/bin/php /var/www/html/ourspace/artisan queue:work --daemon --env=
 [Install]
 WantedBy=multi-user.target
 ```
+
+```ini
+[Unit]
+Description=OurSpace WebSockets	Service
+
+[Service]
+User=www-data
+Group=www-data
+Restart=on-failure
+ExecStart=/usr/bin/php /var/www/html/ourspace/artisan reverb:start
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Finally, enable and start both services, and your OurSpace instance will be ready to be used!
 
 ## TODO:
 
