@@ -16,10 +16,10 @@
     - [x] Boosts
         - [x] Local Boost
     - [x] Tags
-    - [ ] Mentions
-        - [ ] Local mentions
+    - [x] Mentions
+        - [x] Local mentions
         - [ ] Private post
-    - [ ] Pinned Posts
+    - [x] Pinned Posts
     - [x] Nodeinfo
     - [ ] Notifications
 
@@ -31,7 +31,7 @@
         - [x] Update profile picture
         - [ ] Mark account as private (in federation manual approval is needed)
         - [x] Allow custom CSS
-        - [ ] Profile audio
+        - [x] Profile audio
         - [ ] Top 8 friends
     - [x] Friends (they are known as follows in the activitypub protocol)
         - [x] Add friends
@@ -67,4 +67,4 @@
     - [x] Use jobs when posting activities
     - [ ] Sign the get activities for mastodon when secure mode is enable
     - [x] Set a minimum font size for the tags cloud
-    - [ ] Pagination, pagination, AND MORE PAGINATION
+    - [x] Pagination, pagination, AND MORE PAGINATION

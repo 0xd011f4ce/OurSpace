@@ -13,6 +13,11 @@ use App\Models\Like;
 use App\Types\TypeActor;
 use App\Types\TypeActivity;
 
+use App\Events\UserFollowedEvent;
+use App\Events\NoteLikedEvent;
+
+use App\Events\AP\ActivityUndoEvent;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -66,14 +71,9 @@ class APInboxController extends Controller
             return response ()->json (["error" => "Follow already exists",], 409);
 
         $activity ["activity_id"] = $activity ["id"];
-
         $act = Activity::create ($activity);
 
-        $follow = Follow::create ([
-            "activity_id" => $act->id,
-            "actor" => $actor->id,
-            "object" => $target->id,
-        ]);
+        UserFollowedEvent::dispatch ($act, $actor, $target);
 
         // TODO: Users should be able to manually check this
         $accept_activity = TypeActivity::craft_accept ($act);
@@ -88,6 +88,7 @@ class APInboxController extends Controller
 
     public function handle_undo (User $user, $activity)
     {
+        ActivityUndoEvent::dispatch ($activity, $activity);
         return response ()->json (ActionsActivity::activity_undo ($activity));
     }
 
@@ -114,11 +115,7 @@ class APInboxController extends Controller
         else
             $act = Activity::where ("activity_id", $activity ["id"])->first ();
 
-        $like = Like::create ([
-            "activity_id" => $act->id,
-            "actor_id" => $actor->id,
-            "note_id" => $note->id,
-        ]);
+        NoteLikedEvent::dispatch ($act, $actor, $note);
 
         return response ()->json (["success" => "Like created",], 200);
     }

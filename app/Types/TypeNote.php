@@ -8,6 +8,7 @@ use App\Models\Actor;
 use App\Models\Activity;
 use App\Models\NoteAttachment;
 use App\Models\NoteMention;
+use App\Notifications\UserNotification;
 use GuzzleHttp\Client;
 
 use Illuminate\Support\Facades\Log;
@@ -187,19 +188,23 @@ class TypeNote
                         $mention_actor = null;
 
                         $actor_exists = null;
-                        Log::info (json_encode ($exploded_name));
 
+                        $is_local = false;
                         if (count ($exploded_name) == 2)
                         {
                             // let's check if maybe it's local
                             $actor_exists = Actor::where ("preferredUsername", $exploded_name [1])->first ();
                             if (!$actor_exists)
                                 continue;
+
+                            $is_local = true;
                         }
                         else if (count ($exploded_name) == 3)
                         {
                             // maybe it's remote
                             $actor_exists = TypeActor::actor_exists_or_obtain_from_handle($exploded_name [1], $exploded_name [2]);
+                            if ($actor_exists->user)
+                                $is_local = true;
                         }
                         else
                             continue;
@@ -208,6 +213,15 @@ class TypeNote
                             "note_id" => $note->id,
                             "actor_id" => $actor_exists->id
                         ]);
+
+                        if ($is_local)
+                        {
+                            $actor_exists->user->notify (new UserNotification(
+                                "Mention",
+                                $actor,
+                                $actor_exists
+                            ));
+                        }
                         break;
                 }
             }

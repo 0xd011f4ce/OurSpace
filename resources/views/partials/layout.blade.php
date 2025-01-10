@@ -41,5 +41,28 @@
     </div>
 
     @vite(["resources/js/app.js"])
+
+    @if (auth ()->check ())
+    <script>
+        const notification_sound = new Audio ("/resources/sounds/notification.mp3")
+        notification_sound.muted = true
+        notification_sound.play ()
+        notification_sound.muted = false
+
+        function register_echo ()
+        {
+            window.Echo.private ("App.Models.User.{{ auth ()->id () }}")
+                .notification ((notification) =>
+                {
+                    notification_sound.play ()
+
+                    // of course, remove this
+                    alert ("You received a " + notification.notification_type + " notification!")
+                })
+        }
+
+        document.addEventListener ("DOMContentLoaded", register_echo)
+    </script>
+    @endif
 </body>
 </html>

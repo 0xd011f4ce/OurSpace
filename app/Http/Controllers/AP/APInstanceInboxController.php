@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers\AP;
 
-use App\Actions\ActionsActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 use App\Models\Actor;
 use App\Models\Activity;
 use App\Models\Announcement;
+use App\Models\ProfilePin;
 
 use App\Types\TypeActor;
 use App\Types\TypeActivity;
 use App\Types\TypeNote;
 
+use App\Actions\ActionsActivity;
+
 use App\Http\Controllers\Controller;
-use App\Models\ProfilePin;
+
+use App\Notifications\UserNotification;
 
 class APInstanceInboxController extends Controller
 {
@@ -92,6 +95,12 @@ class APInstanceInboxController extends Controller
             "actor_id" => $announcement_actor->id,
             "note_id" => $note_exists->id
         ]);
+
+        $note_actor = $note_exists->get_actor ()->first ();
+        if ($note_actor->user)
+        {
+            $note_actor->user->notify (new UserNotification("Boost", $announcement_actor, $note_exists));
+        }
 
         return response ()->json (["status" => "ok"]);
     }
