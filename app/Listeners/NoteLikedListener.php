@@ -6,8 +6,9 @@ use App\Models\Like;
 
 use App\Events\NoteLikedEvent;
 
-use Illuminate\Support\Facades\Log;
 use App\Notifications\UserNotification;
+
+use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 

@@ -8,7 +8,11 @@ use App\Models\Actor;
 use App\Models\Activity;
 use App\Models\NoteAttachment;
 use App\Models\NoteMention;
+
+use App\Events\NoteRepliedEvent;
+
 use App\Notifications\UserNotification;
+
 use GuzzleHttp\Client;
 
 use Illuminate\Support\Facades\Log;
@@ -62,8 +66,6 @@ class TypeNote
                 "name" => $mention->actor->local_actor_id ?? "@" . $mention->actor->preferredUsername
             ];
         }
-
-        Log::info (json_encode ($response));
 
         return $response;
     }
@@ -157,6 +159,8 @@ class TypeNote
                 $parent_exists = TypeNote::obtain_external ($request ["inReplyTo"]);
 
             $note->in_reply_to = $parent_exists ? $parent_exists->note_id : null;
+
+            NoteRepliedEvent::dispatch ($activity, $actor, $parent_exists);
         }
 
         if (isset ($request ["tag"]) && $request ["tag"])
