@@ -19,13 +19,21 @@
             @foreach ($processed_notifications as $notification)
                 <tr @if ($notification ['read_at'] == null) style="font-weight: bold" @endif>
                     <td>
-                        <a href="{{ route ('users.show', [ 'user_name' => $notification ['actor']->local_actor_id ? $notification ['actor']->local_actor_id : $notification ['actor']->name ]) }}">
-                            <p>{{ $notification ['actor']->name }}</p>
-                        </a>
+                        @if ($notification ['type'] == 'Signup')
+                            <a href="{{ route ('users.show', [ 'user_name' => $notification ['object']->actor->preferredUsername ]) }}">
+                                <p>{{ $notification ['object']->actor->preferredUsername }}</p>
+                            </a>
+                        @else
+                            <a href="{{ route ('users.show', [ 'user_name' => $notification ['actor']->local_actor_id ? $notification ['actor']->local_actor_id : $notification ['actor']->name ]) }}">
+                                <p>{{ $notification ['actor']->name }}</p>
+                            </a>
+                        @endif
                     </td>
 
                     <td>
-                        @if ($notification ['type'] == 'Follow')
+                        @if ($notification ['type'] == 'Signup')
+                            <p>Joined Ourspace! Say something!!</p>
+                        @elseif ($notification ['type'] == 'Follow')
                             <p>Followed you</p>
                         @elseif ($notification ['type'] == 'Unfollow')
                             <p>Unfollowed you</p>

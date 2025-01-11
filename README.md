@@ -220,6 +220,7 @@ WantedBy=multi-user.target
 ```
 
 ```ini
+# /lib/systemd/system/ourspace-ws.service
 [Unit]
 Description=OurSpace WebSockets	Service
 
@@ -233,7 +234,20 @@ ExecStart=/usr/bin/php /var/www/html/ourspace/artisan reverb:start
 WantedBy=multi-user.target
 ```
 
+Now reload the systemd daemon:
+
+```bash
+sudo systemctl daemon-reload
+```
+
 Finally, enable and start both services, and your OurSpace instance will be ready to be used!
+
+Aditionally, if you want to start multiple instances of the queue workers (which is ideal) you can name the service like `/lib/systemd/system/ourspace-queue@.service` and you can enable and manage them like this:
+
+```bash
+sudo systemctl enable ourspace-queue\{1..6} # enables 6 services
+sudo systemctl start ourspace-queue\{1..6} # starts 6 services
+```
 
 ## TODO:
 

@@ -42,14 +42,16 @@ class HomeController extends Controller
 
         if (request ()->get ("posts") == "latest")
         {
-            $notes = Note::latest ()->where ("in_reply_to", null)->take (10)->get ();
+            $notes = Note::latest ();
         }
         else
         {
             $notes = Note::withCount ([ "get_likes" => function ($query) {
                 $query->where ("created_at", ">=", now ()->subDay ());
-            }])->where ("in_reply_to", null)->orderBy ("get_likes_count", "desc")->take (8)->get ();
+            }])->where ("in_reply_to", null)->orderBy ("get_likes_count", "desc");
         }
+
+        $notes = $notes->paginate (10);
 
         return view ("browse", compact ("users", "popular_hashtags", "notes"));
     }

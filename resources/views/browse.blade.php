@@ -53,5 +53,7 @@
                 @endforeach
             </tbody>
         </table>
+
+        {{ $notes->links("pagination::default") }}
     </div>
 @endsection

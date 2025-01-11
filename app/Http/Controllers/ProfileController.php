@@ -57,7 +57,7 @@ class ProfileController extends Controller
 
         $incoming_fields = $request->validate ([
             "avatar" => "image|max:4096",
-            "song" => "file|mimes:audio/mpeg,mp3|max:1024",
+            "song" => "file|mimes:audio/mpeg,mp3|max:4096",
             "bio" => "sometimes|nullable|string",
             "about_you" => "sometimes|nullable|string",
             "status" => "sometimes|nullable|string",
@@ -186,6 +186,10 @@ class ProfileController extends Controller
                 case "Follow":
                 case "Unfollow":
                     $object = Actor::find ($data["object"]);
+                    break;
+
+                case "Signup":
+                    $object = User::find ($data ["object"]);
                     break;
 
                 case "Like":

@@ -40,7 +40,7 @@
 
                     <script>
                         let music = document.getElementById ('music');
-                        music.volume = 0.1;
+                        music.volume = 0.075;
                         music.play ()
                     </script>
                 @endif
