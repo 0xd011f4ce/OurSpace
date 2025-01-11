@@ -5,8 +5,7 @@
 @section ("content")
     <div class="simple-container">
         <h1>Notifications</h1>
-        <p>You have <b>{{ count ($user->unreadNotifications) }}</b> unread notifications</p>
-        <br>
+        <p>You have <b>{{ $unread_notifications }}</b> unread notifications</p>
 
         <table border="1" width="100%">
             <tr>

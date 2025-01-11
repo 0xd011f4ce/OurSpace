@@ -237,7 +237,7 @@ class TypeActivity {
 
     public static function post_activity (Activity $activity, Actor $source, $target, $should_sign = false)
     {
-        PostActivityJob::dispatch ($activity, $source, $target, $should_sign);
+        PostActivityJob::dispatch ($activity, $source, $target, $should_sign)->onQueue ("ap");
 
         return [
             "success" => "activity posted"

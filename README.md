@@ -202,12 +202,27 @@ php artisan storage:link
 php artisan install:broadcasting
 ```
 
-Now, we need to create two services to handle the jobs that OurSpace needs to run and another one to run Laravel Reverb. So run something `emacs /lib/systemd/system/ourspace-queue.service` and `emacs /lib/systemd/system/ourspace-ws.service` and add the following content:
+Now, we need to create three services to handle the jobs that OurSpace needs to run, another to handle the notifications' queue and another one to run Laravel Reverb. So run something `emacs /lib/systemd/system/ourspace-queue.service`, `emacs /lib/systemd/system/ourspace-notifications.service`, `emacs /lib/systemd/system/ourspace-ws.service` and add the following content:
 
 ```ini
 # /lib/systemd/system/ourspace-queue.service
 [Unit]
 Description=OurSpace queue worker
+
+[Service]
+User=www-data
+Group=www-data
+Restart=on-failure
+ExecStart=/usr/bin/php /var/www/html/ourspace/artisan queue:work --daemon --env=production --queue=ap
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```ini
+# /lib/systemd/system/ourspace-notifications.service
+[Unit]
+Description=OurSpace notifications worker
 
 [Service]
 User=www-data

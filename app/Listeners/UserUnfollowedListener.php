@@ -27,7 +27,7 @@ class UserUnfollowedListener
      */
     public function handle(UserUnfollowedEvent $event): void
     {
-        $follow_exists = Follow::where("actor_id", $event->actor->id)
+        $follow_exists = Follow::where ("actor_id", $event->actor->id)
             ->where("object_id", $event->object->id)
             ->first();
 
@@ -38,7 +38,7 @@ class UserUnfollowedListener
         if (!$user)
             return;
 
-        $user->notify(new UserNotification(
+        $user->notify (new UserNotification (
             "Unfollow",
             $event->actor->id,
             $event->object->id,

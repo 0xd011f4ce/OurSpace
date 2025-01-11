@@ -170,8 +170,9 @@ class ProfileController extends Controller
             return redirect ()->route ("login");
 
         $user = auth ()->user ();
-        $unread_notifications = $user->notifications;
-        $notifications = PaginationHelper::paginate (collect ($unread_notifications), 20);
+        $user_notifications = $user->notifications;
+        $notifications = PaginationHelper::paginate (collect ($user_notifications), 20);
+        $unread_notifications = $user->unreadNotifications->count ();
         $processed_notifications = [];
 
         foreach ($notifications as $notification)
@@ -212,6 +213,6 @@ class ProfileController extends Controller
             $notification->markAsRead ();
         }
 
-        return view ("users.notifications", compact ("user", "notifications", "processed_notifications"));
+        return view ("users.notifications", compact ("user", "notifications", "processed_notifications", "unread_notifications"));
     }
 }

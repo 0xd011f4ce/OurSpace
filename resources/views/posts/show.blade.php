@@ -3,6 +3,7 @@
 @section ("title", "View Post")
 
 @section ("content")
+
 <div class="row article blog-entry">
     <div class="col w-20 left">
         <div class="edit-info">

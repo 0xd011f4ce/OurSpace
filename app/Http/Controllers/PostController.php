@@ -18,6 +18,9 @@ class PostController extends Controller
     {
         $actor = $note->get_actor ()->first ();
 
+        if (!$actor)
+            return redirect ()->back ();
+
         return view ("posts.show", compact ("note", "actor"));
     }
 
