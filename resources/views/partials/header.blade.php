@@ -66,6 +66,12 @@
                 <a href="#">&nbsp;Favs </a>
             </li>
 
+            @auth
+            <li class="active">
+                <a href="{{ route ('users.notifications') }}">&nbsp;Notifications ({{ count (auth ()->user ()->unreadNotifications) }})</a>
+            </li>
+            @endauth
+
             <li>
                 <a href="https://github.com/0xd011f4ce/OurSpace">&nbsp;Source </a>
             </li>

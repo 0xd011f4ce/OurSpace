@@ -99,7 +99,7 @@ class APInstanceInboxController extends Controller
         $note_actor = $note_exists->get_actor ()->first ();
         if ($note_actor->user)
         {
-            $note_actor->user->notify (new UserNotification("Boost", $announcement_actor, $note_exists));
+            $note_actor->user->notify (new UserNotification("Boost", $announcement_actor->id, $note_exists->id));
         }
 
         return response ()->json (["status" => "ok"]);

@@ -223,7 +223,7 @@ class TypeNote
                             $actor_exists->user->notify (new UserNotification(
                                 "Mention",
                                 $actor->id,
-                                $actor_exists->id
+                                $note->id
                             ));
                         }
                         break;

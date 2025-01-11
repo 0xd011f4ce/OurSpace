@@ -45,9 +45,6 @@
     @if (auth ()->check ())
     <script>
         const notification_sound = new Audio ("/resources/sounds/notification.mp3")
-        notification_sound.muted = true
-        notification_sound.play ()
-        notification_sound.muted = false
 
         function register_echo ()
         {

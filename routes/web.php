@@ -26,6 +26,7 @@ Route::middleware ("update_online")->group (function () {
     // user routes
     Route::get ("/user/edit", [ ProfileController::class, "edit" ])->name ("users.edit")->middleware ("auth");
     Route::post ("/user/edit", [ ProfileController::class, "update" ])->middleware ("auth");
+    Route::get ("/user/notifications", [ ProfileController::class, "notifications" ])->name ("users.notifications")->middleware ("auth");
     Route::get ("/user/{user_name}/friends", [ ProfileController::class, "friends" ])->name ("users.friends");
     Route::get ("/user/{user_name}", [ ProfileController::class, "show" ])->name ("users.show");
 

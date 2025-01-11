@@ -10,8 +10,10 @@ use Intervention\Image\Drivers\Gd\Driver;
 
 use App\Models\User;
 use App\Models\Actor;
+use App\Models\Note;
 
 use App\Actions\ActionsUser;
+use App\Helpers\PaginationHelper;
 
 class ProfileController extends Controller
 {
@@ -160,5 +162,52 @@ class ProfileController extends Controller
         }
 
         return view ("users.friends", compact ("actor", "user", "friends"));
+    }
+
+    public function notifications ()
+    {
+        if (!auth ()->check ())
+            return redirect ()->route ("login");
+
+        $user = auth ()->user ();
+        $unread_notifications = $user->notifications;
+        $notifications = PaginationHelper::paginate (collect ($unread_notifications), 20);
+        $processed_notifications = [];
+
+        foreach ($notifications as $notification)
+        {
+            $data = $notification->data;
+            $type = $data ['type'];
+            $actor = Actor::find ($data["actor"]);
+            $object = null;
+
+            switch ($type)
+            {
+                case "Follow":
+                case "Unfollow":
+                    $object = Actor::find ($data["object"]);
+                    break;
+
+                case "Like":
+                case "Reply":
+                case "Boost":
+                case "Mention":
+                    $object = Note::find ($data["object"]);
+                    break;
+            }
+
+            $processed_notifications[] = [
+                "id"=> $notification->id,
+                "type" => $type,
+                "actor" => $actor,
+                "object" => $object,
+                "created_at" => $notification->created_at,
+                "read_at" => $notification->read_at
+            ];
+
+            $notification->markAsRead ();
+        }
+
+        return view ("users.notifications", compact ("user", "notifications", "processed_notifications"));
     }
 }
