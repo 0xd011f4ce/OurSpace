@@ -13,10 +13,11 @@ use App\Models\Like;
 use App\Types\TypeActor;
 use App\Types\TypeActivity;
 
-use App\Events\UserFollowedEvent;
 use App\Events\NoteLikedEvent;
 
 use App\Events\AP\ActivityUndoEvent;
+use App\Events\AP\ActivityFollowEvent;
+use App\Events\AP\ActivityLikeEvent;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -54,69 +55,16 @@ class APInboxController extends Controller
 
     private function handle_follow (User $user, $activity)
     {
-        if (TypeActivity::activity_exists ($activity["id"]))
-            return response ()->json (["error" => "Activity already exists",], 409);
-
-        $actor = TypeActor::actor_exists_or_obtain ($activity ["actor"]);
-
-        $target = TypeActor::actor_get_local ($activity ["object"]);
-        if (!$target || !$target->user)
-            return response ()->json (["error" => "Target not found",], 404);
-
-        // check follow doesn't exist
-        $follow_exists = Follow::where ("actor", $actor->id)
-            ->where ("object", $target->id)
-            ->first ();
-        if ($follow_exists)
-            return response ()->json (["error" => "Follow already exists",], 409);
-
-        $activity ["activity_id"] = $activity ["id"];
-        $act = Activity::create ($activity);
-
-        UserFollowedEvent::dispatch ($act, $actor, $target);
-
-        // TODO: Users should be able to manually check this
-        $accept_activity = TypeActivity::craft_accept ($act);
-        $response = TypeActivity::post_activity ($accept_activity, $target, $actor);
-        if (!$response)
-        {
-            return response ()->json ([
-                "error" => "Error posting activity",
-            ], 500);
-        }
+        ActivityFollowEvent::dispatch ($activity);
     }
 
     public function handle_undo (User $user, $activity)
     {
-        ActivityUndoEvent::dispatch ($activity, $activity);
-        return response ()->json (ActionsActivity::activity_undo ($activity));
+        ActivityUndoEvent::dispatch ($activity);
     }
 
     public function handle_like (User $user, $activity)
     {
-        $actor = TypeActor::actor_exists_or_obtain ($activity ["actor"]);
-        $note_id = $activity ["object"];
-        $note = Note::where ("note_id", $note_id)->first ();
-        if (!$note)
-        {
-            Log::info ("Note not found: " . $note_id);
-            return response ()->json (["error" => "Note not found",], 404);
-        }
-
-        // check like doesn't already exist
-        $like_exists = $actor->liked_note ($note);
-        if ($like_exists)
-            return response ()->json (["error" => "Like already exists",], 409);
-
-        $activity ["activity_id"] = $activity ["id"];
-        $activity_exists = TypeActivity::activity_exists ($activity ["id"]);
-        if (!$activity_exists)
-            $act = Activity::create ($activity);
-        else
-            $act = Activity::where ("activity_id", $activity ["id"])->first ();
-
-        NoteLikedEvent::dispatch ($act, $actor, $note);
-
-        return response ()->json (["success" => "Like created",], 200);
+        ActivityLikeEvent::dispatch ($activity);
     }
 }

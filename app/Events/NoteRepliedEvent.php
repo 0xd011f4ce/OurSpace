@@ -19,13 +19,13 @@ class NoteRepliedEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $activity;
-    public Actor $actor;
-    public Note $object;
+    public $actor;
+    public $object;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($activity, Actor $actor, Note $object)
+    public function __construct($activity, $actor, $object)
     {
         $this->activity = $activity;
         $this->actor = $actor;

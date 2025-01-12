@@ -18,14 +18,14 @@ class NoteLikedEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public Activity $activity;
-    public Actor $actor;
-    public Note $note;
+    public $activity;
+    public $actor;
+    public $note;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Activity $activity, Actor $actor, Note $note)
+    public function __construct($activity, $actor, $note)
     {
         $this->activity = $activity;
         $this->actor = $actor;

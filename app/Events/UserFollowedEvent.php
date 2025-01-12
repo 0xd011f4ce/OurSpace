@@ -18,9 +18,9 @@ class UserFollowedEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public Activity $activity;
-    public Actor $actor;
-    public Actor $object;
+    public $activity;
+    public $actor;
+    public $object;
 
     /**
      * Create a new event instance.

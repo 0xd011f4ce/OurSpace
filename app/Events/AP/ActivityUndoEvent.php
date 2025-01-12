@@ -23,8 +23,6 @@ class ActivityUndoEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $activity;
-    public $actor;
-    public $object;
 
     /**
      * Create a new event instance.
@@ -32,31 +30,5 @@ class ActivityUndoEvent
     public function __construct($activity)
     {
         $this->activity = $activity;
-
-        $this->actor = TypeActor::actor_exists_or_obtain ($activity ["actor"]);
-
-        $child_activity = $activity ["object"];
-        $child_activity_id = "";
-
-        if (is_array ($child_activity))
-            $child_activity_id = $child_activity ["id"];
-        else
-            $child_activity_id = $child_activity;
-
-        if (!TypeActivity::activity_exists ($child_activity_id))
-            return ["error" => "Activity not found",];
-
-        $child_activity = Activity::where ("activity_id", $child_activity_id)->first ();
-        $this->object = $child_activity;
-
-        switch ($this->object->type)
-        {
-            case "Follow":
-                $unfollowed_actor = Actor::where ("actor_id", $this->object->object)->first ();
-                UserUnfollowedEvent::dispatch ($this->object, $this->actor, $unfollowed_actor);
-                break;
-        }
-
-        $child_activity->delete ();
     }
 }

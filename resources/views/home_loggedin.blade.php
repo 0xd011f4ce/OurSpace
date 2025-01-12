@@ -29,7 +29,7 @@
                         |
                         <a href="#">Bulletins</a>
                         |
-                        <a href="#">Friends</a>
+                        <a href="{{ route ('users.friends', [ 'user_name' => auth ()->user ()->name ]) }}">Friends</a>
                     </p>
                     <p>
                         My URL:
