@@ -391,6 +391,10 @@ class APOutboxController extends Controller
         }
 
         $create_activity = TypeActivity::craft_create ($actor, $note);
+
+        $create_activity->to = $note->to;
+        $create_activity->cc = $note->cc;
+
         $note->activity_id = $create_activity->id;
         $note->save ();
 

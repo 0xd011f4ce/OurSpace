@@ -88,6 +88,9 @@ class TypeNote
             "tag" => $request ["tag"] ?? null,
 
             // TODO: This should change when I implement visibilities and private notes
+            "to" => [
+                "https://www.w3.org/ns/activitystreams#Public"
+            ],
             "cc" => [
                 $actor->followers
             ]

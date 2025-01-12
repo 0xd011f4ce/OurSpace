@@ -16,6 +16,10 @@
             </tr>
 
             @foreach ($processed_notifications as $notification)
+                @if (!$notification ['actor'] || !$notification ['object'])
+                    @continue
+                @endif
+
                 <tr @if ($notification ['read_at'] == null) style="font-weight: bold" @endif>
                     <td>
                         @if ($notification ['type'] == 'Signup')

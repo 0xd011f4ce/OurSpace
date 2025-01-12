@@ -16,7 +16,9 @@ class TypeActivity {
     public static function craft_response (Activity $activity)
     {
         $crafted_activity = [
-            "@context" => "https://www.w3.org/ns/activitystreams",
+            "@context" => [
+                "https://www.w3.org/ns/activitystreams",
+            ],
             "id" => $activity->activity_id,
             "type" => $activity->type,
             "actor" => $activity->actor,

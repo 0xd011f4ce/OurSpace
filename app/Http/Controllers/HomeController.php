@@ -58,7 +58,14 @@ class HomeController extends Controller
 
     public function tag ($tag)
     {
-        dd ($tag);
+        $tag_name = "#" . $tag;
+        $hashtag = Hashtag::where ("name", $tag_name)->first ();
+        if (!$hashtag)
+            return redirect ()->route ("browse");
+
+        $posts = $hashtag->get_notes ()->paginate (20);
+
+        return view ("posts.tag", compact ("hashtag", "posts"));
     }
 
     public function search ()

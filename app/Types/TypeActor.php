@@ -209,14 +209,17 @@ class TypeActor {
         // we need to save the model first
         $actor->save ();
 
-        ProfileAttachment::where ("actor_id", $actor->id)->delete ();
-        foreach ($request ["attachment"] as $attachment)
+        if (isset ($request ["attachment"]))
         {
-            $profile_attachment = ProfileAttachment::create ([
-                "actor_id" => $actor->id,
-                "name" => $attachment ["name"],
-                "content" => $attachment ["value"]
-            ]);
+            ProfileAttachment::where ("actor_id", $actor->id)->delete ();
+            foreach ($request ["attachment"] as $attachment)
+            {
+                $profile_attachment = ProfileAttachment::create ([
+                    "actor_id" => $actor->id,
+                    "name" => $attachment ["name"],
+                    "content" => $attachment ["value"]
+                ]);
+            }
         }
 
         $featured_items = TypeActor::actor_process_featured ($actor);
