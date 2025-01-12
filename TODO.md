@@ -2,7 +2,7 @@
 
 - [-] Activitypub
     - [x] Accounts
-    - [-] Posts
+    - [x] Posts
         - [x] Local posts should be federated
         - [x] Local posts should be deleted
         - [x] Remote posts should be fetched
@@ -18,10 +18,10 @@
     - [x] Tags
     - [x] Mentions
         - [x] Local mentions
-        - [ ] Private post
+        - [x] Private post
     - [x] Pinned Posts
     - [x] Nodeinfo
-    - [ ] Notifications
+    - [x] Notifications
 
 - [-] Social features
     - [x] Profile

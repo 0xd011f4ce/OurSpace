@@ -20,7 +20,8 @@ class Note extends Model
         "content",
         "tag",
         "to",
-        "cc"
+        "cc",
+        "visibility"
     ];
 
     protected $casts = [
@@ -87,5 +88,35 @@ class Note extends Model
     public function is_pinned (Actor $actor)
     {
         return ProfilePin::where ("actor_id", $actor->id)->where ("note_id", $this->id)->first ();
+    }
+
+    public function can_view (Actor $actor = null)
+    {
+        $final_actor = $actor;
+        $note_actor = $this->get_actor ()->first ();
+        if (!$final_actor && auth ()->check ())
+        {
+            $final_actor = auth ()->user ()->actor;
+        }
+
+        if ($this->visibility == "public")
+        {
+            return true;
+        }
+        else if ($this->visibility == "followers" && $final_actor)
+        {
+            return $final_actor->friends_with ($note_actor);
+        }
+        else if ($this->visibility == "private" && $final_actor)
+        {
+            if ($final_actor == $note_actor)
+                return true;
+
+            $mention_exists = NoteMention::where ("note_id", $this->id)->where ("actor_id", $final_actor->id)->first ();
+            if ($mention_exists)
+                return true;
+        }
+
+        return false;
     }
 }

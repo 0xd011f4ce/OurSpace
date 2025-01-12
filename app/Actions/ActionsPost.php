@@ -125,6 +125,7 @@ class ActionsPost
                     "summary" => $processed ["summary"],
                     "content" => $processed ["content"],
                     "attachments" => $processed ["attachments"],
+                    "visibility" => $request ["visibility"],
                     "inReplyTo" => $processed ["inReplyTo"] ?? null,
                     "tags" => $processed ["tags"] ?? null,
                     "mentions" => $processed ["mentions"] ?? null

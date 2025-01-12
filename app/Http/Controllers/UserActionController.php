@@ -32,7 +32,8 @@ class UserActionController extends Controller
         $request->validate ([
             "summary" => "nullable|string",
             "content" => "required",
-            "files.*" => "max:4096"
+            "files.*" => "max:4096",
+            "visibility" => "required|in:public,private,followers",
         ]);
 
         $response = ActionsPost::post_new ($request);

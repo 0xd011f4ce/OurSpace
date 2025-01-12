@@ -370,6 +370,7 @@ class APOutboxController extends Controller
             }
         }
 
+        $mentions = [];
         if (isset ($request ["mentions"]))
         {
             foreach ($request ["mentions"] as $mention)
@@ -387,8 +388,36 @@ class APOutboxController extends Controller
                     "note_id" => $note->id,
                     "actor_id" => $object->id
                 ]);
+
+                $mentions[] = $object->actor_id;
             }
         }
+
+        if ($request ["visibility"] == "public")
+        {
+            $note->to = [
+                "https://www.w3.org/ns/activitystreams#Public"
+            ];
+            $note->cc = [
+                $actor->followers
+            ];
+        }
+        else if ($request ["visibility"] == "followers")
+        {
+            // TODO: Boosting should be disabled
+            $note->to = [
+                $actor->followers
+            ];
+            $note->cc = [];
+        }
+        else if ($request ["visibility"] == "private")
+        {
+            // TODO: Boosting should be disabled
+            $note->to = $mentions;
+        }
+
+        $note->visibility = $request ["visibility"];
+        $note->save ();
 
         $create_activity = TypeActivity::craft_create ($actor, $note);
 

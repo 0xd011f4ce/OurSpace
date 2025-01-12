@@ -86,14 +86,6 @@ class TypeNote
             "attributedTo" => $actor->actor_id,
             "content" => $request ["content"] ?? null,
             "tag" => $request ["tag"] ?? null,
-
-            // TODO: This should change when I implement visibilities and private notes
-            "to" => [
-                "https://www.w3.org/ns/activitystreams#Public"
-            ],
-            "cc" => [
-                $actor->followers
-            ]
         ]);
 
         $note->url = route ('posts.show', $note->id);
@@ -107,6 +99,7 @@ class TypeNote
         if ($activity)
             $note->activity_id = $activity->id;
 
+        $note_actor = $actor;
         if ($actor)
             $note->actor_id = $actor->id;
         else
@@ -122,6 +115,7 @@ class TypeNote
             }
 
             $note->actor_id = $actor->id;
+            $note_actor = $actor;
         }
 
         $note->note_id = $request["id"] ?? null;
@@ -132,6 +126,8 @@ class TypeNote
         $note->content = $request["content"] ?? null;
         $note->tag = $request["tag"] ?? null;
         $note->created_at = $request["published"] ?? null;
+        $note->to = $request["to"] ?? null;
+        $note->cc = $request["cc"] ?? null;
 
         $attachments = $note->attachments ()->get ();
         foreach ($attachments as $attachment)
@@ -237,6 +233,20 @@ class TypeNote
         if (isset ($request ["replies"]))
         {
             // TODO: Handle replies
+        }
+
+        $note_to = $note->to;
+        if (in_array ("https://www.w3.org/ns/activitystreams#Public", $note_to))
+        {
+            $note->visibility = "public";
+        }
+        else if (in_array ($note_actor->followers, $note_to))
+        {
+            $note->visibility = "followers";
+        }
+        else
+        {
+            $note->visibility = "private";
         }
     }
 

@@ -21,6 +21,9 @@ if ($actor->user_id)
     $actor_url = route ('users.show', [ 'user_name' => $actor->user->name ]);
 else
     $actor_url = route ('users.show', [ 'user_name' => $actor->local_actor_id ]);
+
+if (!$display_post->can_view ())
+    return;
 @endphp
 
 <tr>

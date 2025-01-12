@@ -21,6 +21,8 @@ class PostController extends Controller
         if (!$actor)
             return redirect ()->back ();
 
+        if (!$note->can_view ())
+            return redirect ()->back ()->with ("error", "You are not allowed to view this post.");
         return view ("posts.show", compact ("note", "actor"));
     }
 

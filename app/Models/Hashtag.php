@@ -11,6 +11,6 @@ class Hashtag extends Model
     ];
 
     public function get_notes () {
-        return $this->belongsToMany(Note::class, 'note_hashtag');
+        return $this->belongsToMany(Note::class, 'note_hashtag')->orderBy('created_at', 'desc');
     }
 }

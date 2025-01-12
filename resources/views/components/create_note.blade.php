@@ -10,9 +10,18 @@
     <br>
 
     <textarea name="content" placeholder="What's on your mind?" style="width: 100%"></textarea>
-    <input type="file" name="files[]" accept="image/*" multiple><br>
-    <button type="submit">Post</button>
     <small>Markdown is supported</small>
+    <br>
+    <input type="file" name="files[]" accept="image/*" multiple><br>
+    <p>
+        <b>Visibility:</b>
+        <select name="visibility">
+            <option value="public">Public</option>
+            <option value="followers">Friends only</option>
+            <option value="private">Mentioned Only</option>
+        </select>
+    </p>
+    <button type="submit">Post</button>
 
     @error ("content")
         <div class="error">{{ $message }}</div>
