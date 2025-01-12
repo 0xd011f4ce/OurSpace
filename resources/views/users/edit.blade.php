@@ -36,8 +36,14 @@
             @error("song")
                 <p class="error">{{ $message }}</p>
             @enderror
+            <small>Max file size: 4MB</small>
+            <br><br>
+            <small>Select custom notification sound:</small>
+            <input type="file" name="notification_sound" accept="audio/*"><br>
+            @error("notification_sound")
+                <p class="error">{{ $message }}</p>
+            @enderror
             <small>Max file size: 1MB</small>
-            <br>
             <h1>Bio:</h1>
             <br>
             <textarea name="bio" id="bio" cols="58" placeholder="Bio">{{ $user->bio }}</textarea>

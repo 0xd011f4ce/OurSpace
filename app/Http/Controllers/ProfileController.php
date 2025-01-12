@@ -58,6 +58,7 @@ class ProfileController extends Controller
         $incoming_fields = $request->validate ([
             "avatar" => "image|max:4096",
             "song" => "file|mimes:audio/mpeg,mp3|max:4096",
+            "notification_sound" => "file|mimes:audio/mpeg,mp3|max:1024",
             "bio" => "sometimes|nullable|string",
             "about_you" => "sometimes|nullable|string",
             "status" => "sometimes|nullable|string",
@@ -76,9 +77,11 @@ class ProfileController extends Controller
 
         $changing_avatar = false;
         $changing_song = false;
+        $changing_notification_sound = false;
 
         $old_avatar = null;
         $old_song = null;
+        $old_notification_sound = null;
         if (isset ($incoming_fields["avatar"]) && !empty ($incoming_fields["avatar"]))
         {
             $manager = new ImageManager (new Driver ());
@@ -104,6 +107,16 @@ class ProfileController extends Controller
             $changing_song = true;
         }
 
+        if (isset ($incoming_fields ["notification_sound"]) && !empty ($incoming_fields["notification_sound"]))
+        {
+            $file = $request->file ("notification_sound");
+            Storage::disk ("public")->put ("notification_sounds/" . $fname . ".mp3", file_get_contents ($file));
+
+            $old_notification_sound = "notification_sounds/" . $user->notification_sound;
+            $user->notification_sound = $fname . ".mp3";
+            $changing_notification_sound = true;
+        }
+
         $user->bio = $incoming_fields["bio"];
         $user->about_you = $incoming_fields["about_you"];
         $user->status = $incoming_fields["status"];
@@ -127,6 +140,9 @@ class ProfileController extends Controller
 
         if ($changing_song)
             Storage::disk ("public")->delete (str_replace ("/storage/", "", $old_song));
+
+        if ($changing_notification_sound)
+            Storage::disk ("public")->delete (str_replace ("/storage/", "", $old_notification_sound));
 
         $response = ActionsUser::update_profile ();
         if (isset ($response["error"]))

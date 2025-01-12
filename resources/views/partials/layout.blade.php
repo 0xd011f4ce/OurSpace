@@ -44,7 +44,7 @@
 
     @if (auth ()->check ())
     <script>
-        const notification_sound = new Audio ("/resources/sounds/notification.mp3")
+        const notification_sound = new Audio ("{{ auth ()->user ()->notification_sound }}")
 
         function register_echo ()
         {

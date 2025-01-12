@@ -82,6 +82,13 @@ class User extends Authenticatable
         });
     }
 
+    protected function notificationSound () : Attribute
+    {
+        return Attribute::make (get: function ($value) {
+            return $value ? "/storage/notification_sounds/" . $value : "/resources/sounds/notification.mp3";
+        });
+    }
+
     public function actor ()
     {
         return $this->hasOne (Actor::class);
