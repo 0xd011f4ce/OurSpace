@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Actor;
 use App\Models\Note;
 use App\Models\Hashtag;
+use App\Models\BlogCategory;
 
 use App\Helpers\PaginationHelper;
 

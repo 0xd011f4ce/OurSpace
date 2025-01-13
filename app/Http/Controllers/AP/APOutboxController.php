@@ -29,45 +29,47 @@ use Illuminate\Support\Facades\Storage;
 
 class APOutboxController extends Controller
 {
-    public function outbox (User $user, Request $request)
+    public function outbox ($name, Request $request)
     {
+        $actor = Actor::where ("preferredUsername", $name)->where ("user_id", "!=", null)->first  ();
+
         // TODO: check we are logged in and we are the logged in user
         switch ($request->get ("type"))
         {
             case "UpdateProfile":
-                return $this->handle_update_profile ($user);
+                return $this->handle_update_profile ($actor);
                 break;
 
             case "UpdateNote":
-                return $this->handle_update_note ($user, $request);
+                return $this->handle_update_note ($actor, $request);
                 break;
 
             case "DeleteNote":
-                return $this->handle_delete_note ($user, $request);
+                return $this->handle_delete_note ($actor, $request);
                 break;
 
             case "Follow":
-                return $this->handle_follow ($user, $request->get ("object"));
+                return $this->handle_follow ($actor, $request->get ("object"));
                 break;
 
             case "Unfollow":
-                return $this->handle_unfollow ($user, $request->get ("object"));
+                return $this->handle_unfollow ($actor, $request->get ("object"));
                 break;
 
             case "Like":
-                return $this->handle_like ($user, $request->get ("object"));
+                return $this->handle_like ($actor, $request->get ("object"));
                 break;
 
             case "Boost":
-                return $this->handle_boost ($user, $request->get ("object"));
+                return $this->handle_boost ($actor, $request->get ("object"));
                 break;
 
             case "Pin":
-                return $this->handle_pin ($user, $request->get ("object"));
+                return $this->handle_pin ($actor, $request->get ("object"));
                 break;
 
             case "Post":
-                return $this->handle_post ($user, $request);
+                return $this->handle_post ($actor, $request);
                 break;
 
             default:
@@ -77,9 +79,8 @@ class APOutboxController extends Controller
         }
     }
 
-    public function handle_update_profile (User $user)
+    public function handle_update_profile (Actor $actor)
     {
-        $actor = $user->actor ()->first ();
         $actor_response = TypeActor::build_response ($actor);
 
         $update_activity = TypeActivity::craft_update ($actor, $actor_response);
@@ -87,10 +88,8 @@ class APOutboxController extends Controller
         return response ()->json ("success", 200);
     }
 
-    public function handle_update_note (User $user, $request)
+    public function handle_update_note (Actor $actor, $request)
     {
-        $actor = $user->actor ()->first ();
-
         // first check if there are new attachments
         if ($request ["attachments"])
         {
@@ -135,9 +134,8 @@ class APOutboxController extends Controller
         return response ()->json ("success", 200);
     }
 
-    public function handle_delete_note (User $user, $request)
+    public function handle_delete_note (Actor $actor, $request)
     {
-        $actor = $user->actor ()->first ();
         $note = Note::where ("id", $request ["note"])->first ();
         if (!$note)
             return response ()->json ([ "error" => "note not found" ], 404);
@@ -154,29 +152,29 @@ class APOutboxController extends Controller
         return response ()->json ("success", 200);
     }
 
-    public function handle_follow (User $user, string $object)
+    public function handle_follow (Actor $actor, string $object)
     {
         $object_actor = Actor::where ("actor_id", $object)->first ();
         if (!$object_actor)
             return response ()->json ([ "error" => "object not found" ], 404);
 
-        if ($user->actor ()->first ()->actor_id == $object_actor->actor_id)
+        if ($actor->actor_id == $object_actor->actor_id)
             return response ()->json ([ "error" => "cannot follow self" ], 400);
 
         // check we are not following already
-        $following_activity = Activity::where ("actor", $user->actor ()->first ()->actor_id)
+        $following_activity = Activity::where ("actor", $actor->actor_id)
             ->where ("object", '"' . str_replace ("/", "\/", $object_actor->actor_id) . '"')
             ->where ("type", "Follow")
             ->first ();
         if ($following_activity)
             return response ()->json ([ "error" => "already following" ], 400);
 
-        $follow_activity = TypeActivity::craft_follow ($user->actor ()->first (), $object_actor);
-        $response = TypeActivity::post_activity ($follow_activity, $user->actor ()->first (), $object_actor);
+        $follow_activity = TypeActivity::craft_follow ($actor, $object_actor);
+        $response = TypeActivity::post_activity ($follow_activity, $actor, $object_actor);
 
         $follow = Follow::create ([
             "activity_id" => $follow_activity->id,
-            "actor" => $user->actor ()->first ()->id,
+            "actor" => $actor->id,
             "object" => $object_actor->id,
         ]);
 
@@ -189,21 +187,21 @@ class APOutboxController extends Controller
         ];
     }
 
-    public function handle_unfollow (User $user, string $object)
+    public function handle_unfollow (Actor $actor, string $object)
     {
         $object_actor = Actor::where ("actor_id", $object)->first ();
         if (!$object_actor)
             return response ()->json ([ "error" => "object not found" ], 404);
 
-        $follow_activity = Activity::where ("actor", $user->actor ()->first ()->actor_id)
+        $follow_activity = Activity::where ("actor", $actor->actor_id)
             ->where ("object", json_encode ($object_actor->actor_id, JSON_UNESCAPED_SLASHES))
             ->where ("type", "Follow")
             ->first ();
         if (!$follow_activity)
-            return response ()->json ([ "error" => "no follow activity found. " . $user->actor ()->first ()->actor_id . " unfollowing " . $object_actor->actor_id ], 404);
+            return response ()->json ([ "error" => "no follow activity found. " . $actor->actor_id . " unfollowing " . $object_actor->actor_id ], 404);
 
-        $unfollow_activity = TypeActivity::craft_undo ($follow_activity, $user->actor ()->first ());
-        $response = TypeActivity::post_activity ($unfollow_activity, $user->actor ()->first (), $object_actor);
+        $unfollow_activity = TypeActivity::craft_undo ($follow_activity, $actor);
+        $response = TypeActivity::post_activity ($unfollow_activity, $actor, $object_actor);
 
         // TODO: Check if it was successfully sent
         /* if (!$response || $response->getStatusCode () < 200 || $response->getStatusCode () >= 300)
@@ -216,13 +214,12 @@ class APOutboxController extends Controller
         ];
     }
 
-    public function handle_like (User $user, $request)
+    public function handle_like (Actor $actor, $request)
     {
         $object = Note::where ("note_id", $request)->first ();
         if (!$object)
             return response ()->json ([ "error" => "object not found" ], 404);
 
-        $actor = $user->actor ()->first ();
         $already_liked = $actor->liked_note ($object);
         if ($already_liked)
         {
@@ -262,13 +259,12 @@ class APOutboxController extends Controller
         ];
     }
 
-    public function handle_boost (User $user, $object)
+    public function handle_boost (Actor $actor, $object)
     {
         $object = Note::where ("note_id", $object)->first ();
         if (!$object)
             return response ()->json ([ "error" => "object not found" ], 404);
 
-        $actor = $user->actor ()->first ();
         $already_boosted = $actor->boosted_note ($object);
         if ($already_boosted)
         {
@@ -302,13 +298,12 @@ class APOutboxController extends Controller
         ];
     }
 
-    public function handle_pin (User $user, $object)
+    public function handle_pin (Actor $actor, $object)
     {
         $object = Note::where ("note_id", $object)->first ();
         if (!$object)
             return response ()->json ([ "error" => "object not found" ], 404);
 
-        $actor = $user->actor ()->first ();
         $already_pinned = $object->is_pinned ($actor);
         if ($already_pinned)
         {
@@ -342,9 +337,8 @@ class APOutboxController extends Controller
         ];
     }
 
-    public function handle_post (User $user, $request)
+    public function handle_post (Actor $actor, $request)
     {
-        $actor = $user->actor ()->first ();
         $note = TypeNote::craft_from_outbox ($actor, $request);
 
         if (isset ($request ["attachments"]))
@@ -417,6 +411,18 @@ class APOutboxController extends Controller
         }
 
         $note->visibility = $request ["visibility"];
+
+        // if the parent note is not public, responses shouldn't be either
+        if ($request ["inReplyTo"])
+        {
+            $parent_note = TypeNote::note_exists($request ["inReplyTo"]);
+            if ($parent_note)
+            {
+                $note->to = $parent_note->to;
+                $note->cc = $parent_note->cc;
+                $note->visibility = $parent_note->visibility;
+            }
+        }
         $note->save ();
 
         $create_activity = TypeActivity::craft_create ($actor, $note);

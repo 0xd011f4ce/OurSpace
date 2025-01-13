@@ -26,7 +26,7 @@ class UserController extends Controller
     public function do_signup (Request $request)
     {
         $incoming_fields = $request->validate ([
-            "name" => "required|alpha_dash",
+            "name" => "required|alpha_dash|unique:users|unique:blogs",
             "email" => "required|email|unique:users",
             "password" => "required|confirmed"
         ]);

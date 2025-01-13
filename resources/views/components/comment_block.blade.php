@@ -17,7 +17,9 @@ if (!$actor)
     return;
 }
 
-if ($actor->user_id)
+if ($actor->blog_id)
+    $actor_url = route ('blogs.show', [ 'blog' => $actor->blog->slug ]);
+else if ($actor->user_id)
     $actor_url = route ('users.show', [ 'user_name' => $actor->user->name ]);
 else
     $actor_url = route ('users.show', [ 'user_name' => $actor->local_actor_id ]);
@@ -35,11 +37,7 @@ if (!$display_post->can_view ())
         </a>
         <a href="{{ $actor_url }}">
             <p>
-                @if ($actor->user)
-                    <img loading="lazy" src="{{ $actor->user->avatar }}" class="pfp-fallback" width="50">
-                @else
-                    <img loading="lazy" src="{{ $actor->icon }}" class="pfp-fallback" width="50">
-                @endif
+                <img loading="lazy" src="{{ $actor->icon }}" class="pfp-fallback" width="50">
             </p>
         </a>
     </td>

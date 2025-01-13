@@ -25,7 +25,7 @@
                         View My
                         <a href="{{ route('users.show', ['user_name' => auth()->user()->name]) }}">Profile</a>
                         |
-                        <a href="#">Blog</a>
+                        <a href="{{ route ('users.blogs', [ 'user_name' => auth ()->user ()->name ]) }}">Blog</a>
                         |
                         <a href="#">Bulletins</a>
                         |

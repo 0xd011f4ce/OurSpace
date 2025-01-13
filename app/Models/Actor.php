@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\User;
 use App\Models\Announcement;
 use App\Models\Note;
+use App\Models\Blog;
 
 use App\Helpers\PaginationHelper;
 
@@ -19,6 +20,7 @@ class Actor extends Model
 
         "type",
         "actor_id",
+        "blog_id",
         "local_actor_id",
 
         "following",
@@ -57,6 +59,11 @@ class Actor extends Model
         return $this->belongsTo (User::class);
     }
 
+    public function blog ()
+    {
+        return $this->belongsTo (Blog::class);
+    }
+
     public function profile_attachment ()
     {
         return $this->hasMany (ProfileAttachment::class);
@@ -81,6 +88,12 @@ class Actor extends Model
     public function create_from_user (User $user)
     {
         $data = TypeActor::create_from_user ($user);
+        return $this->create ($data);
+    }
+
+    public function create_from_blog (Blog $blog)
+    {
+        $data = TypeActor::create_from_blog ($blog);
         return $this->create ($data);
     }
 

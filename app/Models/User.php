@@ -99,6 +99,11 @@ class User extends Authenticatable
         return Cache::has ("user-online-" . $this->id);
     }
 
+    public function blogs ()
+    {
+        return $this->hasMany (Blog::class);
+    }
+
     public function mutual_friends ()
     {
         $followers = Follow::where ("actor", $this->actor->id)->pluck ("object")->toArray ();

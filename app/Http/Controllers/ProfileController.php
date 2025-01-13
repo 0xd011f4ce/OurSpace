@@ -11,6 +11,7 @@ use Intervention\Image\Drivers\Gd\Driver;
 use App\Models\User;
 use App\Models\Actor;
 use App\Models\Note;
+use App\Models\Blog;
 
 use App\Actions\ActionsUser;
 use App\Helpers\PaginationHelper;
@@ -168,8 +169,9 @@ class ProfileController extends Controller
         $ids = $user->mutual_friends ();
         if (request ()->get ("query"))
         {
+            $query = request ()->get ("query");
             $friends = Actor::whereIn ("actor_id", $ids)
-                ->where ("preferredUsername", "like", "%" . request ()->get ("query") . "%")
+                ->where ("preferredUsername", "like", "%" . $query . "%")
                 ->get ();
         }
         else
@@ -230,5 +232,21 @@ class ProfileController extends Controller
         }
 
         return view ("users.notifications", compact ("user", "notifications", "processed_notifications", "unread_notifications"));
+    }
+
+    public function blogs ($user_name)
+    {
+        if (str_starts_with ($user_name, "@"))
+        {
+            return redirect ()->route ("users.show", [ "user_name" => $user_name ]);
+        }
+
+        $user = User::where ("name", $user_name)->first ();
+        if (!$user)
+            return redirect ()->route ("home");
+
+        $blogs = Blog::where ("user_id", $user->id)->orderBy ("created_at", "desc")->get ();
+
+        return view ("users.blogs", compact ("user", "blogs"));
     }
 }

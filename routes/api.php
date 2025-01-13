@@ -19,15 +19,16 @@ Route::get ("/.well-known/nodeinfo/2.1", [ APNodeInfoController::class, "nodeinf
 
 Route::prefix ("/ap/v1")->group (function () {
     // users
-    Route::post ("/user/{user:name}/inbox", [ APInboxController::class, "inbox" ])->name ("ap.inbox");
-    Route::post ("/user/{user:name}/outbox", [ APOutboxController::class, "outbox" ])->name ("ap.outbox");
-    Route::get ("/user/{user:name}/followers", [ APActorController::class, "followers" ])->name ("ap.followers");
-    Route::get ("/user/{user:name}/following", [ APActorController::class, "following" ])->name ("ap.following");
-    Route::get ("/user/{user:name}/collections/featured", [ APActorController::class, "featured" ])->name ("ap.featured");
-    Route::get ("/user/{user:name}", [ APActorController::class, "user" ])->name ("ap.user");
+    Route::post ("/user/{name}/inbox", [ APInboxController::class, "inbox" ])->name ("ap.inbox");
+    Route::post ("/user/{name}/outbox", [ APOutboxController::class, "outbox" ])->name ("ap.outbox");
+    Route::get ("/user/{name}/followers", [ APActorController::class, "followers" ])->name ("ap.followers");
+    Route::get ("/user/{name}/following", [ APActorController::class, "following" ])->name ("ap.following");
+    Route::get ("/user/{name}/collections/featured", [ APActorController::class, "featured" ])->name ("ap.featured");
+    Route::get ("/user/{name}", [ APActorController::class, "user" ])->name ("ap.user");
 
     // notes
     Route::get ("/note/{note:private_id}", [ APGeneralController::class, "note" ])->name ("ap.note");
 
+    // instance
     Route::post ("/inbox", [ APInstanceInboxController::class, "inbox" ])->name ("ap.inbox");
 });

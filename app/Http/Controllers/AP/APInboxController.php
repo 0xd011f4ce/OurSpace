@@ -25,8 +25,12 @@ use App\Http\Controllers\Controller;
 
 class APInboxController extends Controller
 {
-    public function inbox (User $user)
+    public function inbox ($name)
     {
+        $actor = Actor::where ("preferredUsername", $name)->where ("user_id", "!=", null)->first ();
+        if (!$actor)
+            return response ()->json ([ "error" => "Actor not found" ], 404);
+
         $request = request ();
         $type = $request->get ("type");
 
@@ -35,15 +39,15 @@ class APInboxController extends Controller
 
         switch ($type) {
             case "Follow":
-                $this->handle_follow ($user, $request->all ());
+                $this->handle_follow ($actor, $request->all ());
                 break;
 
             case "Undo":
-                $this->handle_undo ($user, $request->all ());
+                $this->handle_undo ($actor, $request->all ());
                 break;
 
             case "Like":
-                $this->handle_like ($user, $request->all ());
+                $this->handle_like ($actor, $request->all ());
                 break;
 
             default:
@@ -53,17 +57,17 @@ class APInboxController extends Controller
         }
     }
 
-    private function handle_follow (User $user, $activity)
+    private function handle_follow (Actor $actor, $activity)
     {
         ActivityFollowEvent::dispatch ($activity);
     }
 
-    public function handle_undo (User $user, $activity)
+    public function handle_undo (Actor $actor, $activity)
     {
         ActivityUndoEvent::dispatch ($activity);
     }
 
-    public function handle_like (User $user, $activity)
+    public function handle_like (Actor $actor, $activity)
     {
         ActivityLikeEvent::dispatch ($activity);
     }

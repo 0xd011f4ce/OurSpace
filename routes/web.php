@@ -7,6 +7,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserActionController;
+use App\Http\Controllers\BlogController;
 
 // auth related
 Route::get ("/auth/login", [ UserController::class, "login" ])->name ("login")->middleware ("guest");
@@ -28,6 +29,7 @@ Route::middleware ("update_online")->group (function () {
     Route::post ("/user/edit", [ ProfileController::class, "update" ])->middleware ("auth");
     Route::get ("/user/notifications", [ ProfileController::class, "notifications" ])->name ("users.notifications")->middleware ("auth");
     Route::get ("/user/{user_name}/friends", [ ProfileController::class, "friends" ])->name ("users.friends");
+    Route::get ("/user/{user_name}/blogs", [ ProfileController::class, "blogs" ])->name ("users.blogs");
     Route::get ("/user/{user_name}", [ ProfileController::class, "show" ])->name ("users.show");
 
     // posts routes
@@ -42,10 +44,17 @@ Route::middleware ("update_online")->group (function () {
     // other routes
     Route::get ("/browse", [ HomeController::class, "browse" ])->name ("browse");
     Route::get ("/search", [ HomeController::class, "search" ])->name ("search");
-    Route::get ("/tags/{tag}", [ HomeController::class, "tag" ])->name ("tags"); // TODO: This
+    Route::get ("/tags/{tag}", [ HomeController::class, "tag" ])->name ("tags");
     Route::get ("/search", [ HomeController::class, "search" ])->name ("search");
     Route::get ("/requests", [ HomeController::class, "requests" ])->name ("requests")->middleware ("auth");
     Route::post ("/requests", [ HomeController::class, "requests_accept" ])->middleware ("auth");
+
+    // blog routes
+    Route::get ("/blogs/create", [ BlogController::class, "create" ])->name ("blogs.create")->middleware ("auth");
+    Route::post ("/blogs/create", [ BlogController::class, "store" ])->middleware ("auth");
+    Route::get ("/blogs/{blog:slug}/entry/new", [ BlogController::class, "new_entry" ])->name ("blogs.new_entry")->middleware("auth");
+    Route::get ("/blogs/{blog:slug}", [ BlogController::class, "show" ])->name ("blogs.show");
+    Route::get ("/blogs", [ BlogController::class, "index" ])->name ("blogs");
 });
 
 require __DIR__ . "/api.php";

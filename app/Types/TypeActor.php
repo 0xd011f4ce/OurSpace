@@ -3,6 +3,7 @@
 namespace App\Types;
 
 use App\Models\User;
+use App\Models\Blog;
 use App\Models\Actor;
 use App\Models\ProfileAttachment;
 use App\Models\Instance;
@@ -56,6 +57,40 @@ class TypeActor {
             "preferredUsername" => $user->name,
             "name" => $user->name,
             "summary" => "",
+
+            "public_key" => $keys["public_key"]["key"],
+            "private_key" => $keys["private_key"]
+        ];
+    }
+
+    public static function create_from_blog (Blog $blog)
+    {
+        $keys = TypeActor::gen_keys ();
+        $app_url = env ("APP_URL");
+
+        return [
+            "blog_id" => $blog->id,
+
+            "type" => "Person",
+            "actor_id" => $app_url . "/ap/v1/user/" . $blog->slug,
+
+            "inbox" => $app_url . "/ap/v1/user/" . $blog->slug . "/inbox",
+            "outbox" => $app_url . "/ap/v1/user/" . $blog->slug . "/outbox",
+
+            "following" => $app_url . "/ap/v1/user/" . $blog->slug . "/following",
+            "followers" => $app_url . "/ap/v1/user/" . $blog->slug . "/followers",
+
+            "liked" => $app_url . "/ap/v1/user/" . $blog->slug . "/liked",
+            "featured" => $app_url . "/ap/v1/user/" . $blog->slug . "/collections/featured",
+            "featured_tags" => $app_url . "/ap/v1/user/" . $blog->slug . "/collections/featured/tags",
+
+            "sharedInbox" => $app_url . "/ap/v1/inbox",
+
+            "preferredUsername" => $blog->slug,
+            "name" => $blog->name,
+            "summary" => $blog->description,
+
+            "icon" => $app_url . "/storage/blog_icons/" . $blog->icon,
 
             "public_key" => $keys["public_key"]["key"],
             "private_key" => $keys["private_key"]
@@ -122,7 +157,7 @@ class TypeActor {
             ]
         ];
 
-        if ($actor->user)
+        if ($actor->user && !$actor->blog_id)
         {
             // appent to @context
             $response ["@context"][] = [

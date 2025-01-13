@@ -106,8 +106,7 @@ class PostController extends Controller
         if (!auth ()->check ())
             return back ()->with ("error", "You need to be logged in to pin a post.");
 
-        $user = auth ()->user ();
-        $actor = $user->actor ()->first ();
+        $actor = $note->get_actor ()->first ();
 
         $response = ActionsPost::pin_post ($actor, $note);
 

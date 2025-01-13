@@ -1,3 +1,20 @@
+@php
+    $user_url = null;
+
+    if ($actor->blog_id)
+    {
+        $user_url = route ('blogs.show', [ 'blog' => $actor->blog->slug ]);
+    }
+    else if ($actor->user_id)
+    {
+        $user_url = route ('users.show', [ 'user_name' => $actor->user->name ]);
+    }
+    else
+    {
+        $user_url = route ('users.show', [ 'user_name' => $actor->local_actor_id ]);
+    }
+@endphp
+
 @extends("partials.layout")
 
 @section ("title", "View Post")
@@ -8,14 +25,14 @@
     <div class="col w-20 left">
         <div class="edit-info">
             <div class="profile-pic">
-                <img loading="lazy" src="{{ $actor->user ? $actor->user->avatar : $actor->icon }}" class="pfp-fallback">
+                <img loading="lazy" src="{{ $actor->icon }}" class="pfp-fallback">
             </div>
 
             <div class="author-details">
                 <h4>
                     Published by
                     <span>
-                        <a href="{{ route ('users.show', [ 'user_name' => $actor->user ? $actor->user->name : $actor->local_actor_id ]) }}">
+                        <a href="{{ $user_url }}">
                             {{ $actor->name }}
                         </a>
                     </span>
@@ -29,9 +46,9 @@
                 </p>
 
                 <p class="links">
-                    <a href="{{ route ('users.show', [ 'user_name' => $actor->user ? $actor->user->name : $actor->local_actor_id ]) }}">
+                    <a href="{{ $user_url }}">
                         <img loading="lazy" src="/resources/icons/user.png" class="icon">
-                        <span class="m-hide">View</span> Profile
+                        <span class="m-hide">View</span> {{ $actor->blog_id ? "Blog" : "Profile" }}
                     </a>
                 </p>
             </div>

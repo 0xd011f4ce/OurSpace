@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\AP;
 
 use App\Models\User;
+use App\Models\Blog;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -32,7 +33,9 @@ class APWebfingerController extends Controller
         $user = $user[0];
         $actual_user = User::where ("name", $user)->first ();
         if (!isset ($actual_user)) {
-            return response ()->json ([ "error" => "user not found" ], 404);
+            $actual_user = Blog::where ("slug", $user)->first ();
+            if (!$actual_user)
+                return response ()->json ([ "error" => "user not found" ], 404);
         }
 
         $webfinger = [

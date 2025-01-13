@@ -50,7 +50,7 @@
             <div class="mood">
                 @if ($user != null)
                     <p><b>Mood:</b> {{ $user->mood }}</p>
-                    <p><b>View my: <a href="#">Blog</a> | <a href="#">Bulletins</a></b></p>
+                    <p><b>View my: <a href="{{ route ('users.blogs', [ 'user_name' => $user->name ]) }}">Blog</a> | <a href="#">Bulletins</a></b></p>
                 @endif
             </div>
 
@@ -280,10 +280,9 @@
             @if ($user != null)
             <div class="blog-preview">
                 <h4>
-                    {{ $user->name }}'s Latest Blog Entries [<a href="#">View Blog</a>]
+                    {{ $user->name }}'s Latest Blog Entries [<a href="{{ route ('users.blogs', [ 'user_name' => $user->name ]) }}">View Blog</a>]
                 </h4>
                 <p>
-                    <i>There are no Blog Entries yet.</i>
                 </p>
             </div>
             @endif

@@ -13,14 +13,14 @@
     <small>Markdown is supported</small>
     <br>
     <input type="file" name="files[]" accept="image/*" multiple><br>
-    <p>
+    <div>
         <b>Visibility:</b>
         <select name="visibility">
             <option value="public">Public</option>
             <option value="followers">Friends only</option>
             <option value="private">Mentioned Only</option>
         </select>
-    </p>
+    </div>
     <button type="submit">Post</button>
 
     @error ("content")

@@ -39,7 +39,11 @@
                         @elseif ($notification ['type'] == 'Follow')
                             <p>Followed you</p>
                         @elseif ($notification ['type'] == 'Unfollow')
-                            <p>Unfollowed you</p>
+                            @if ($notification ["object"]->id == auth ()->user ()->id)
+                                <p>You unfollowed you</p>
+                            @else
+                                <p>Unfollowed <b>{{ $notification ['object']->name }}</b></p>
+                            @endif
                         @elseif ($notification ['type'] == 'Boost')
                             <p>Boosted this <b><a href="{{ route ('posts.show', ['note' => $notification['object']->id]) }}">post</a></b></p>
                         @elseif ($notification ['type'] == 'Like')

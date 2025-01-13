@@ -47,7 +47,11 @@
             </li>
 
             <li>
-                <a href="#">&nbsp;Blog </a>
+                @auth
+                    <a href="{{ route ('blogs') }}">&nbsp;Blog </a>
+                @else
+                    <a href="{{ route ('login') }}">&nbsp; Blog</a>
+                @endauth
             </li>
 
             <li>

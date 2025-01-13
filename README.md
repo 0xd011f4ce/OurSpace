@@ -195,11 +195,12 @@ Restart nginx:
 sudo systemctl restart nginx
 ```
 
-Now link the storage to the public folder and install the dependencies for reverb:
+Now link the storage to the public folder, install the dependencies for reverb and seed the database:
 
 ```bash
 php artisan storage:link
 php artisan install:broadcasting
+php artisan db:seed
 ```
 
 Now, we need to create three services to handle the jobs that OurSpace needs to run, another to handle the notifications' queue and another one to run Laravel Reverb. So run something `emacs /lib/systemd/system/ourspace-queue.service`, `emacs /lib/systemd/system/ourspace-notifications.service`, `emacs /lib/systemd/system/ourspace-ws.service` and add the following content:

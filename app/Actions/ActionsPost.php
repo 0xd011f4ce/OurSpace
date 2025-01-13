@@ -115,7 +115,11 @@ class ActionsPost
 
         $processed = ActionsPost::process_content_and_attachments ($request);
 
-        $actor = auth ()->user ()->actor ()->first ();
+        $actor = null;
+        if ($request ["blog_id"])
+            $actor = Actor::where ("blog_id", $request ["blog_id"])->first ();
+        else
+            $actor = auth ()->user ()->actor ()->first ();
 
         try {
             $client = new Client ();

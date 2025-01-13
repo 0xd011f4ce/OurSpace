@@ -11,4 +11,19 @@ class ProfilePin extends Model
         "note_id",
         "actor_id"
     ];
+
+    public function activity ()
+    {
+        return $this->belongsTo (Activity::class);
+    }
+
+    public function note ()
+    {
+        return $this->belongsTo (Note::class);
+    }
+
+    public function actor ()
+    {
+        return $this->belongsTo (Actor::class);
+    }
 }
